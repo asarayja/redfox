@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redfox i Farta</title>
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at center, #b3e0ff 0%, #ffffff 100%);
+      --container-bg: rgba(255,255,255,0.9);
+      --text-color: #222;
+      --instruksjon-color: #555;
+      --button-gradient: linear-gradient(45deg, #ff0000, #ff4500);
+      --title-gradient: linear-gradient(45deg, #ff0000, #ff4500);
+      --shadow-color: rgba(0,0,0,0.2);
+    }
+    body.dark-mode {
+      --bg-gradient: radial-gradient(circle at center, #333 0%, #1a1a1a 100%);
+      --container-bg: rgba(40,40,40,0.9);
+      --text-color: #ddd;
+      --instruksjon-color: #aaa;
+      --button-gradient: linear-gradient(45deg, #6C3BAA, #8A4DBD);
+      --title-gradient: linear-gradient(45deg, #6C3BAA, #8A4DBD);
+      --shadow-color: rgba(255,255,255,0.1);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-gradient);
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: var(--container-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px var(--shadow-color);
+      transition: background 0.3s;
+    }
+    canvas {
+      background: linear-gradient(to top, #cceeff, #ffffff);
+      display: block;
+      margin: 40px auto;
+      border: 4px solid #444;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      border-radius: 8px;
+    }
+    h1 {
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      font-size: 36px;
+      background: var(--title-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 4px var(--shadow-color);
+      animation: bounceIn 1s ease-out;
+    }
+    #score, #highScore, #redfoxCoins {
+      color: var(--text-color);
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px var(--shadow-color);
+    }
+    #highScore.updated {
+      animation: highScorePulse 0.5s ease-in-out;
+    }
+    #gameOver {
+      display: none;
+      font-size: 24px;
+      color: red;
+      font-weight: bold;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px var(--shadow-color);
+      animation: pulse 1.5s infinite;
+    }
+    #cheatCodeDisplay {
+      display: none;
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      font-weight: bold;
+      color: #ff0000;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px var(--shadow-color);
+      animation: fadeInOut 3s forwards;
+    }
+    p.instruksjon {
+      color: var(--instruksjon-color);
+      transition: color 0.3s;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background: var(--button-gradient);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px var(--shadow-color);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px var(--shadow-color);
+    }
+    #themeToggle {
+      background: linear-gradient(45deg, #666, #999);
+    }
+    #cheatInput {
+      padding: 8px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #444;
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    .container label[for="volumeControl"] {
+      display: block;
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--text-color);
+      margin-top: 10px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .container #volumeControl {
+      display: block;
+      width: 200px;
+      margin: 0 auto 10px;
+      -webkit-appearance: none;
+      background: #ccc;
+      border-radius: 5px;
+      height: 8px;
+      outline: none;
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    #volumeControl::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--button-gradient);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    #volumeControl::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: var(--button-gradient);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    @keyframes highScorePulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      canvas {
+        width: 100%;
+        height: auto;
+      }
+      h1 {
+        font-size: 28px;
+      }
+      #score, #highScore, #redfoxCoins, #gameOver, #cheatCodeDisplay {
+        font-size: 16px;
+      }
+      button, #cheatInput {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+      .container label[for="volumeControl"] {
+        font-size: 14px;
+        margin-top: 8px;
+        margin-bottom: 6px;
+      }
+      .container #volumeControl {
+        width: 150px;
+        margin: 0 auto 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Redfox i Farta!</h1>
+    <p class="instruksjon">
+      <strong>Styring:</strong><br>
+      ← Venstre pil: Gå til venstre<br>
+      → Høyre pil: Gå til høyre<br>
+      ↓ Ned pil: Dukke<br>
+      SPACE: Hopp / Start på nytt hvis game over<br>
+      R: Bruk Redfox Coin for å starte fra der du døde (hvis tilgjengelig)<br>
+    </p>
+    <canvas id="revCanvas" width="800" height="400"></canvas>
+    <audio id="backgroundMusic" loop preload="auto">
+      <source src="rev.mp3" type="audio/mpeg">
+    </audio>
+    <p id="score" style="margin-bottom: 5px;">Meter: 0 m</p>
+    <p id="highScore" style="margin: 5px 0;">High Score: 0 m</p>
+    <p id="redfoxCoins" style="margin-top: 5px;">Redfox Coins: 0</p>
+    <p id="gameOver">Game Over! Poeng: 0 m | High Score: 0 m<br>Trykk SPACE for å starte på nytt.</p>
+    <input type="text" id="cheatInput" placeholder="Skriv juksekode">
+    <label for="volumeControl">Volum</label>
+    <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.5">
+    <button onclick="brukJuksekode()">Bruk Juksekode</button>
+    <button onclick="resetSpill()">Start Spill</button>
+    <button onclick="resetHighScore()">Nullstill High Score</button>
+    <button id="themeToggle" onclick="toggleTheme()">Bytt til Dark Mode</button>
+    <div id="cheatCodeDisplay"></div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("revCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const revBilde = new Image();
+    revBilde.src = "rev.png";
+
+    let audioContext = new (window.AudioContext || window.webkitAudioContext)(); // Initialize AudioContext once
+    let lastCoinSoundTime = 0;
+    let lastJumpSoundTime = 0;
+    const soundCooldown = 100; // 100ms cooldown for sounds
+
+    let musicVolume = localStorage.getItem("redfoxMusicVolume") ? parseFloat(localStorage.getItem("redfoxMusicVolume")) : 0.5;
+    const backgroundMusic = document.getElementById("backgroundMusic");
+    backgroundMusic.volume = musicVolume === 0 ? 0.001 : musicVolume;
+    backgroundMusic.addEventListener('error', e => console.error("Feil ved lasting av rev.mp3:", e));
+
+    function startBackgroundMusic() {
+      if (!backgroundMusic.playing) {
+        backgroundMusic.play().catch(e => console.error("Kunne ikke spille musikk:", e));
+      }
+    }
+
+    function playCoinSound() {
+      const now = Date.now();
+      if (now - lastCoinSoundTime < soundCooldown) return; // Prevent rapid sound creation
+      lastCoinSoundTime = now;
+
+      try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(1320, audioContext.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.2);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.2);
+      } catch (e) {
+        console.error("Feil i playCoinSound:", e);
+      }
+    }
+
+    function playJumpSound() {
+      const now = Date.now();
+      if (now - lastJumpSoundTime < soundCooldown) return; // Prevent rapid sound creation
+      lastJumpSoundTime = now;
+
+      try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(660, audioContext.currentTime + 0.15);
+        gainNode.gain.setValueAtTime(0.2 * musicVolume, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.25);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.25);
+      } catch (e) {
+        console.error("Feil i playJumpSound:", e);
+      }
+    }
+
+    let revX = 100, revY = 250;
+    let revWidth = 100, revHeight = 60;
+    let velocityY = 0, gravity = 0.8, jumpPower = -20;
+    let jumping = false, ducking = false;
+    let bevegVenstre = false, bevegHoyre = false;
+    const bevegFart = 4;
+
+    let score = 0;
+    let highScore = localStorage.getItem("redfoxHighScore") ? parseInt(localStorage.getItem("redfoxHighScore")) : 0;
+    let redfoxCoins = 0;
+    let hinder = [], flammer = [], partikler = [], teller = 0;
+    let gameOver = false;
+    let morktVaer = false;
+    let baseHinderFart = 1.5;
+    let sisteHastighetsOking = 0;
+    let sisteCoinMeter = -3000;
+    let coinCooldown = 0;
+
+    let gullPiss = [];
+    let vanndammer = [];
+    let sisteBaesjMeter = -1000;
+    let gullPissTid = 0;
+
+    let coinAnimations = [];
+    let trees = [];
+    let flameTriggers = [];
+
+    let darkMode = localStorage.getItem("redfoxDarkMode") === "true";
+    if (darkMode) {
+      document.body.classList.add("dark-mode");
+      document.getElementById("themeToggle").textContent = "Bytt til Light Mode";
+    }
+
+    const flameGradient = ctx.createLinearGradient(0, 310, 0, 190);
+    flameGradient.addColorStop(0, '#FF4500');
+    flameGradient.addColorStop(1, '#FFFF99'); // Simplified gradient
+
+    const coinGradient = ctx.createRadialGradient(-3, -3, 2, 0, 0, 15);
+    coinGradient.addColorStop(0, '#ff0000');
+    coinGradient.addColorStop(1, '#ff4500');
+
+    const gressGradient = ctx.createLinearGradient(0, 300, 0, 330);
+    gressGradient.addColorStop(0, '#2e8b57');
+    gressGradient.addColorStop(1, '#228B22'); // Simplified gradient
+
+    const jordGradient = ctx.createLinearGradient(0, 310, 0, 400);
+    jordGradient.addColorStop(0, '#8B4513');
+    jordGradient.addColorStop(1, '#3C2F22'); // Simplified gradient
+
+    function resetSpill(cheatScore = 0, resume = false) {
+      try {
+        console.log("resetSpill called: cheatScore =", cheatScore, "resume =", resume);
+        const cheatInput = document.getElementById("cheatInput");
+        console.log("Before enabling cheatInput: disabled =", cheatInput.disabled);
+        cheatInput.disabled = false;
+        setTimeout(() => {
+          cheatInput.disabled = false;
+          console.log("After setTimeout: cheatInput.disabled =", cheatInput.disabled);
+        }, 0);
+
+        startBackgroundMusic();
+        revX = 100;
+        revY = 250;
+        velocityY = 0;
+        jumping = false;
+        ducking = false;
+        bevegVenstre = false;
+        bevegHoyre = false;
+
+        trees = [];
+        for (let x = 0; x < canvas.width + 100; x += 80) {
+          trees.push({
+            x: x + Math.random() * 20,
+            height: 80 + Math.random() * 80,
+            width: 8 + Math.random() * 8,
+            leafRadius: 15 + Math.random() * 15
+          });
+        }
+
+        score = resume ? score : cheatScore;
+        baseHinderFart = 1.5 + Math.min(Math.floor(score / 4000) * 0.3, 3.0);
+        sisteHastighetsOking = score - (score % 2000);
+
+        if (!resume) {
+          redfoxCoins = 0;
+          sisteBaesjMeter = score > 0 ? Math.floor(score / 60000) * 60000 : -1000;
+          gullPissTid = 0;
+          sisteCoinMeter = score - 3000;
+          coinCooldown = 0;
+
+          flameTriggers = [];
+          for (let s = 3000; s <= 40000; s += 2000) {
+            if (s < 10000) flameTriggers.push(s + Math.floor(Math.random() * 1000 - 500));
+            else if (s < 20000) flameTriggers.push(s + Math.floor(Math.random() * 800 - 400));
+            else if (s < 30000) flameTriggers.push(s + Math.floor(Math.random() * 600 - 300));
+            else flameTriggers.push(s + Math.floor(Math.random() * 400 - 200));
+          }
+
+          const syklus = Math.floor((score - 1000) / 8000);
+          const posISyklus = (score - 1000 - syklus * 8000);
+          const erRegn = posISyklus >= 0 && posISyklus < 2000;
+          morktVaer = erRegn;
+
+          skyer = score < 5000 ? [
+            { x: 150, y: 80, r: 30, coinCooldown: 0 },
+            { x: 350, y: 60, r: 25, coinCooldown: 0 },
+            { x: 550, y: 100, r: 40, coinCooldown: 0 },
+            { x: 750, y: 70, r: 35, coinCooldown: 0 }
+          ] : erRegn ? [
+            { x: 150, y: 80, r: 30, coinCooldown: 0 },
+            { x: 350, y: 60, r: 25, coinCooldown: 0 },
+            { x: 550, y: 100, r: 40, coinCooldown: 0 },
+            { x: 750, y: 70, r: 35, coinCooldown: 0 },
+            { x: 250, y: 90, r: 20, coinCooldown: 0 },
+            { x: 450, y: 50, r: 30, coinCooldown: 0 }
+          ] : [
+            { x: 150, y: 80, r: 30, coinCooldown: 0 },
+            { x: 350, y: 60, r: 25, coinCooldown: 0 },
+            { x: 550, y: 100, r: 40, coinCooldown: 0 }
+          ];
+          if (erRegn && score >= 5000) {
+            skyer.push(
+              { x: 650, y: 80, r: 25, coinCooldown: 0 },
+              { x: 200, y: 60, r: 35, coinCooldown: 0 }
+            );
+          }
+        }
+
+        hinder = [];
+        flammer = [];
+        partikler = [];
+        vanndammer = [];
+        gullPiss = [];
+        teller = 0;
+        cheatCodeTimer = 0;
+        currentCheatCode = "";
+        document.getElementById("cheatCodeDisplay").style.display = "none";
+
+        steinOgGull.forEach(stein => {
+          stein.x = Math.random() * 800;
+        });
+
+        lavaAarer.forEach(aare => {
+          aare.x1 = Math.random() * 800;
+          aare.y1 = 330 + Math.random() * 70;
+          const length = 30 + Math.random() * 20;
+          const angle = (Math.random() - 0.5) * Math.PI / 2;
+          aare.x2 = aare.x1 + length * Math.cos(angle);
+          aare.y2 = Math.min(400, Math.max(330, aare.y1 + length * Math.sin(angle)));
+          aare.branches = Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => ({
+            t: Math.random(),
+            length: 10 + Math.random() * 10,
+            angle: (Math.random() - 0.5) * Math.PI / 2
+          }));
+        });
+
+        gameOver = false;
+        console.log("Before final enable: cheatInput.disabled =", cheatInput.disabled);
+        cheatInput.disabled = false;
+        console.log("After final enable: cheatInput.disabled =", cheatInput.disabled);
+
+        document.getElementById("score").textContent = "Meter: " + score + " m";
+        document.getElementById("highScore").textContent = "High Score: " + highScore + " m";
+        document.getElementById("redfoxCoins").textContent = "Redfox Coins: " + redfoxCoins;
+        document.getElementById("gameOver").style.display = "none";
+
+        console.log("Spill resatt: score =", score, "baseHinderFart =", baseHinderFart);
+        canvas.focus();
+        oppdater();
+      } catch (e) {
+        console.error("Feil i resetSpill:", e);
+      }
+    }
+
+    function brukJuksekode() {
+      try {
+        const cheatInput = document.getElementById("cheatInput");
+        const cheatCode = cheatInput.value.toLowerCase();
+        let cheatScore = 0;
+        if (cheatCode === "driterdu") {
+          cheatScore = 5000;
+        } else if (cheatCode === "fiserdu") {
+          cheatScore = 10000;
+        } else if (cheatCode === "redfoxeru") {
+          cheatScore = 15000;
+        } else if (cheatCode === "reverud") {
+          cheatScore = 20000;
+        } else if (cheatCode === "ullerdu") {
+          cheatScore = 30000;
+        } else if (cheatCode === "hopperud") {
+          cheatScore = 40000;
+        } else {
+          alert("Ugyldig juksekode!");
+          return;
+        }
+        document.getElementById("cheatCodeDisplay").textContent = `Juksekode aktivert: ${cheatCode}`;
+        document.getElementById("cheatCodeDisplay").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("cheatCodeDisplay").style.display = "none";
+        }, 3000);
+        cheatInput.value = "";
+        resetSpill(cheatScore);
+        canvas.focus();
+      } catch (e) {
+        console.error("Feil i brukJuksekode:", e);
+      }
+    }
+
+    function resetHighScore() {
+      try {
+        highScore = 0;
+        localStorage.setItem("redfoxHighScore", highScore);
+        document.getElementById("highScore").textContent = "High Score: " + highScore + " m";
+        canvas.focus();
+      } catch (e) {
+        console.error("Feil i resetHighScore:", e);
+      }
+    }
+
+    function toggleTheme() {
+      try {
+        document.body.classList.toggle("dark-mode");
+        const themeButton = document.getElementById("themeToggle");
+        darkMode = document.body.classList.contains("dark-mode");
+        themeButton.textContent = darkMode ? "Bytt til Light Mode" : "Bytt til Dark Mode";
+        localStorage.setItem("redfoxDarkMode", darkMode);
+        canvas.focus();
+      } catch (e) {
+        console.error("Feil i toggleTheme:", e);
+      }
+    }
+
+    let skyer = [
+      { x: 150, y: 80, r: 30, coinCooldown: 0 },
+      { x: 350, y: 60, r: 25, coinCooldown: 0 },
+      { x: 550, y: 100, r: 40, coinCooldown: 0 },
+      { x: 750, y: 70, r: 35, coinCooldown: 0 }
+    ];
+
+    let steinOgGull = Array.from({ length: 15 }, () => ({
+      x: Math.random() * 800,
+      y: 335 + Math.random() * 55,
+      r: 5 + Math.random() * 10,
+      type: Math.random() > 0.7 ? "gull" : "stein"
+    }));
+
+    let lavaAarer = Array.from({ length: 8 }, () => {
+      const x1 = Math.random() * 800;
+      const y1 = 330 + Math.random() * 70;
+      const length = 30 + Math.random() * 20;
+      const angle = (Math.random() - 0.5) * Math.PI / 2;
+      const x2 = x1 + length * Math.cos(angle);
+      const y2 = Math.min(400, Math.max(330, y1 + length * Math.sin(angle)));
+      const branches = Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => ({
+        t: Math.random(),
+        length: 10 + Math.random() * 10,
+        angle: (Math.random() - 0.5) * Math.PI / 2
+      }));
+      return { x1, y1, x2, y2, branches };
+    });
+
+    let cheatCodeTimer = 0;
+    let currentCheatCode = "";
+
+    function tegnBakgrunn() {
+      try {
+        const bgGradient = ctx.createRadialGradient(canvas.width / 2, 0, canvas.height, canvas.width / 2, 0, canvas.width);
+        bgGradient.addColorStop(0, morktVaer ? '#2F4F4F' : '#a0d8ef');
+        bgGradient.addColorStop(1, morktVaer ? '#4F6F6F' : '#e6f3ff');
+        ctx.fillStyle = bgGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+        let skyFart = 0.5 * (baseHinderFart / 1.5);
+        if (score >= 15000) skyFart *= 1.2;
+        skyer.forEach(sky => {
+          ctx.beginPath();
+          ctx.fillStyle = morktVaer ? 'rgba(100,100,100,0.7)' : 'rgba(255,255,255,0.9)';
+          ctx.arc(sky.x, sky.y, sky.r, 0, Math.PI * 2);
+          ctx.arc(sky.x + 20, sky.y, sky.r * 0.8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = morktVaer ? 'rgba(80,80,80,0.5)' : 'rgba(240,240,240,0.7)';
+          ctx.arc(sky.x + 10, sky.y + 5, sky.r * 0.6, 0, Math.PI * 2);
+          ctx.fill();
+          sky.x -= skyFart;
+          if (sky.x < -100) {
+            let newX = canvas.width + Math.random() * 30;
+            let tooClose;
+            do {
+              tooClose = false;
+              for (let otherSky of skyer) {
+                if (otherSky !== sky && Math.abs(otherSky.x - newX) < 150) {
+                  tooClose = true;
+                  newX = canvas.width + Math.random() * 30;
+                  break;
+                }
+              }
+            } while (tooClose);
+            sky.x = newX;
+            sky.y = 40 + Math.random() * 60;
+            sky.r = 20 + Math.random() * 20;
+            sky.coinCooldown = 0;
+          }
+        });
+        ctx.restore();
+
+        ctx.save();
+        trees.forEach(tree => {
+          ctx.fillStyle = '#5C4033';
+          ctx.fillRect(tree.x - tree.width / 2, 310 - tree.height, tree.width, tree.height);
+          const leafGradient = ctx.createRadialGradient(
+            tree.x, 310 - tree.height - tree.leafRadius, tree.leafRadius * 0.5,
+            tree.x, 310 - tree.height, tree.leafRadius
+          );
+          leafGradient.addColorStop(0, '#3CB371');
+          leafGradient.addColorStop(1, '#228B22');
+          ctx.beginPath();
+          ctx.fillStyle = leafGradient;
+          ctx.arc(tree.x, 310 - tree.height - tree.leafRadius, tree.leafRadius, 0, Math.PI * 2);
+          ctx.fill();
+          tree.x -= 0.3 * baseHinderFart;
+          if (tree.x < -50) {
+            tree.x = canvas.width + 80;
+            tree.height = 80 + Math.random() * 80;
+            tree.width = 8 + Math.random() * 8;
+            tree.leafRadius = 15 + Math.random() * 15;
+          }
+        });
+        ctx.restore();
+
+        ctx.save();
+        coinAnimations.forEach((coin, i) => {
+          ctx.beginPath();
+          ctx.fillStyle = coinGradient;
+          ctx.arc(coin.x, coin.y, 15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 18px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('R', coin.x, coin.y);
+        });
+        ctx.restore();
+
+        ctx.fillStyle = gressGradient;
+        ctx.fillRect(0, 310, canvas.width, 20);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+        ctx.fillRect(0, 310, canvas.width, 3);
+
+        ctx.fillStyle = jordGradient;
+        ctx.fillRect(0, 330, canvas.width, 70);
+
+        ctx.save();
+        vanndammer.forEach((dam, i) => {
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255, 215, 0, ${dam.opacity})`;
+          ctx.ellipse(dam.x, 310, dam.radius * 1.5, dam.radius * 0.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+          dam.opacity -= 0.02;
+          dam.radius += 0.1;
+          dam.life--;
+          if (dam.life <= 0) vanndammer.splice(i, 1);
+        });
+        ctx.restore();
+
+        ctx.save();
+        lavaAarer.forEach(aare => {
+          ctx.beginPath();
+          const lavaGradient = ctx.createLinearGradient(aare.x1, aare.y1, aare.x2, aare.y2);
+          lavaGradient.addColorStop(0, '#FFFF99');
+          lavaGradient.addColorStop(1, '#FF4500'); // Simplified gradient
+          ctx.strokeStyle = lavaGradient;
+          ctx.lineWidth = 3;
+          ctx.moveTo(aare.x1, aare.y1);
+          ctx.lineTo(aare.x2, aare.y2);
+          ctx.stroke();
+
+          aare.branches.forEach(branch => {
+            const bx1 = aare.x1 + branch.t * (aare.x2 - aare.x1);
+            const by1 = aare.y1 + branch.t * (aare.y2 - aare.y1);
+            const bx2 = bx1 + branch.length * Math.cos(branch.angle);
+            const by2 = Math.min(400, Math.max(330, by1 + branch.length * Math.sin(branch.angle)));
+            ctx.beginPath();
+            ctx.strokeStyle = lavaGradient;
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(bx1, by1);
+            ctx.lineTo(bx2, by2);
+            ctx.stroke();
+          });
+
+          aare.x1 -= baseHinderFart;
+          aare.x2 -= baseHinderFart;
+          aare.branches.forEach(branch => {
+            branch.t = Math.max(0, Math.min(1, branch.t - baseHinderFart / Math.hypot(aare.x2 - aare.x1, aare.y2 - aare.y1)));
+          });
+
+          if (aare.x2 < -50) {
+            aare.x1 = canvas.width + Math.random() * 100;
+            aare.y1 = 330 + Math.random() * 70;
+            const length = 30 + Math.random() * 20;
+            const angle = (Math.random() - 0.5) * Math.PI / 2;
+            aare.x2 = aare.x1 + length * Math.cos(angle);
+            aare.y2 = Math.min(400, Math.max(330, aare.y1 + length * Math.sin(angle)));
+            aare.branches = Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => ({
+              t: Math.random(),
+              length: 10 + Math.random() * 10,
+              angle: (Math.random() - 0.5) * Math.PI / 2
+            }));
+          }
+        });
+        ctx.restore();
+
+        ctx.save();
+        steinOgGull.forEach(stein => {
+          ctx.beginPath();
+          const gradient = ctx.createRadialGradient(stein.x - stein.r * 0.3, stein.y - stein.r * 0.3, stein.r * 0.2, stein.x, stein.y, stein.r);
+          gradient.addColorStop(0, stein.type === "gull" ? "#FFFF99" : "#999");
+          gradient.addColorStop(1, stein.type === "gull" ? "#FFD700" : "#777");
+          ctx.fillStyle = gradient;
+          ctx.arc(stein.x, stein.y, stein.r, 0, Math.PI * 2);
+          ctx.fill();
+          stein.x -= baseHinderFart;
+          if (stein.x < -20) {
+            stein.x = canvas.width + Math.random() * 100;
+            stein.y = 335 + Math.random() * 55;
+            stein.r = 5 + Math.random() * 10;
+            stein.type = Math.random() > 0.7 ? "gull" : "stein";
+          }
+        });
+        ctx.restore();
+
+        gullPiss.forEach((b, i) => {
+          if (b.y < 310) {
+            b.y += b.speed;
+          } else {
+            vanndammer.push({
+              x: b.x,
+              y: 310,
+              radius: 5,
+              opacity: 0.8,
+              life: 30
+            });
+            gullPiss.splice(i, 1);
+          }
+          ctx.beginPath();
+          ctx.strokeStyle = "#FFD700";
+          ctx.lineWidth = b.width;
+          ctx.moveTo(b.x, b.y);
+          ctx.lineTo(b.x + 2, b.y + 15);
+          ctx.stroke();
+        });
+      } catch (e) {
+        console.error("Feil i tegnBakgrunn:", e);
+      }
+    }
+
+    function tegnRev() {
+      try {
+        ctx.save();
+        if (score < 40000) {
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+          ctx.shadowBlur = 5;
+          ctx.shadowOffsetX = 3;
+          ctx.shadowOffsetY = 3;
+        }
+        const justertBredde = revWidth - 20;
+        const justertHoyde = ducking ? 30 : 60;
+        const drawY = jumping ? revY : 310 - justertHoyde;
+        ctx.drawImage(revBilde, revX, drawY, justertBredde, justertHoyde);
+        ctx.restore();
+      } catch (e) {
+        console.error("Feil i tegnRev:", e);
+      }
+    }
+
+    function tegnHinder() {
+      try {
+        ctx.save();
+        hinder.forEach((h, i) => {
+          ctx.beginPath();
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+          ctx.ellipse(h.x + 5, h.y + 5, h.r, h.r * 0.7, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          const gradient = ctx.createRadialGradient(h.x - h.r * 0.3, h.y - h.r * 0.3, h.r * 0.2, h.x, h.y, h.r);
+          gradient.addColorStop(0, '#7B5A3A');
+          gradient.addColorStop(1, '#5C4033');
+          ctx.beginPath();
+          ctx.fillStyle = gradient;
+          ctx.ellipse(h.x, h.y, h.r, h.r * 0.7, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.fillStyle = 'rgba(200,160,120,0.4)';
+          ctx.ellipse(h.x - h.r * 0.3, h.y - h.r * 0.3, h.r * 0.2, h.r * 0.15, Math.PI / 4, 0, Math.PI * 2);
+          ctx.fill();
+
+          h.x -= baseHinderFart;
+
+          const revHoyde = ducking ? 30 : 60;
+          const justertBredde = revWidth - 20;
+          const revTopY = jumping ? revY : 310 - revHoyde;
+          const revBottomY = revTopY + revHoyde;
+
+          if (
+            h.x < revX + justertBredde &&
+            h.x + h.r > revX &&
+            revBottomY > h.y - h.r &&
+            revTopY < h.y + h.r &&
+            !gameOver
+          ) {
+            gameOver = true;
+            for (let j = 0; j < 2; j++) {
+              partikler.push({
+                x: h.x,
+                y: h.y,
+                vx: (j % 2 === 0 ? 1 : -1) * 3,
+                vy: 0,
+                life: 30
+              });
+              partikler.push({
+                x: h.x,
+                y: h.y,
+                vx: 0,
+                vy: (j % 2 === 0 ? 1 : -1) * 3,
+                life: 30
+              });
+            }
+            if (score > highScore) {
+              highScore = score;
+              localStorage.setItem("redfoxHighScore", highScore);
+              document.getElementById("highScore").textContent = "High Score: " + highScore + " m";
+              document.getElementById("highScore").classList.add("updated");
+              setTimeout(() => document.getElementById("highScore").classList.remove("updated"), 500);
+            }
+            document.getElementById("gameOver").textContent = `Game Over! Poeng: ${score} m | High Score: ${highScore} m\nTrykk SPACE for å starte på nytt.\nTrykk R for å bruke 1 Redfox Coin og starte fra der du døde (${redfoxCoins} tilgjengelig).`;
+            document.getElementById("gameOver").style.display = "block";
+            const cheatInput = document.getElementById("cheatInput");
+            console.log("tegnHinder: Cheat input remains enabled, disabled =", cheatInput.disabled);
+          }
+        });
+        ctx.restore();
+      } catch (e) {
+        console.error("Feil i tegnHinder:", e);
+      }
+    }
+
+    function tegnFlammer() {
+      try {
+        ctx.save();
+        flammer.forEach(f => {
+          const scale = 1 + 0.1 * Math.sin(teller * 0.1);
+          const flameWidth = 20 * scale;
+          const flameHeight = f.baseHeight * scale;
+
+          ctx.beginPath();
+          ctx.fillStyle = flameGradient;
+          ctx.ellipse(f.x, f.baseY, flameWidth / 2, flameHeight / 2, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.fillStyle = 'rgba(255, 69, 0, 0.3)';
+          ctx.ellipse(f.x, f.baseY + flameHeight / 2, flameWidth * 1.5, flameHeight * 0.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          f.x -= baseHinderFart;
+
+          const revHoyde = ducking ? 30 : 60;
+          const justertBredde = revWidth - 20;
+          const revTopY = jumping ? revY : 310 - revHoyde;
+          const revBottomY = revTopY + revHoyde;
+
+          if (
+            f.x - flameWidth / 2 < revX + justertBredde &&
+            f.x + flameWidth / 2 > revX &&
+            revBottomY > f.baseY - flameHeight / 2 &&
+            revTopY < f.baseY + flameHeight / 2 &&
+            !gameOver
+          ) {
+            gameOver = true;
+            for (let i = 0; i < 2; i++) {
+              partikler.push({
+                x: f.x,
+                y: f.baseY,
+                vx: (i % 2 === 0 ? 1 : -1) * 3,
+                vy: 0,
+                life: 30
+              });
+              partikler.push({
+                x: f.x,
+                y: f.baseY,
+                vx: 0,
+                vy: (i % 2 === 0 ? 1 : -1) * 3,
+                life: 30
+              });
+            }
+            if (score > highScore) {
+              highScore = score;
+              localStorage.setItem("redfoxHighScore", highScore);
+              document.getElementById("highScore").textContent = "High Score: " + highScore + " m";
+              document.getElementById("highScore").classList.add("updated");
+              setTimeout(() => document.getElementById("highScore").classList.remove("updated"), 500);
+            }
+            document.getElementById("gameOver").textContent = `Game Over! Poeng: ${score} m | High Score: ${highScore} m\nTrykk SPACE for å starte på nytt.\nTrykk R for å bruke 1 Redfox Coin og starte fra der du døde (${redfoxCoins} tilgjengelig).`;
+            document.getElementById("gameOver").style.display = "block";
+            const cheatInput = document.getElementById("cheatInput");
+            console.log("tegnFlammer: Cheat input remains enabled, disabled =", cheatInput.disabled);
+          }
+        });
+        ctx.restore();
+      } catch (e) {
+        console.error("Feil i tegnFlammer:", e);
+      }
+    }
+
+    function tegnPartikler() {
+      try {
+        ctx.save();
+        partikler.forEach((p, i) => {
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255, 69, 0, ${p.life / 30})`;
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life--;
+          if (p.life <= 0) partikler.splice(i, 1);
+        });
+        ctx.restore();
+      } catch (e) {
+        console.error("Feil i tegnPartikler:", e);
+      }
+    }
+
+    function tegnGameOverEffekter() {
+      try {
+        ctx.save();
+        flammer.forEach(f => {
+          ctx.beginPath();
+          ctx.strokeStyle = '#FF0000';
+          ctx.lineWidth = 3;
+          ctx.moveTo(f.x - 10, f.baseY - 10);
+          ctx.lineTo(f.x + 10, f.baseY + 10);
+          ctx.moveTo(f.x + 10, f.baseY - 10);
+          ctx.lineTo(f.x - 10, f.baseY + 10);
+          ctx.stroke();
+        });
+        ctx.restore();
+      } catch (e) {
+        console.error("Feil i tegnGameOverEffekter:", e);
+      }
+    }
+
+    function oppdater() {
+      try {
+        const startTime = performance.now(); // Monitor frame time
+
+        if (gameOver) {
+          tegnBakgrunn();
+          tegnRev();
+          tegnHinder();
+          tegnFlammer();
+          tegnPartikler();
+          tegnGameOverEffekter();
+          return;
+        }
+
+        tegnBakgrunn();
+
+        skyer.forEach(sky => {
+          if (sky.coinCooldown > 0) sky.coinCooldown--;
+        });
+
+        if (jumping) {
+          velocityY += gravity;
+          revY += velocityY;
+          if (revY >= 250) {
+            revY = 250;
+            velocityY = 0;
+            jumping = false;
+          }
+
+          const justertBredde = revWidth - 20;
+          const revTopY = revY;
+          const revRect = {
+            x: revX,
+            y: revTopY,
+            width: justertBredde,
+            height: 30
+          };
+          if (coinAnimations.length === 0 && coinCooldown <= 0) {
+            for (let i = 0; i < skyer.length; i++) {
+              const sky = skyer[i];
+              if (sky.coinCooldown > 0) continue;
+              const skyRect = {
+                x: sky.x - sky.r * 0.8,
+                y: sky.y - sky.r * 0.8,
+                width: sky.r * 1.6,
+                height: sky.r * 1.6
+              };
+              if (
+                revRect.x < skyRect.x + skyRect.width &&
+                revRect.x + revRect.width > skyRect.x &&
+                revRect.y < skyRect.y + skyRect.height &&
+                revRect.y + revRect.height > skyRect.y
+              ) {
+                const coinChance = score < 5000 ? 0.05 : score < 15000 ? 0.03 : 0.02;
+                const forceCoin = score - sisteCoinMeter >= 5000;
+                if (forceCoin || Math.random() < coinChance) {
+                  console.log("Spawner coin: x =", sky.x, "y =", sky.y);
+                  coinAnimations.push({
+                    x: sky.x,
+                    y: sky.y,
+                    baseY: sky.y,
+                    baseR: sky.r,
+                    phase: 0,
+                    phaseTime: 0
+                  });
+                  sisteCoinMeter = score;
+                  coinCooldown = 600;
+                  sky.coinCooldown = 600;
+                  break; // Exit loop after spawning coin
+                }
+              }
+            }
+          }
+
+          const coinRadius = score < 5000 ? 20 : score < 15000 ? 16 : 12;
+          coinAnimations.forEach((coin, i) => {
+            const dx = (revX + justertBredde / 2) - coin.x;
+            const dy = revTopY - coin.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < coinRadius) {
+              redfoxCoins++;
+              document.getElementById("redfoxCoins").textContent = "Redfox Coins: " + redfoxCoins;
+              playCoinSound();
+              coinAnimations.splice(i, 1);
+            }
+          });
+        }
+
+        const speedFactor = score < 5000 ? 0.9 : score < 15000 ? 1.1 : 1.3;
+        coinAnimations.forEach((coin, i) => {
+          coin.phaseTime += speedFactor;
+          if (coin.phase === 0) {
+            const t = Math.min(1, coin.phaseTime / 24);
+            coin.y = coin.baseY + t * coin.baseR;
+            if (t >= 1) {
+              coin.phase = 1;
+              coin.phaseTime = 0;
+            }
+          } else if (coin.phase === 1) {
+            const t = Math.min(1, coin.phaseTime / 48);
+            coin.y = coin.baseY + coin.baseR - t * (coin.baseY + coin.baseR - 20);
+            if (t >= 1) {
+              coin.phase = 2;
+              coin.phaseTime = 0;
+            }
+          } else if (coin.phase === 2) {
+            const t = Math.min(1, coin.phaseTime / 48);
+            coin.y = 20 + t * (coin.baseY - 20);
+            if (t >= 1) {
+              coin.phase = 3;
+              coin.phaseTime = 0;
+            }
+          } else if (coin.phase === 3) {
+            const t = Math.min(1, coin.phaseTime / 24);
+            coin.y = coin.baseY - t * (coin.baseY + 20);
+            if (t >= 1) {
+              coinAnimations.splice(i, 1);
+            }
+          }
+          coin.x -= 0.5 * (baseHinderFart / 1.5);
+        });
+
+        if (bevegVenstre && revX > 0) revX -= bevegFart;
+        if (bevegHoyre && revX + (revWidth - 20) < canvas.width) revX += bevegFart;
+
+        if (score >= 2000 && score % 2000 === 0 && score > sisteHastighetsOking) {
+          baseHinderFart += 0.2;
+          sisteHastighetsOking = score;
+          console.log("Hastighet økt: baseHinderFart =", baseHinderFart);
+        }
+
+        baseHinderFart = Math.min(4.0, Math.max(1.5, baseHinderFart));
+
+        const syklus = Math.floor((score - 1000) / 8000);
+        const posISyklus = (score - 1000 - syklus * 8000);
+        const erRegn = posISyklus >= 0 && posISyklus < 2000;
+        morktVaer = erRegn || gullPissTid > 0;
+
+        if (morktVaer && skyer.length < 6) {
+          skyer = [
+            { x: 150, y: 80, r: 30, coinCooldown: 0 },
+            { x: 350, y: 60, r: 25, coinCooldown: 0 },
+            { x: 550, y: 100, r: 40, coinCooldown: 0 },
+            { x: 750, y: 70, r: 35, coinCooldown: 0 },
+            { x: 250, y: 90, r: 20, coinCooldown: 0 },
+            { x: 450, y: 50, r: 30, coinCooldown: 0 }
+          ];
+          if (score >= 5000) {
+            skyer.push(
+              { x: 650, y: 80, r: 25, coinCooldown: 0 },
+              { x: 200, y: 60, r: 35, coinCooldown: 0 }
+            );
+          }
+        } else if (!morktVaer && skyer.length > 4) {
+          skyer = [
+            { x: 150, y: 80, r: 30, coinCooldown: 0 },
+            { x: 350, y: 60, r: 25, coinCooldown: 0 },
+            { x: 550, y: 100, r: 40, coinCooldown: 0 },
+            { x: 750, y: 70, r: 35, coinCooldown: 0 }
+          ];
+        }
+
+        if (flameTriggers.length > 0 && score >= flameTriggers[0]) {
+          const maxFlammer = 2;
+          const antallFlammer = Math.floor(Math.random() * maxFlammer) + 1;
+          let usedYs = [];
+          for (let i = 0; i < antallFlammer; i++) {
+            let baseY;
+            do {
+              baseY = 120 + Math.random() * 100;
+            } while (usedYs.some(y => Math.abs(y - baseY) < 50));
+            usedYs.push(baseY);
+            const flameHeight = 10 + Math.random() * 10;
+            flammer.push({
+              x: canvas.width + i * 50,
+              baseHeight: flameHeight,
+              baseY: baseY
+            });
+            console.log("Spawner flamme: x =", canvas.width + i * 50, "baseHeight =", flameHeight, "baseY =", baseY);
+          }
+          flameTriggers.shift();
+        }
+
+        if (teller % (score < 500 ? 90 : 60) === 0 && (hinder.length === 0 || hinder[hinder.length - 1].x < canvas.width - 200)) {
+          const dobbel = Math.random() < (score >= 20000 ? 0.15 : 0.1);
+          for (let i = 0; i < (dobbel ? 2 : 1); i++) {
+            hinder.push({
+              x: canvas.width + i * 40,
+              y: 310,
+              r: 25 + Math.random() * 5
+            });
+            console.log("Spawner hinder: x =", canvas.width + i * 40, "score =", score, "hinder antall =", hinder.length);
+          }
+        }
+
+        if (flammer.length === 0 && (morktVaer || gullPissTid > 0)) {
+          const regnIntervall = score >= 20000 ? 3 : score >= 5000 ? 5 : 8;
+          const antallDraper = score >= 20000 ? Math.floor(Math.random() * 10) + 15 : score >= 5000 ? Math.floor(Math.random() * 8) + 10 : Math.floor(Math.random() * 6) + 5;
+          if (teller % regnIntervall === 0) {
+            for (let i = 0; i < antallDraper; i++) {
+              const sky = skyer[Math.floor(Math.random() * skyer.length)];
+              gullPiss.push({
+                x: sky.x + (Math.random() * sky.r * 2 - sky.r),
+                y: sky.y + sky.r,
+                width: 1 + Math.random(),
+                speed: 6 + Math.random() * 4
+              });
+            }
+            if (gullPiss.length > 50) {
+              gullPiss = gullPiss.slice(-50);
+            }
+          }
+        } else if (flammer.length > 0 && gullPiss.length > 0) {
+          gullPiss = [];
+        }
+
+        tegnRev();
+        tegnHinder();
+        tegnFlammer();
+        tegnPartikler();
+
+        score += 1;
+        document.getElementById("score").textContent = "Meter: " + score + " m";
+
+        if (score === 5000 && cheatCodeTimer === 0) {
+          currentCheatCode = "driterdu";
+          cheatCodeTimer = 1800;
+          document.getElementById("cheatCodeDisplay").textContent = `Juksekode låst opp: ${currentCheatCode}`;
+          document.getElementById("cheatCodeDisplay").style.display = "block";
+        } else if (score === 10000 && cheatCodeTimer === 0) {
+          currentCheatCode = "fiserdu";
+          cheatCodeTimer = 1800;
+          document.getElementById("cheatCodeDisplay").textContent = `Juksekode låst opp: ${currentCheatCode}`;
+          document.getElementById("cheatCodeDisplay").style.display = "block";
+        } else if (score === 15000 && cheatCodeTimer === 0) {
+          currentCheatCode = "redfoxeru";
+          cheatCodeTimer = 1800;
+          document.getElementById("cheatCodeDisplay").textContent = `Juksekode låst opp: ${currentCheatCode}`;
+          document.getElementById("cheatCodeDisplay").style.display = "block";
+        } else if (score === 20000 && cheatCodeTimer === 0) {
+          currentCheatCode = "reverud";
+          cheatCodeTimer = 1800;
+          document.getElementById("cheatCodeDisplay").textContent = `Juksekode låst opp: ${currentCheatCode}`;
+          document.getElementById("cheatCodeDisplay").style.display = "block";
+        } else if (score === 30000 && cheatCodeTimer === 0) {
+          currentCheatCode = "ullerdu";
+          cheatCodeTimer = 1800;
+          document.getElementById("cheatCodeDisplay").textContent = `Juksekode låst opp: ${currentCheatCode}`;
+          document.getElementById("cheatCodeDisplay").style.display = "block";
+        } else if (score === 40000 && cheatCodeTimer === 0) {
+          currentCheatCode = "hopperud";
+          cheatCodeTimer = 1800;
+          document.getElementById("cheatCodeDisplay").textContent = `Juksekode låst opp: ${currentCheatCode}`;
+          document.getElementById("cheatCodeDisplay").style.display = "block";
+        }
+
+        if (cheatCodeTimer > 0) {
+          cheatCodeTimer--;
+          if (cheatCodeTimer === 0) {
+            document.getElementById("cheatCodeDisplay").style.display = "none";
+            currentCheatCode = "";
+          }
+        }
+
+        if (coinCooldown > 0) {
+          coinCooldown--;
+        }
+
+        teller++;
+        if (score % 60000 === 0 && score !== 0 && score !== sisteBaesjMeter) {
+          gullPissTid = 150;
+          sisteBaesjMeter = score;
+        }
+
+        flammer = flammer.filter(f => f.x > -100);
+        hinder = hinder.filter(h => h.x > -100); // Clean up off-screen hinder
+
+        if (gullPissTid > 0) {
+          gullPissTid--;
+        }
+
+        const frameTime = performance.now() - startTime;
+        if (frameTime > 16.67) {
+          console.warn(`Slow frame: ${frameTime.toFixed(2)}ms`);
+        }
+
+        requestAnimationFrame(oppdater);
+      } catch (e) {
+        console.error("Feil i oppdater:", e);
+      }
+    }
+
+    document.addEventListener("keydown", function(e) {
+      try {
+        startBackgroundMusic();
+        if (e.code === "Space") {
+          e.preventDefault();
+          if (gameOver) {
+            console.log("Space pressed: Triggering resetSpill");
+            resetSpill();
+          } else if (!jumping) {
+            velocityY = jumpPower;
+            jumping = true;
+            playJumpSound();
+          }
+        } else if (e.code === "KeyR" && gameOver && redfoxCoins > 0) {
+          e.preventDefault();
+          console.log("R pressed: Triggering resetSpill with resume");
+          redfoxCoins--;
+          document.getElementById("redfoxCoins").textContent = "Redfox Coins: " + redfoxCoins;
+          resetSpill(score, true);
+        } else if (e.code === "ArrowDown") {
+          e.preventDefault();
+          ducking = true;
+        } else if (e.code === "ArrowLeft") {
+          e.preventDefault();
+          bevegVenstre = true;
+        } else if (e.code === "ArrowRight") {
+          e.preventDefault();
+          bevegHoyre = true;
+        }
+      } catch (e) {
+        console.error("Feil i keydown:", e);
+      }
+    });
+
+    document.addEventListener("keyup", function(e) {
+      try {
+        if (e.code === "ArrowDown") {
+          ducking = false;
+        } else if (e.code === "ArrowLeft") {
+          bevegVenstre = false;
+        } else if (e.code === "ArrowRight") {
+          bevegHoyre = false;
+        }
+      } catch (e) {
+        console.error("Feil i keyup:", e);
+      }
+    });
+
+    document.querySelectorAll('button').forEach(button => {
+      button.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+      });
+      button.addEventListener('click', function(e) {
+        this.blur();
+        startBackgroundMusic();
+      });
+    });
+
+    const volumeControl = document.getElementById("volumeControl");
+    volumeControl.value = musicVolume;
+    volumeControl.addEventListener("input", function() {
+      try {
+        musicVolume = parseFloat(volumeControl.value);
+        backgroundMusic.volume = musicVolume === 0 ? 0.001 : musicVolume;
+        localStorage.setItem("redfoxMusicVolume", musicVolume);
+      } catch (e) {
+        console.error("Feil i volumeControl input:", e);
+      }
+    });
+
+    window.addEventListener('load', function() {
+      try {
+        document.getElementById("redfoxCoins").textContent = "Redfox Coins: " + redfoxCoins;
+        document.getElementById("highScore").textContent = "High Score: " + highScore + " m";
+        volumeControl.value = musicVolume;
+        backgroundMusic.volume = musicVolume === 0 ? 0.001 : musicVolume;
+        canvas.focus();
+      } catch (e) {
+        console.error("Feil i window.load:", e);
+      }
+    });
+
+    revBilde.onload = function() {
+      try {
+        document.getElementById("highScore").textContent = "High Score: " + highScore + " m";
+        resetSpill();
+        tegnBakgrunn();
+        oppdater();
+      } catch (e) {
+        console.error("Feil i revBilde.onload:", e);
+      }
+    };
+
+    revBilde.onerror = function() {
+      console.error("Kunne ikke laste rev.png");
+    };
+  </script>
+</body>
+</html>

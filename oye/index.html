@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multiplayer Eye Target Game</title>
+  <style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: contain;
+    font-family: 'Arial', sans-serif;
+    color: white;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  canvas {
+    background: #000;
+    border: 2px solid #fff;
+    display: block;
+    margin-top: 20px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  }
+
+  .menu {
+    text-align: center;
+    margin-top: 2vmin;
+  }
+
+  .bar-container {
+    width: 100%;
+    height: 30px;
+    background: #333;
+    position: relative;
+    margin-top: 1vmin;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  .bar {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg,#ff0000,#cc0000);
+    left: 50%;
+    width: 0;
+    transform: translateX(-50%);
+    transition: all 0.2s;
+  }
+
+  .volume-control input[type='range'] {
+    -webkit-appearance: none;
+    width: 80px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .volume-control input[type='range']:focus {
+    outline: none;
+  }
+
+  .volume-control input[type='range']::-webkit-slider-runnable-track {
+    height: 5px;
+    border-radius: 5px;
+    background: #444;
+  }
+
+  .volume-control input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ff0000;
+    margin-top: -5px;
+    transition: background 0.3s;
+  }
+
+  .volume-control input[type='range']::-webkit-slider-thumb:hover {
+    background: #ff6666;
+  }
+
+  .volume-control input[type='range']::-moz-range-track {
+    height: 5px;
+    border-radius: 5px;
+    background: #444;
+  }
+
+  .volume-control input[type='range']::-moz-range-progress {
+    height: 5px;
+    border-radius: 5px;
+    background: #ff0000;
+  }
+
+  .volume-control input[type='range']::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ff0000;
+    border: none;
+  }
+
+  #gameOverScreen, #startScreen, #waitingScreen {
+    opacity: 0;
+    transition: opacity 0.6s ease-in;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    font-size: 5vmin;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+  }
+
+  #gameOverScreen button, #startScreen button, #waitingScreen button {
+    margin-top: 3vmin;
+    padding: 2vmin 4vmin;
+    font-size: 2.5vmin;
+    background: linear-gradient(45deg,#ff0000,#cc0000);
+    border: none;
+    color: white;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 0 15px rgba(255,0,0,0.6);
+  }
+
+  #gameOverScreen button:hover, #startScreen button:hover, #waitingScreen button:hover {
+    background: linear-gradient(45deg,#ff6666,#ff0000);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255,0,0,0.9);
+  }
+
+  .hit {
+    animation: blinkHit 0.1s ease;
+  }
+
+  @keyframes blinkHit {
+    0% { filter: brightness(1.5);}
+    100% { filter: brightness(1);}
+  }
+
+  #timerDisplay, #timeTravelTimerDisplay {
+    font-size: 3vmin;
+    margin-top: 1vmin;
+    color: #ff0000;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255,0,0,0.7);
+  }
+
+  .controls {
+    position: absolute;
+    top: 1vmin;
+    right: 1vmin;
+    display: flex;
+    gap: 1vmin;
+    align-items: center;
+    background: rgba(0,0,0,0.7);
+    padding: 1vmin 1.5vmin;
+    border-radius: 20px;
+    border: 1px solid #444;
+  }
+
+  .controls label {
+    display: flex;
+    align-items: center;
+    gap: 0.5vmin;
+    font-size: 1.8vmin;
+  }
+
+  .controls select, .controls input[type='checkbox'] {
+    padding: 0.5vmin;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+  }
+
+  .controls button {
+    padding: 1vmin 2vmin;
+    background: linear-gradient(45deg,#ff0000,#cc0000);
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.8vmin;
+  }
+
+  .controls button:hover {
+    background: linear-gradient(45deg,#ff6666,#ff0000);
+    transform: scale(1.1);
+  }
+
+  .score-display {
+    font-size: 2.5vmin;
+    margin-bottom: 0.5vmin;
+    text-shadow: 0 0 5px rgba(255,255,255,0.5);
+  }
+
+  #scoreDisplay, #highScoreDisplay, #eyeHealthDisplay, #timeTravelTimerDisplay {
+    font-weight: bold;
+    color: #ff0000;
+    display: inline-block;
+  }
+
+  #perfectText {
+    position: absolute;
+    top: 10vmin;
+    font-size: 6vmin;
+    font-weight: bold;
+    color: #ff0000;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+    animation: pulse 0.5s infinite alternate;
+  }
+
+  @keyframes pulse {
+    from { transform: scale(1);}
+    to { transform: scale(1.1);}
+  }
+
+  #recordText {
+    position: absolute;
+    top: 18vmin;
+    font-size: 4vmin;
+    font-weight: bold;
+    color: #ff6666;
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+    text-shadow: 0 0 10px rgba(255,102,102,0.8);
+  }
+
+  #scorePopup {
+    position: absolute;
+    font-size: 4vmin;
+    font-weight: bold;
+    color: #ff0000;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+  }
+
+  .mode-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vmin;
+    margin-top: 2vmin;
+    align-items: center;
+  }
+
+  .mode-buttons select {
+    padding: 1vmin;
+    font-size: 2vmin;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 5px;
+    width: 30vmin;
+    max-width: 200px;
+  }
+
+  .mode-buttons label {
+    font-size: 2.5vmin;
+  }
+
+  .player-cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 5;
+    transform: translate(-50%, -50%);
+  }
+
+  .player1-cursor {
+    background-color: #ff0000;
+    box-shadow: 0 0 10px #ff0000;
+  }
+
+  .player2-cursor {
+    background-color: #0066ff;
+    box-shadow: 0 0 10px #0066ff;
+  }
+
+  .player-score {
+    font-size: 2.5vmin;
+    margin-bottom: 0.5vmin;
+    font-weight: bold;
+  }
+
+  .player1-score {
+    color: #ff0000;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+  }
+
+  .player2-score {
+    color: #0066ff;
+    text-shadow: 0 0 5px rgba(0, 102, 255, 0.7);
+  }
+
+  /* === MOBILPORTRETT === */
+@media (orientation: portrait) and (max-width: 768px) {
+  canvas {
+    width: 90vw !important;
+    height: calc(90vw * 0.6667) !important; /* 3:2 forhold */
+    margin-top: 1vmin !important; /* redusert */
+  }
+  .controls {
+    flex-direction: column;
+    top: 0.5vmin;
+    right: 0.5vmin;
+    padding: 0.5vmin 1vmin;
+    gap: 0.5vmin;
+  }
+  .controls label, .controls button {
+    font-size: 2.2vmin;
+  }
+  .controls button {
+    padding: 1vmin 2vmin;
+  }
+  .volume-control input[type='range'] {
+    width: 20vmin;
+  }
+  .score-display, #timerDisplay, #timeTravelTimerDisplay {
+    font-size: 2.8vmin;
+  }
+  #perfectText {
+    font-size: 8vmin;
+    top: 7vmin;
+  }
+  #recordText {
+    font-size: 5vmin;
+    top: 13vmin;
+  }
+  #scorePopup {
+    font-size: 5vmin;
+  }
+  .bar-container {
+    height: 3.5vmin;
+  }
+}
+
+/* === MOBILLANDSKAP === */
+@media (orientation: landscape) and (max-height: 500px) {
+  canvas {
+    width: 90vw !important;
+    height: calc(90vw * 0.6667) !important; /* 3:2 forhold */
+    margin-top: 0.5vmin !important;
+  }
+  .controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0.5vmin 1vmin;
+    top: 0.5vmin;
+    right: 0.5vmin;
+    gap: 0.5vmin;
+  }
+  .controls label, .controls button {
+    font-size: 2vmin;
+  }
+  .controls button {
+    padding: 0.8vmin 1.5vmin;
+  }
+  .volume-control input[type='range'] {
+    width: 18vmin;
+  }
+  .score-display {
+    font-size: 2.5vmin;
+  }
+  #timerDisplay, #timeTravelTimerDisplay {
+    font-size: 3vmin;
+  }
+  #perfectText {
+    font-size: 7vmin;
+    top: 5vmin;
+  }
+  #recordText {
+    font-size: 4.5vmin;
+    top: 10vmin;
+  }
+  #scorePopup {
+    font-size: 5vmin;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="controls">
+    <div class="volume-control"><span id="soundLabel">Lyd:</span><input type="range" id="soundVolume" min="0" max="1" step="0.1" value="1"></div>
+    <div class="volume-control"><span id="musicLabel">Musikk:</span><input type="range" id="musicVolume" min="0" max="1" step="0.1" value="0.15"></div>
+    <button id="menuButton" onclick="returnToMainMenu()" style="display:none;">Menu</button>
+  </div>
+  
+  <div class="menu" id="gameMenu" style="display:none;">
+    <div class="player-score player1-score"><span id="player1Name">Player 1:</span> <span id="player1Score">0</span></div>
+    <div class="player-score player2-score"><span id="player2Name">Player 2:</span> <span id="player2Score">0</span></div>
+    <div id="timerDisplay"><span id="timeLabel">Time:</span> <span id="timeValue">60s</span></div>
+  </div>
+  
+  <div id="perfectText">Perfekt!</div>
+  <div id="recordText">Ny rekord!</div>
+  <div id="scorePopup"></div>
+  <canvas id="gameCanvas" width="1080" height="720" style="display:none;"></canvas>
+  <div class="bar-container" style="display:none;"><div id="bar" class="bar"></div></div>
+  
+  <div id="startScreen" class="menu">
+    <div id="gameTitle">MULTIPLAYER EYE TARGET</div>
+    <div class="mode-buttons">
+      <label for="langSelect" id="langSelectLabel">Språk:</label>
+      <select id="langSelect" onchange="switchLanguage()">
+        <option value="en">English</option>
+        <option value="no">Norsk</option>
+      </select>
+      <label for="playerName" id="playerNameLabel">Ditt navn:</label>
+      <input type="text" id="playerName" maxlength="10" placeholder="Navn" style="padding: 1vmin; font-size: 2vmin; background: #333; color: white; border: 1px solid #555; border-radius: 5px; width: 30vmin; max-width: 200px;">
+      <button onclick="joinMultiplayerGame()" id="joinGameBtn">Bli med i spill</button>
+      <button onclick="resetHighScore()" id="resetHighScoreBtn">Nullstill High Score</button>
+    </div>
+  </div>
+  
+  <div id="waitingScreen" class="menu">
+    <div id="waitingText">Venter på motspiller...</div>
+    <button onclick="cancelWaiting()" id="cancelWaitingBtn">Avbryt</button>
+  </div>
+  
+  <div id="gameOverScreen" class="menu">
+    <div id="gameOverText">GAME OVER!</div>
+    <div id="winnerText"></div>
+    <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:-1;"></canvas>
+    <button id="restartButton" onclick="restartGame()">Start på nytt</button>
+    <button id="mainMenuButton" onclick="returnToMainMenu()">Hovedmeny</button>
+  </div>
+  
+  <audio id="bgMusic" loop preload="auto">
+    <source src="eye.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="mp3Sound" preload="auto">
+    <source src="lyd.mp3" type="audio/mpeg">
+  </audio>
+
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+<script>
+// Felles variabeldeklarasjoner
+const pusherAppKey = "c92aa76da8acb9cdf46f";
+const pusherCluster = "eu";
+const STANDARD_MOVE_RANGE = 60;
+const STANDARD_MOVE_SPEED = 0.006;
+const STANDARD_BLINK_SPEED = 0.3;
+const STANDARD_BLINK_INTERVAL = 2000;
+const GAME_DURATION = 60;
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas?.getContext('2d');
+const bar = document.getElementById('bar');
+const player1ScoreDisplay = document.getElementById('player1Score');
+const player2ScoreDisplay = document.getElementById('player2Score');
+const gameOverScreen = document.getElementById('gameOverScreen');
+const startScreen = document.getElementById('startScreen');
+const gameMenu = document.getElementById('gameMenu');
+const timerDisplay = document.getElementById('timerDisplay');
+const waitingScreen = document.getElementById('waitingScreen');
+
+let pusher = null;
+let gameChannel = null;
+let playerId = null;
+let playerName = "Player";
+let opponentId = null;
+let opponentName = "Opponent";
+let isHost = false;
+let gameActive = false;
+let gameStartTime = 0;
+let lastPositionUpdate = 0;
+let players = {};
+let playerCursor = null;
+let opponentCursor = null;
+
+const baseEyeRadius = 120;
+const baseIrisRadius = 48;
+const basePupilRadius = 24;
+
+let eyeX = canvas ? canvas.width / 2 : 0;
+let eyeY = canvas ? canvas.height / 2 : 0;
+let eyeRadius = baseEyeRadius;
+let irisRadius = baseIrisRadius;
+let pupilRadius = basePupilRadius;
+let mouseX = eyeX;
+let mouseY = eyeY;
+let player1Score = 0;
+let player2Score = 0;
+let highScore = 0;
+let blinkProgress = 0;
+let blinking = false;
+let gameOver = false;
+let irisX = eyeX;
+let irisY = eyeY;
+let blinkDirection = 1;
+let timer = GAME_DURATION;
+let timerInterval = null;
+let currentLanguage = 'en';
+let soundVolume = 1;
+let musicVolume = 0.15;
+
+const translations = {
+  en: {
+    soundType: "Sound type:",
+    language: "Language:",
+    sound: "Sound:",
+    music: "Music:",
+    score: "Score:",
+    highScore: "High Score:",
+    time: "Time:",
+    gameOver: "GAME OVER!",
+    restart: "Restart",
+    mainMenu: "Main Menu",
+    perfect: "Perfect!",
+    record: "New record!",
+    gameTitle: "MULTIPLAYER EYE TARGET",
+    joinGame: "Join Game",
+    resetHighScore: "Reset High Score",
+    highScoreReset: "High Score reset!",
+    enterName: "Please enter your name",
+    youWin: "You win!",
+    wins: "wins!",
+    opponentDisconnected: "Opponent disconnected",
+    waitingForOpponent: "Waiting for opponent..."
+  },
+  no: {
+    soundType: "Lydtype:",
+    language: "Språk:",
+    sound: "Lyd:",
+    music: "Musikk:",
+    score: "Poengsum:",
+    highScore: "Høyeste poengsum:",
+    time: "Tid:",
+    gameOver: "GAME OVER!",
+    restart: "Start på nytt",
+    mainMenu: "Hovedmeny",
+    perfect: "Perfekt!",
+    record: "Ny rekord!",
+    gameTitle: "FLERSPILLER ØYE-MÅLSPILL",
+    joinGame: "Bli med i spill",
+    resetHighScore: "Nullstill High Score",
+    highScoreReset: "Høyeste poengsum nullstilt!",
+    enterName: "Vennligst skriv inn navnet ditt",
+    youWin: "Du vinner!",
+    wins: "vinner!",
+    opponentDisconnected: "Motspiller koblet fra",
+    waitingForOpponent: "Venter på motspiller..."
+  }
+};
+
+function resizeCanvas() {
+  if (!canvas) return;
+  
+  const container = canvas.parentElement;
+  if (container) {
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+  } else {
+    canvas.width = window.innerWidth * 0.8;
+    canvas.height = window.innerHeight * 0.7;
+  }
+  
+  eyeX = canvas.width / 2;
+  eyeY = canvas.height / 2;
+  irisX = eyeX;
+  irisY = eyeY;
+  mouseX = eyeX;
+  mouseY = eyeY;
+}
+
+function initializeGame() {
+  if (!canvas) return;
+  
+  resizeCanvas();
+  eyeRadius = baseEyeRadius * (canvas.width / 1000);
+  irisRadius = baseIrisRadius * (canvas.width / 1000);
+  pupilRadius = basePupilRadius * (canvas.width / 1000);
+  
+  playerCursor = document.createElement('div');
+  playerCursor.className = 'player-cursor';
+  document.body.appendChild(playerCursor);
+  
+  opponentCursor = document.createElement('div');
+  opponentCursor.className = 'opponent-cursor';
+  document.body.appendChild(opponentCursor);
+}
+
+function drawEye() {
+  if (!ctx || !canvas) return;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.beginPath();
+  ctx.arc(eyeX, eyeY, eyeRadius, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  
+  const dx = mouseX - eyeX;
+  const dy = mouseY - eyeY;
+  const distance = Math.min(Math.sqrt(dx * dx + dy * dy), eyeRadius - irisRadius);
+  const angle = Math.atan2(dy, dx);
+  
+  irisX = eyeX + Math.cos(angle) * distance;
+  irisY = eyeY + Math.sin(angle) * distance;
+  
+  ctx.beginPath();
+  ctx.arc(irisX, irisY, irisRadius * (1 - blinkProgress * 0.5), 0, Math.PI * 2);
+  ctx.fillStyle = '#00a0e0';
+  ctx.fill();
+  
+  ctx.beginPath();
+  ctx.arc(irisX, irisY, pupilRadius * (1 - blinkProgress * 0.7), 0, Math.PI * 2);
+  ctx.fillStyle = '#000000';
+  ctx.fill();
+  
+  if (blinking) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(
+      eyeX - eyeRadius,
+      eyeY - eyeRadius - (eyeRadius * 2 * blinkProgress),
+      eyeRadius * 2,
+      eyeRadius * 2 * blinkProgress * 2
+    );
+  }
+}
+
+function updateBlink() {
+  if (blinking) {
+    blinkProgress += blinkDirection * STANDARD_BLINK_SPEED;
+    if (blinkProgress >= 1) {
+      blinkProgress = 1;
+      blinkDirection = -1;
+    } else if (blinkProgress <= 0) {
+      blinkProgress = 0;
+      blinkDirection = 1;
+      blinking = false;
+    }
+  }
+}
+
+function scheduleBlink() {
+  if (!gameActive) return;
+  setTimeout(() => {
+    blinking = true;
+    scheduleBlink();
+  }, STANDARD_BLINK_INTERVAL + Math.random() * 1000);
+}
+
+function gameLoop() {
+  if (!gameActive) return;
+  
+  updateBlink();
+  drawEye();
+  requestAnimationFrame(gameLoop);
+}
+
+function initializePusher() {
+  try {
+    playerId = 'player-' + Math.random().toString(36).substr(2, 9);
+    
+    const channelName = 'public-game-' + Math.random().toString(36).substr(2, 8);
+    
+    pusher = new Pusher(pusherAppKey, {
+      cluster: pusherCluster,
+      forceTLS: true,
+      enabledTransports: ['ws', 'wss'],
+      disableStats: true,
+      auth: null,
+      authTransport: null
+    });
+
+    gameChannel = pusher.subscribe(channelName);
+    
+    gameChannel.bind('pusher:subscription_succeeded', () => {
+      console.log("Koblet til kanal:", channelName);
+      gameChannel.trigger('client-player-ready', {
+        id: playerId,
+        name: playerName,
+        timestamp: Date.now()
+      });
+    });
+
+    gameChannel.bind('pusher:subscription_error', (status) => {
+      console.error("Abonnementsfeil:", status);
+      alert("Kan ikke koble til spillkanal. Prøv igjen.");
+    });
+
+    gameChannel.bind('client-player-ready', (data) => {
+      if (data.id !== playerId && !opponentId) {
+        opponentId = data.id;
+        opponentName = data.name || "Motspiller";
+        document.getElementById('player2Name').textContent = opponentName + ":";
+        
+        if (!gameActive) {
+          startMultiplayerGame();
+        }
+      }
+    });
+
+    gameChannel.bind('client-position-update', (data) => {
+      if (data.playerId !== playerId && opponentCursor) {
+        updateOpponentCursor(data.x, data.y);
+      }
+    });
+
+    gameChannel.bind('client-eye-position', (data) => {
+      if (!isHost && data.x && data.y) {
+        eyeX = data.x;
+        eyeY = data.y;
+      }
+    });
+
+    gameChannel.bind('client-score-update', (data) => {
+      if (data.playerId !== playerId && player2ScoreDisplay) {
+        player2Score = data.score;
+        player2ScoreDisplay.textContent = player2Score;
+      }
+    });
+
+    gameChannel.bind('client-game-over', (data) => {
+      if (data && data.winnerId) {
+        endMultiplayerGame(data.winnerId, data.scores);
+      }
+    });
+
+  } catch (e) {
+    console.error("Pusher init feil:", e);
+    alert("Kunne ikke initialisere nettverk. Last siden på nytt.");
+  }
+}
+
+function updateOpponentCursor(x, y) {
+  if (opponentCursor) {
+    const rect = canvas.getBoundingClientRect();
+    opponentCursor.style.left = (x + rect.left) + 'px';
+    opponentCursor.style.top = (y + rect.top) + 'px';
+  }
+}
+
+function joinMultiplayerGame() {
+  try {
+    const nameInput = document.getElementById('playerName');
+    if (!nameInput || nameInput.value.trim() === '') {
+      alert(translations[currentLanguage].enterName);
+      return;
+    }
+    
+    playerName = nameInput.value.trim().substring(0, 10);
+    document.getElementById('player1Name').textContent = playerName + ":";
+    
+    if (!pusher) {
+      initializePusher();
+    } else if (gameChannel) {
+      gameChannel.trigger('client-player-ready', {
+        id: playerId,
+        name: playerName
+      });
+    }
+    
+    startScreen.style.opacity = '0';
+    setTimeout(() => {
+      startScreen.style.display = 'none';
+      waitingScreen.style.display = 'flex';
+      setTimeout(() => {
+        waitingScreen.style.opacity = '1';
+        document.getElementById('waitingText').textContent = translations[currentLanguage].waitingForOpponent;
+      }, 10);
+    }, 500);
+    
+  } catch (e) {
+    console.error("Bli-med-feil:", e);
+  }
+}
+
+function startMultiplayerGame() {
+  try {
+    isHost = !opponentId || playerId < opponentId;
+    
+    document.getElementById('player1Name').textContent = playerName + ":";
+    document.getElementById('player2Name').textContent = opponentName + ":";
+    
+    waitingScreen.style.opacity = '0';
+    setTimeout(() => {
+      waitingScreen.style.display = 'none';
+      canvas.style.display = 'block';
+      gameMenu.style.display = 'block';
+      document.querySelector('.bar-container').style.display = 'block';
+      
+      gameActive = true;
+      gameStartTime = Date.now();
+      startTimedMode();
+      scheduleBlink();
+      requestAnimationFrame(gameLoop);
+      
+      sendPositionUpdate();
+    }, 500);
+    
+  } catch (e) {
+    console.error("Startfeil:", e);
+  }
+}
+
+function startTimedMode() {
+  timer = GAME_DURATION;
+  timerDisplay.textContent = timer;
+  timerInterval = setInterval(() => {
+    timer--;
+    timerDisplay.textContent = timer;
+    if (timer <= 0) {
+      clearInterval(timerInterval);
+      endMultiplayerGame(player1Score > player2Score ? playerId : opponentId, { player1: player1Score, player2: player2Score });
+    }
+  }, 1000);
+}
+
+function sendPositionUpdate() {
+  if (!gameChannel || !gameActive) return;
+  
+  const now = Date.now();
+  if (now - lastPositionUpdate < 50) return;
+  
+  lastPositionUpdate = now;
+  
+  try {
+    gameChannel.trigger('client-position-update', {
+      playerId: playerId,
+      x: mouseX,
+      y: mouseY
+    });
+  } catch (e) {
+    console.warn("Kunne ikke sende posisjon:", e);
+  }
+}
+
+function endMultiplayerGame(winnerId, scores) {
+  gameActive = false;
+  clearInterval(timerInterval);
+  
+  if (gameChannel) {
+    try {
+      gameChannel.unbind_all();
+      pusher.unsubscribe(gameChannel.name);
+    } catch (e) {
+      console.warn("Kanalopprydding feilet:", e);
+    }
+  }
+  
+  gameOverScreen.style.display = 'flex';
+  setTimeout(() => gameOverScreen.style.opacity = '1', 10);
+  
+  if (winnerId === playerId) {
+    document.getElementById('gameOverText').textContent = translations[currentLanguage].youWin;
+  } else {
+    document.getElementById('gameOverText').textContent = opponentName + " " + translations[currentLanguage].wins;
+  }
+}
+
+function onCanvasClick() {
+  const dx = mouseX - irisX;
+  const dy = mouseY - irisY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (distance < irisRadius && !blinking) {
+    player1Score++;
+    player1ScoreDisplay.textContent = player1Score;
+    if (gameChannel) {
+      gameChannel.trigger('client-score-update', {
+        playerId: playerId,
+        score: player1Score
+      });
+    }
+  }
+}
+
+function restartGame() {
+  gameOverScreen.style.opacity = '0';
+  setTimeout(() => {
+    gameOverScreen.style.display = 'none';
+    startScreen.style.display = 'flex';
+    setTimeout(() => startScreen.style.opacity = '1', 10);
+  }, 500);
+  player1Score = 0;
+  player2Score = 0;
+  player1ScoreDisplay.textContent = '0';
+  player2ScoreDisplay.textContent = '0';
+  opponentId = null;
+  gameActive = false;
+}
+
+function returnToMainMenu() {
+  gameOverScreen.style.opacity = '0';
+  setTimeout(() => {
+    gameOverScreen.style.display = 'none';
+    startScreen.style.display = 'flex';
+    setTimeout(() => startScreen.style.opacity = '1', 10);
+  }, 500);
+}
+
+function cancelWaiting() {
+  waitingScreen.style.opacity = '0';
+  setTimeout(() => {
+    waitingScreen.style.display = 'none';
+    startScreen.style.display = 'flex';
+    setTimeout(() => startScreen.style.opacity = '1', 10);
+  }, 500);
+}
+
+function switchLanguage() {
+  const languageSelect = document.getElementById('languageSelect');
+  currentLanguage = languageSelect.value;
+  updateUIText();
+}
+
+function updateUIText() {
+  document.getElementById('soundTypeLabel').textContent = translations[currentLanguage].soundType;
+  document.getElementById('languageLabel').textContent = translations[currentLanguage].language;
+  document.getElementById('soundLabel').textContent = translations[currentLanguage].sound;
+  document.getElementById('musicLabel').textContent = translations[currentLanguage].music;
+  document.getElementById('joinGameBtn').textContent = translations[currentLanguage].joinGame;
+}
+
+function updateSoundVolume() {
+  soundVolume = document.getElementById('soundSlider').value;
+}
+
+function updateMusicVolume() {
+  musicVolume = document.getElementById('musicSlider').value;
+}
+
+function resetHighScore() {
+  highScore = 0;
+  alert(translations[currentLanguage].highScoreReset);
+}
+
+function setupEventListeners() {
+  try {
+    const joinButton = document.getElementById('joinGameBtn');
+    const cancelButton = document.getElementById('cancelWaitingBtn');
+    const restartButton = document.getElementById('restartButton');
+    const menuButton = document.getElementById('menuButton');
+    const resetHighScoreBtn = document.getElementById('resetHighScoreBtn');
+    
+    if (joinButton) joinButton.addEventListener('click', joinMultiplayerGame);
+    if (cancelButton) cancelButton.addEventListener('click', cancelWaiting);
+    if (restartButton) restartButton.addEventListener('click', restartGame);
+    if (menuButton) menuButton.addEventListener('click', returnToMainMenu);
+    if (resetHighScoreBtn) resetHighScoreBtn.addEventListener('click', resetHighScore);
+    
+    const languageSelect = document.getElementById('languageSelect');
+    if (languageSelect) languageSelect.addEventListener('change', switchLanguage);
+    
+    const soundSlider = document.getElementById('soundSlider');
+    if (soundSlider) soundSlider.addEventListener('input', updateSoundVolume);
+    
+    const musicSlider = document.getElementById('musicSlider');
+    if (musicSlider) musicSlider.addEventListener('input', updateMusicVolume);
+    
+  } catch (e) {
+    console.error("Feil ved oppsetting av event listeners:", e);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (canvas) {
+      resizeCanvas();
+      initializeGame();
+      setupEventListeners();
+    }
+    
+    if (startScreen) {
+      startScreen.style.display = 'flex';
+      setTimeout(() => startScreen.style.opacity = '1', 10);
+    }
+    
+    if (canvas) {
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+        if (playerCursor) {
+          playerCursor.style.left = e.clientX + 'px';
+          playerCursor.style.top = e.clientY + 'px';
+        }
+        sendPositionUpdate();
+      });
+      
+      canvas.addEventListener('click', onCanvasClick);
+      
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        mouseX = touch.clientX - rect.left;
+        mouseY = touch.clientY - rect.top;
+        if (playerCursor) {
+          playerCursor.style.left = touch.clientX + 'px';
+          playerCursor.style.top = touch.clientY + 'px';
+        }
+        sendPositionUpdate();
+        onCanvasClick();
+      }, { passive: false });
+      
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        mouseX = touch.clientX - rect.left;
+        mouseY = touch.clientY - rect.top;
+        if (playerCursor) {
+          playerCursor.style.left = touch.clientX + 'px';
+          playerCursor.style.top = touch.clientY + 'px';
+        }
+        sendPositionUpdate();
+      }, { passive: false });
+    }
+  } catch (e) {
+    console.error("Initialiseringsfeil:", e);
+  }
+});
+</script>

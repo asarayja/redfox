@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eye Target Game</title>
+  <style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    touch-action: none;
+    overscroll-behavior: contain;
+    font-family: 'Arial', sans-serif;
+    color: white;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  canvas {
+    background: #000;
+    border: 2px solid #fff;
+    display: block;
+    margin-top: 20px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  }
+
+  .menu {
+    text-align: center;
+    margin-top: 2vmin;
+  }
+
+  .bar-container {
+    width: 100%;
+    height: 30px;
+    background: #333;
+    position: relative;
+    margin-top: 1vmin;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  .bar {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg,#ff0000,#cc0000);
+    left: 50%;
+    width: 0;
+    transform: translateX(-50%);
+    transition: all 0.2s;
+  }
+
+  .volume-control input[type='range'] {
+    -webkit-appearance: none;
+    width: 80px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .volume-control input[type='range']:focus {
+    outline: none;
+  }
+
+  .volume-control input[type='range']::-webkit-slider-runnable-track {
+    height: 5px;
+    border-radius: 5px;
+    background: #444;
+  }
+
+  .volume-control input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ff0000;
+    margin-top: -5px;
+    transition: background 0.3s;
+  }
+
+  .volume-control input[type='range']::-webkit-slider-thumb:hover {
+    background: #ff6666;
+  }
+
+  .volume-control input[type='range']::-moz-range-track {
+    height: 5px;
+    border-radius: 5px;
+    background: #444;
+  }
+
+  .volume-control input[type='range']::-moz-range-progress {
+    height: 5px;
+    border-radius: 5px;
+    background: #ff0000;
+  }
+
+  .volume-control input[type='range']::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ff0000;
+    border: none;
+  }
+
+  #gameOverScreen, #startScreen {
+    opacity: 0;
+    transition: opacity 0.6s ease-in;
+    display: none;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-width: 100vw !important;
+    min-height: 100vh !important;
+    background: #000 !important;
+    color: white;
+    font-size: 5vmin;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000 !important;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+  }
+
+  #gameOverScreen button, #startScreen button {
+    margin-top: 3vmin;
+    padding: 2vmin 4vmin;
+    font-size: 2.5vmin;
+    background: linear-gradient(45deg,#ff0000,#cc0000);
+    border: none;
+    color: white;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 0 15px rgba(255,0,0,0.6);
+  }
+
+  #gameOverScreen button:hover, #startScreen button:hover {
+    background: linear-gradient(45deg,#ff6666,#ff0000);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255,0,0,0.9);
+  }
+
+  .hit {
+    animation: blinkHit 0.1s ease;
+  }
+
+  @keyframes blinkHit {
+    0% { filter: brightness(1.5);}
+    100% { filter: brightness(1);}
+  }
+
+  #timerDisplay, #timeTravelTimerDisplay {
+    font-size: 3vmin;
+    margin-top: 1vmin;
+    color: #ff0000;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255,0,0,0.7);
+  }
+
+  .controls {
+    position: absolute;
+    top: 1vmin;
+    right: 1vmin;
+    display: flex;
+    gap: 1vmin;
+    align-items: center;
+    background: rgba(0,0,0,0.7);
+    padding: 1vmin 1.5vmin;
+    border-radius: 20px;
+    border: 1px solid #444;
+  }
+
+  .controls label {
+    display: flex;
+    align-items: center;
+    gap: 0.5vmin;
+    font-size: 1.8vmin;
+  }
+
+  .controls select, .controls input[type='checkbox'] {
+    padding: 0.5vmin;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+  }
+
+  .controls button {
+    padding: 1vmin 2vmin;
+    background: linear-gradient(45deg,#ff0000,#cc0000);
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.8vmin;
+  }
+
+  .controls button:hover {
+    background: linear-gradient(45deg,#ff6666,#ff0000);
+    transform: scale(1.1);
+  }
+
+  .score-display {
+    font-size: 2.5vmin;
+    margin-bottom: 0.5vmin;
+    text-shadow: 0 0 5px rgba(255,255,255,0.5);
+  }
+
+  #scoreDisplay, #highScoreDisplay, #eyeHealthDisplay, #timeTravelTimerDisplay {
+    font-weight: bold;
+    color: #ff0000;
+    display: inline-block;
+  }
+
+  #perfectText {
+    position: absolute;
+    top: 10vmin;
+    font-size: 6vmin;
+    font-weight: bold;
+    color: #ff0000;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+    animation: pulse 0.5s infinite alternate;
+  }
+
+  @keyframes pulse {
+    from { transform: scale(1);}
+    to { transform: scale(1.1);}
+  }
+
+  #recordText {
+    position: absolute;
+    top: 18vmin;
+    font-size: 4vmin;
+    font-weight: bold;
+    color: #ff6666;
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+    text-shadow: 0 0 10px rgba(255,102,102,0.8);
+  }
+
+  #scorePopup {
+    position: absolute;
+    font-size: 4vmin;
+    font-weight: bold;
+    color: #ff0000;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+  }
+
+  #countdownDisplay {
+    position: absolute;
+    top: 5vmin;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8vmin;
+    font-weight: bold;
+    color: #ff0000;
+    opacity: 0;
+    transition: opacity 0.3s ease-out, transform 0.2s ease;
+    text-shadow: 0 0 15px rgba(255,0,0,0.9);
+    animation: pulse 0.5s infinite alternate;
+    z-index: 500;
+  }
+
+  #countdownDisplay.boom {
+    color: #ff6666;
+    font-size: 10vmin;
+    text-shadow: 0 0 20px rgba(255,102,102,1);
+    animation: boomPulse 0.3s ease;
+  }
+
+  @keyframes boomPulse {
+    0% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.3); }
+    100% { transform: translateX(-50%) scale(1); }
+  }
+
+  .mode-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vmin;
+    margin-top: 2vmin;
+    align-items: center;
+  }
+
+  .mode-buttons select {
+    padding: 1vmin;
+    font-size: 2vmin;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 5px;
+    width: 30vmin;
+    max-width: 200px;
+  }
+
+  .mode-buttons label {
+    font-size: 2.5vmin;
+  }
+
+  @media (orientation: portrait) and (max-width: 768px) {
+    canvas {
+      width: 90vw !important;
+      height: calc(90vw * 0.6667) !important;
+      margin-top: 1vmin !important;
+    }
+    .controls {
+      flex-direction: column;
+      top: 0.5vmin;
+      right: 0.5vmin;
+      padding: 0.5vmin 1vmin;
+      gap: 0.5vmin;
+    }
+    .controls label, .controls button {
+      font-size: 2.2vmin;
+    }
+    .controls button {
+      padding: 1vmin 2vmin;
+    }
+    .volume-control input[type='range'] {
+      width: 20vmin;
+    }
+    .score-display, #timerDisplay, #timeTravelTimerDisplay {
+      font-size: 2.8vmin;
+    }
+    #perfectText {
+      font-size: 8vmin;
+      top: 7vmin;
+    }
+    #recordText {
+      font-size: 5vmin;
+      top: 13vmin;
+    }
+    #scorePopup {
+      font-size: 5vmin;
+    }
+    #countdownDisplay {
+      font-size: 10vmin;
+      top: 3vmin;
+    }
+    #countdownDisplay.boom {
+      font-size: 12vmin;
+    }
+    .bar-container {
+      height: 3.5vmin;
+    }
+  }
+
+  @media (orientation: landscape) and (max-height: 500px) {
+    canvas {
+      width: 90vw !important;
+      height: calc(90vw * 0.6667) !important;
+      margin-top: 0.5vmin !important;
+    }
+    .controls {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0.5vmin 1vmin;
+      top: 0.5vmin;
+      right: 0.5vmin;
+      gap: 0.5vmin;
+    }
+    .controls label, .controls button {
+      font-size: 2vmin;
+    }
+    .controls button {
+      padding: 0.8vmin 1.5vmin;
+    }
+    .volume-control input[type='range'] {
+      width: 18vmin;
+    }
+    .score-display {
+      font-size: 2.5vmin;
+    }
+    #timerDisplay, #timeTravelTimerDisplay {
+      font-size: 3vmin;
+    }
+    #perfectText {
+      font-size: 7vmin;
+      top: 5vmin;
+    }
+    #recordText {
+      font-size: 4.5vmin;
+      top: 10vmin;
+    }
+    #scorePopup {
+      font-size: 5vmin;
+    }
+    #countdownDisplay {
+      font-size: 9vmin;
+      top: 2vmin;
+    }
+    #countdownDisplay.boom {
+      font-size: 11vmin;
+    }
+  }
+  #confettiCanvas {
+    display: none;
+  }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <div class="volume-control"><span id="soundLabel">Lyd:</span><input type="range" id="soundVolume" min="0" max="1" step="0.1" value="1"></div>
+    <div class="volume-control"><span id="musicLabel">Musikk:</span><input type="range" id="musicVolume" min="0" max="1" step="0.1" value="0.15"></div>
+    <button id="menuButton" onclick="returnToMainMenu()" style="display:none;">Menu</button>
+  </div>
+  
+  <div class="menu" id="gameMenu" style="display:none;">
+    <div class="score-display"><span id="scoreLabel">Poengsum:</span> <span id="scoreDisplay">0</span></div>
+    <div class="score-display"><span id="highScoreLabel">Høyeste poengsum:</span> <span id="highScoreDisplay">0</span></div>
+    <div class="score-display" id="eyeHealthDisplay" style="display:none;"><span id="eyeHealthLabel">Helse:</span> <span id="eyeHealthValue">100</span></div>
+    <div id="timerDisplay" style="display:none;"><span id="timeLabel">Tid:</span> <span id="timeValue">60s</span></div>
+    <div id="timeTravelTimerDisplay" style="display:none;"><span id="timeTravelLabel">Tid igjen:</span> <span id="timeTravelValue">3s</span></div>
+  </div>
+  
+  <div id="perfectText">Perfekt!</div>
+  <div id="recordText">Ny rekord!</div>
+  <div id="scorePopup"></div>
+  <div id="countdownDisplay"></div>
+  <canvas id="gameCanvas" width="1080" height="720" style="display:none;"></canvas>
+  <div class="bar-container" style="display:none;"><div id="bar" class="bar"></div></div>
+  
+  <div id="startScreen" class="menu">
+    <div id="gameTitle">ØYE-MÅLSPILL</div>
+    <div class="mode-buttons">
+      <label for="langSelect" id="langSelectLabel">Språk:</label>
+      <select id="langSelect" onchange="switchLanguage()">
+        <option value="en">Engelsk</option>
+        <option value="no" selected>Norsk</option>
+      </select>
+      <label id="soundTypeLabel" for="soundType">Lydtype:</label>
+      <select id="soundType" onchange="saveSoundType()">
+        <option value="mp3">Retro-Lyd</option>
+      </select>
+      <label id="musicTypeLabel" for="musicType">Musikktype:</label>
+      <select id="musicType" onchange="saveMusicType()">
+        <option value="eye.mp3">Øyelyd</option>
+        <option value="musikk.mp3">Musikklyd</option>
+      </select>
+      <label for="modeSelectStart" id="modeLabel">Velg modus:</label>
+      <select id="modeSelectStart">
+        <option value="standard">Standard</option>
+        <option value="freaky">Freaky</option>
+        <option value="timed">Tidsbegrenset</option>
+        <option value="zombie">Zombie</option>
+        <option value="timetravel">Tidsreise</option>
+        <option value="shadow">Skygge</option>
+        <option value="chaos">Kaos</option>
+      </select>
+      <button onclick="startGame(document.getElementById('modeSelectStart').value)" id="startGameBtn">Start Spill</button>
+      <button onclick="resetHighScore()" id="resetHighScoreBtn">Nullstill High Score</button>
+    </div>
+  </div>
+  
+  <div id="gameOverScreen" class="menu">
+    <div id="gameOverText">GAME OVER!</div>
+    <canvas id="confettiCanvas" style="position:absolute;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:-1;"></canvas>
+    <button id="restartButton" onclick="restartGame()">Start på nytt</button>
+    <button id="mainMenuButton" onclick="returnToMainMenu()">Hovedmeny</button>
+  </div>
+  
+  <audio id="bgMusic" loop preload="auto">
+    <source id="bgMusicSource" src="eye.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="mp3Sound" preload="auto">
+    <source src="lyd.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Language texts
+    const translations = {
+      en: {
+        soundType: "Sound type:",
+        language: "Language:",
+        mode: "Mode:",
+        modeLabel: "Mode:",
+        sound: "Sound:",
+        music: "Music:",
+        score: "Score:",
+        highScore: "High Score:",
+        health: "Health:",
+        time: "Time:",
+        timeTravel: "Time Travel:",
+        gameOver: "GAME OVER!",
+        restart: "Restart",
+        mainMenu: "Main Menu",
+        perfect: "Perfect!",
+        record: "New record!",
+        gameTitle: "EYE TARGET GAME",
+        startGame: "Start Game",
+        resetHighScore: "Reset High Score",
+        highScoreReset: "High Score reset!",
+        languages: {
+          en: "English",
+          no: "Norwegian"
+        },
+        modes: {
+          standard: "Standard Mode",
+          freaky: "Freaky Mode",
+          timed: "Time Limited",
+          zombie: "Zombie Mode",
+          timetravel: "Time Travel",
+          shadow: "Shadow Mode",
+          chaos: "Chaos Mode"
+        },
+        musicOptions: {
+          eye: "Eye-sound",
+          music: "Music-sound"
+        },
+        soundOptions: {
+          retro: "Retro sound",
+          mp3: "MP3 sound"
+        }
+      },
+      no: {
+        soundType: "Lydtype:",
+        language: "Språk:",
+        mode: "Modus:",
+        modeLabel: "Velg modus:",
+        sound: "Lyd:",
+        music: "Musikk:",
+        score: "Poengsum:",
+        highScore: "Høyeste poengsum:",
+        health: "Helse:",
+        time: "Tid:",
+        timeTravel: "Tid igjen:",
+        gameOver: "GAME OVER!",
+        restart: "Start på nytt",
+        mainMenu: "Hovedmeny",
+        perfect: "Perfekt!",
+        record: "Ny rekord!",
+        gameTitle: "ØYE-MÅLSPILL",
+        startGame: "Start Spill",
+        resetHighScore: "Nullstill High Score",
+        highScoreReset: "Høyeste poengsum nullstilt!",
+        languages: {
+          en: "Engelsk",
+          no: "Norsk"
+        },
+        modes: {
+          standard: "Standard",
+          freaky: "Freaky",
+          timed: "Tidsbegrenset",
+          zombie: "Zombie",
+          timetravel: "Tidsreise",
+          shadow: "Skygge",
+          chaos: "Kaos"
+        },
+        musicOptions: {
+          eye: "Øyelyd",
+          music: "Musikklyd"
+        },
+        soundOptions: {
+          retro: "Retrolyd",
+          mp3: "MP3-lyd"
+        }
+      }
+    };
+
+    // Constants
+    const FREAKY_EYE_COLOR = '#ff0000';
+    const FREAKY_IRIS_COLOR = '#00ff00';
+    const FREAKY_MOVE_RANGE = 150;
+    const FREAKY_MOVE_SPEED = 0.008;
+    let STANDARD_MOVE_RANGE = 60;
+    let STANDARD_MOVE_SPEED = 0.006;
+    const FREAKY_BLINK_SPEED = 0.6;
+    let STANDARD_BLINK_SPEED = 0.3;
+    const FREAKY_BLINK_INTERVAL = 1000;
+    const STANDARD_BLINK_INTERVAL = 2000;
+    const ZOMBIE_HEALTH_DECAY = 1;
+    const ZOMBIE_EYE_COLOR = '#333';
+    const TIME_TRAVEL_JUMP_INTERVAL_MIN = 1000;
+    const TIME_TRAVEL_JUMP_INTERVAL_MAX = 2000;
+    const TIME_TRAVEL_BLINK_INTERVAL_MIN = 500;
+    const TIME_TRAVEL_BLINK_INTERVAL_MAX = 2000;
+    const TIME_TRAVEL_TIME_LIMIT = 2;
+    const TIME_TRAVEL_MAX_JUMPS = 10;
+    const TIME_TRAVEL_SHOW_DURATION = 1500;
+    const CHAOS_MODE_SWITCH_INTERVAL = 5000;
+    const CHAOS_HEALTH_DECAY = 1.5;
+    const CHAOS_MOVE_SPEED = 0.01;
+    const CHAOS_BLINK_SPEED = 0.8;
+    const BONUS_SCORE_THRESHOLD = 1000;
+    const BONUS_DURATION = 10000;
+    const COLOR_CYCLONE_COLORS = [
+      { color: '#ff0000', multiplier: 2 },
+      { color: '#ff7f00', multiplier: 2.2 },
+      { color: '#ffff00', multiplier: 2.4 },
+      { color: '#00ff00', multiplier: 2.6 },
+      { color: '#0000ff', multiplier: 2.8 },
+      { color: '#4b0082', multiplier: 3 },
+      { color: '#8b00ff', multiplier: 3.2 }
+    ];
+    const COLOR_CYCLE_INTERVAL = 200;
+    const SCORE_BOMB_PERFECT_BOOST = 50;
+    const BOOM_EFFECT_DURATION = 2500;
+    const GREEN_COLORS = ['#00ff00', '#33cc33', '#66ff66'];
+
+    // DOM Elements
+    let canvas, ctx, bar, scoreDisplay, highScoreDisplay, eyeHealthDisplay, timeTravelTimerDisplay, gameOverScreen, startScreen, gameMenu, timerDisplay, modeSelectStart, soundRange, musicRange, bgMusic, mp3Sound, soundTypeSelect, menuButton, countdownDisplay;
+    const baseEyeRadius = 120;
+    const baseIrisRadius = 48;
+    const basePupilRadius = 24;
+
+    // Game State
+    let eyeX, eyeY, eyeRadius, irisRadius, pupilRadius, mouseX, mouseY, score = 0, highScore = 0, eyeHealth = 100;
+    let timeTravelTimer = TIME_TRAVEL_TIME_LIMIT, timeTravelJumpCount = 0, timeTravelEyeVisible = false, timeTravelLastShowTime = 0;
+    let lastTimeTravelJump = Date.now(), lastTimeTravelUpdate = Date.now(), lastHealthUpdate = Date.now();
+    let blinkProgress = 0, blinkSpeed = STANDARD_BLINK_SPEED, blinking = false, gameOver = false, irisX, irisY, blinkDirection = 1;
+    let timer = 60, timerInterval = null, currentMode = 'standard', freakyModeActive = false, zombieModeActive = false;
+    let timeTravelModeActive = false, shadowModeActive = false, chaosModeActive = false, currentLanguage = 'no';
+    let soundVolume = 1, musicVolume = 0.15, soundType = 'mp3', chaosEffect = 'freaky', lastChaosSwitch = Date.now();
+    let bonusActive = false, bonusStartTime = 0, bonusCount = 0, currentColorIndex = 0, perfectHitsDuringBonus = 0, countdownInterval = null;
+    let boomEffectActive = false, boomEffectStartTime = 0, boomParticles = [];
+
+    // Web Audio API for synthetic sound
+    let audioCtx;
+    function playSyntheticSound() {
+      try {
+        if (!audioCtx) return;
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(soundVolume, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.5);
+      } catch (e) {
+        console.error("Error playing synthetic sound:", e);
+      }
+    }
+
+    // Initialize DOM and game
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        canvas = document.getElementById('gameCanvas');
+        ctx = canvas.getContext('2d');
+        bar = document.getElementById('bar');
+        scoreDisplay = document.getElementById('scoreDisplay');
+        highScoreDisplay = document.getElementById('highScoreDisplay');
+        eyeHealthDisplay = document.getElementById('eyeHealthDisplay');
+        timeTravelTimerDisplay = document.getElementById('timeTravelTimerDisplay');
+        gameOverScreen = document.getElementById('gameOverScreen');
+        startScreen = document.getElementById('startScreen');
+        gameMenu = document.getElementById('gameMenu');
+        timerDisplay = document.getElementById('timerDisplay');
+        modeSelectStart = document.getElementById('modeSelectStart');
+        soundRange = document.getElementById('soundVolume');
+        musicRange = document.getElementById('musicVolume');
+        bgMusic = document.getElementById('bgMusic');
+        mp3Sound = document.getElementById('mp3Sound');
+        soundTypeSelect = document.getElementById('soundType');
+        menuButton = document.getElementById('menuButton');
+        countdownDisplay = document.getElementById('countdownDisplay');
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
+        highScoreDisplay.textContent = highScore;
+        currentLanguage = localStorage.getItem('language') || 'no';
+        soundType = localStorage.getItem('soundType') || 'mp3';
+        soundVolume = parseFloat(localStorage.getItem('soundVolume')) || 1;
+        musicVolume = parseFloat(localStorage.getItem('musicVolume')) || 0.15;
+        document.getElementById('langSelect').value = currentLanguage;
+        document.getElementById('soundType').value = soundType;
+        document.getElementById('soundVolume').value = soundVolume;
+        document.getElementById('musicVolume').value = musicVolume;
+
+        resizeCanvas();
+        const savedMusicFile = localStorage.getItem('musicFile') || 'eye.mp3';
+        document.getElementById('musicType').value = savedMusicFile;
+        document.getElementById('bgMusicSource').src = savedMusicFile;
+        bgMusic.load();
+        startScreen.style.display = 'flex';
+        setTimeout(() => startScreen.style.opacity = '1', 10);
+        updateTexts();
+
+        canvas.addEventListener('mousemove', e => {
+          const rect = canvas.getBoundingClientRect();
+          mouseX = e.clientX - rect.left;
+          mouseY = e.clientY - rect.top;
+        });
+        canvas.addEventListener('click', onCanvasClick);
+        canvas.addEventListener('touchstart', e => {
+          e.preventDefault();
+          const rect = canvas.getBoundingClientRect();
+          const touch = e.touches[0];
+          mouseX = touch.clientX - rect.left;
+          mouseY = touch.clientY - rect.top;
+          onCanvasClick();
+        });
+        canvas.addEventListener('touchmove', e => {
+          e.preventDefault();
+          const rect = canvas.getBoundingClientRect();
+          const touch = e.touches[0];
+          mouseX = touch.clientX - rect.left;
+          mouseY = touch.clientY - rect.top;
+        });
+        [soundRange, musicRange].forEach(r => {
+          setRangeColor(r);
+          r.addEventListener('input', () => {
+            if (r === soundRange) updateSoundVolume(); else updateMusicVolume();
+            setRangeColor(r);
+          });
+        });
+        window.addEventListener('resize', resizeCanvas);
+      } catch (e) {
+        console.error("Error initializing game:", e);
+      }
+    });
+
+    function resizeCanvas() {
+      try {
+        const aspectRatio = 1080 / 720;
+        let maxWidth = window.innerWidth * 0.9;
+        let maxHeight = window.innerHeight * 0.6;
+        let newWidth = maxWidth;
+        let newHeight = newWidth / aspectRatio;
+        if (newHeight > maxHeight) {
+          newHeight = maxHeight;
+          newWidth = newHeight * aspectRatio;
+        }
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        eyeX = canvas.width / 2;
+        eyeY = canvas.height / 2;
+        irisX = eyeX;
+        irisY = eyeY;
+        mouseX = eyeX;
+        mouseY = eyeY;
+        const scaleFactor = canvas.width / 1080;
+        eyeRadius = baseEyeRadius * scaleFactor;
+        irisRadius = baseIrisRadius * scaleFactor;
+        pupilRadius = basePupilRadius * scaleFactor;
+      } catch (e) {
+        console.error("Error resizing canvas:", e);
+      }
+    }
+
+    function switchLanguage() {
+      try {
+        currentLanguage = document.getElementById('langSelect').value;
+        localStorage.setItem('language', currentLanguage);
+        updateTexts();
+      } catch (e) {
+        console.error("Error switching language:", e);
+      }
+    }
+
+    function updateTexts() {
+      try {
+        const lang = translations[currentLanguage];
+        document.getElementById('soundTypeLabel').textContent = lang.soundType;
+        document.getElementById('langSelectLabel').textContent = lang.language;
+        document.getElementById('soundLabel').textContent = lang.sound;
+        document.getElementById('musicLabel').textContent = lang.music;
+        document.getElementById('scoreLabel').textContent = lang.score;
+        document.getElementById('highScoreLabel').textContent = lang.highScore;
+        document.getElementById('eyeHealthLabel').textContent = lang.health;
+        document.getElementById('timeLabel').textContent = lang.time;
+        document.getElementById('timeTravelLabel').textContent = lang.timeTravel;
+        document.getElementById('gameOverText').textContent = lang.gameOver;
+        document.getElementById('restartButton').textContent = lang.restart;
+        document.getElementById('mainMenuButton').textContent = lang.mainMenu;
+        document.getElementById('menuButton').textContent = lang.mainMenu;
+        document.getElementById('perfectText').textContent = lang.perfect;
+        document.getElementById('modeLabel').textContent = lang.modeLabel;
+        document.getElementById('recordText').textContent = lang.record;
+        document.getElementById('gameTitle').textContent = lang.gameTitle;
+        document.getElementById('startGameBtn').textContent = lang.startGame;
+        document.getElementById('resetHighScoreBtn').textContent = lang.resetHighScore;
+        document.getElementById('musicTypeLabel').textContent = lang.music;
+        const musicSelect = document.getElementById('musicType');
+        musicSelect.options[0].text = lang.musicOptions.eye;
+        musicSelect.options[1].text = lang.musicOptions.music;
+        const modeSelectStart = document.getElementById('modeSelectStart');
+        modeSelectStart.options[0].text = lang.modes.standard;
+        modeSelectStart.options[1].text = lang.modes.freaky;
+        modeSelectStart.options[2].text = lang.modes.timed;
+        modeSelectStart.options[3].text = lang.modes.zombie;
+        modeSelectStart.options[4].text = lang.modes.timetravel;
+        modeSelectStart.options[5].text = lang.modes.shadow;
+        modeSelectStart.options[6].text = lang.modes.chaos;
+        const langSelect = document.getElementById('langSelect');
+        langSelect.options[0].text = lang.languages.en;
+        langSelect.options[1].text = lang.languages.no;
+        if (timerInterval) document.getElementById('timeValue').textContent = timer + 's';
+        if (zombieModeActive || chaosModeActive) document.getElementById('eyeHealthValue').textContent = Math.floor(eyeHealth);
+        if (timeTravelModeActive || chaosModeActive) document.getElementById('timeTravelValue').textContent = timeTravelTimer.toFixed(1) + 's';
+      } catch (e) {
+        console.error("Error updating texts:", e);
+      }
+    }
+
+    function startGame(mode) {
+      try {
+        currentMode = mode;
+        freakyModeActive = mode === 'freaky';
+        zombieModeActive = mode === 'zombie';
+        timeTravelModeActive = mode === 'timetravel';
+        shadowModeActive = mode === 'shadow';
+        chaosModeActive = mode === 'chaos';
+        blinkSpeed = freakyModeActive ? FREAKY_BLINK_SPEED : (timeTravelModeActive ? Math.random() * 0.5 + 0.3 : (chaosModeActive ? CHAOS_BLINK_SPEED : STANDARD_BLINK_SPEED));
+        soundType = soundTypeSelect.value;
+        resetGameState();
+        startScreen.style.opacity = '0';
+        setTimeout(() => {
+          startScreen.style.display = 'none';
+          canvas.style.display = 'block';
+          gameMenu.style.display = 'block';
+          menuButton.style.display = 'block';
+          document.querySelector('.bar-container').style.display = 'block';
+          if (zombieModeActive || chaosModeActive) {
+            eyeHealthDisplay.style.display = 'block';
+            document.getElementById('eyeHealthValue').textContent = Math.floor(eyeHealth);
+          }
+          if (timeTravelModeActive || chaosModeActive) {
+            timeTravelTimerDisplay.style.display = 'block';
+            document.getElementById('timeTravelValue').textContent = timeTravelTimer.toFixed(1) + 's';
+            scheduleTimeTravelJump();
+            timeTravelEyeVisible = false;
+            timeTravelJumpCount = 0;
+            timeTravelLastShowTime = 0;
+          }
+          updateMusicVolume();
+        }, 600);
+        if (currentMode === 'timed') startTimedMode();
+        if (chaosModeActive) {
+          chaosEffect = 'freaky';
+          lastChaosSwitch = Date.now();
+        }
+        scheduleBlink();
+        lastHealthUpdate = Date.now();
+        lastTimeTravelJump = Date.now();
+        lastTimeTravelUpdate = Date.now();
+        requestAnimationFrame(gameLoop);
+      } catch (e) {
+        console.error("Error starting game:", e);
+      }
+    }
+
+    function scheduleBlink() {
+      try {
+        const interval = timeTravelModeActive ? Math.random() * (TIME_TRAVEL_BLINK_INTERVAL_MAX - TIME_TRAVEL_BLINK_INTERVAL_MIN) + TIME_TRAVEL_BLINK_INTERVAL_MIN : (freakyModeActive ? Math.random() * 800 + 300 : (chaosModeActive ? Math.random() * 600 + 200 : STANDARD_BLINK_INTERVAL));
+        setTimeout(() => {
+          if (!blinking && !gameOver) {
+            blinking = true;
+            blinkDirection = 1;
+            if (timeTravelModeActive || chaosModeActive) blinkSpeed = Math.random() * 0.5 + 0.3;
+          }
+          scheduleBlink();
+        }, interval);
+      } catch (e) {
+        console.error("Error scheduling blink:", e);
+      }
+    }
+
+    function initBoomEffect() {
+      try {
+        boomParticles = [];
+        const particleCount = 50;
+        for (let i = 0; i < particleCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 3 + 1;
+          const colorIndex = Math.floor(Math.random() * GREEN_COLORS.length);
+          const offset = eyeRadius * 1.2;
+          boomParticles.push({
+            x: eyeX + Math.cos(angle) * offset,
+            y: eyeY + Math.sin(angle) * offset,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            radius: Math.random() * 3 + 2,
+            color: GREEN_COLORS[colorIndex],
+            alpha: 1,
+            life: 0
+          });
+        }
+        boomEffectActive = true;
+        boomEffectStartTime = Date.now();
+      } catch (e) {
+        console.error("Error initializing boom effect:", e);
+      }
+    }
+
+    function drawBoomEffect() {
+      try {
+        if (!boomEffectActive) return;
+        const elapsed = Date.now() - boomEffectStartTime;
+        if (elapsed > BOOM_EFFECT_DURATION) {
+          boomEffectActive = false;
+          boomParticles = [];
+          return;
+        }
+        const fadeOutTime = BOOM_EFFECT_DURATION * 0.7;
+        ctx.save();
+        boomParticles.forEach(particle => {
+          particle.life += 0.1;
+          particle.vx += (Math.random() - 0.5) * 0.5;
+          particle.vy += (Math.random() - 0.5) * 0.5;
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+          const dx = particle.x - eyeX;
+          const dy = particle.y - eyeY;
+          const dist = Math.hypot(dx, dy);
+          const targetDist = eyeRadius * 1.2;
+          if (dist > targetDist) {
+            const factor = (dist - targetDist) * 0.05;
+            particle.vx -= (dx / dist) * factor;
+            particle.vy -= (dy / dist) * factor;
+          }
+          particle.alpha = elapsed > fadeOutTime ? 1 - (elapsed - fadeOutTime) / (BOOM_EFFECT_DURATION - fadeOutTime) : (Math.sin(particle.life * 5) * 0.3 + 0.7);
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+          ctx.fillStyle = particle.color;
+          ctx.globalAlpha = particle.alpha;
+          ctx.fill();
+        });
+        ctx.restore();
+      } catch (e) {
+        console.error("Error drawing boom effect:", e);
+      }
+    }
+
+    function startBonusCountdown() {
+      try {
+        let countdown = 10;
+        countdownDisplay.style.opacity = '1';
+        countdownDisplay.textContent = countdown;
+        countdownDisplay.classList.remove('boom');
+
+        countdownInterval = setInterval(() => {
+          countdown--;
+          if (countdown > 0) {
+            countdownDisplay.textContent = countdown;
+          } else if (countdown === 0) {
+            setTimeout(() => {
+              countdownDisplay.textContent = 'BOOM!';
+              countdownDisplay.classList.add('boom');
+              if (currentMode === 'standard') {
+                initBoomEffect();
+              }
+            }, 50);
+
+            const scoreBoost = perfectHitsDuringBonus * SCORE_BOMB_PERFECT_BOOST;
+            score += scoreBoost;
+
+            if (scoreBoost > 0) {
+              showScorePopup('+' + scoreBoost, canvas.width / 2, canvas.height / 2);
+            }
+
+            updateDisplay();
+
+            setTimeout(() => {
+              countdownDisplay.style.opacity = '0';
+              countdownDisplay.textContent = '';
+              countdownDisplay.classList.remove('boom');
+              clearInterval(countdownInterval);
+              countdownInterval = null;
+            }, 1500);
+          }
+        }, 1000);
+      } catch (e) {
+        console.error("Error starting bonus countdown:", e);
+      }
+    }
+
+    function onCanvasClick() {
+      try {
+        if (gameOver || blinkProgress > 0.8 || ((timeTravelModeActive || chaosModeActive) && !timeTravelEyeVisible)) return;
+        const dx = mouseX - irisX;
+        const dy = mouseY - irisY;
+        const dist = Math.hypot(mouseX - eyeX, mouseY - eyeY);
+        const pDist = Math.hypot(dx, dy);
+        let points = 0;
+        let healthBoost = 0;
+        let isPerfectHit = false;
+        if (pDist < pupilRadius * 0.8) {
+          points = 30;
+          healthBoost = 8;
+          isPerfectHit = true;
+          showPerfectText();
+          canvas.classList.add('hit');
+          setTimeout(() => canvas.classList.remove('hit'), 100);
+          if (soundVolume > 0) {
+            if (soundType === 'mp3') {
+              mp3Sound.currentTime = 0;
+              mp3Sound.play().catch(e => console.error("Error playing sound:", e));
+            } else {
+              playSyntheticSound();
+            }
+          }
+        } else if (dist < irisRadius + 10) {
+          points = 15;
+          healthBoost = 4;
+          if (soundVolume > 0) {
+            if (soundType === 'mp3') {
+              mp3Sound.currentTime = 0;
+              mp3Sound.play().catch(e => console.error("Error playing sound:", e));
+            } else {
+              playSyntheticSound();
+            }
+          }
+        } else if (dist < eyeRadius * 0.9) {
+          points = 5;
+          healthBoost = 1;
+          if (soundVolume > 0) {
+            if (soundType === 'mp3') {
+              mp3Sound.currentTime = 0;
+              mp3Sound.play().catch(e => console.error("Error playing sound:", e));
+            } else {
+              playSyntheticSound();
+            }
+          }
+        } else {
+          if (!zombieModeActive && !timeTravelModeActive && !chaosModeActive) {
+            triggerGameOver();
+          } else if (timeTravelModeActive || chaosModeActive) {
+            triggerGameOver();
+          }
+          return;
+        }
+        if (currentMode === 'standard' && bonusActive) {
+          points *= COLOR_CYCLONE_COLORS[currentColorIndex].multiplier;
+          if (isPerfectHit) {
+            perfectHitsDuringBonus++;
+          }
+        }
+        score += points;
+        if (currentMode === 'standard' && score >= BONUS_SCORE_THRESHOLD && !bonusActive) {
+          bonusActive = true;
+          bonusStartTime = Date.now();
+          currentColorIndex = 0;
+          perfectHitsDuringBonus = 0;
+          bonusCount++;
+          startBonusCountdown();
+          setTimeout(() => {
+            boomEffectActive = false;
+            boomParticles = [];
+            bonusActive = false;
+            STANDARD_MOVE_SPEED += 0.001;
+            STANDARD_BLINK_SPEED += 0.05;
+            if (countdownInterval) {
+              clearInterval(countdownInterval);
+              countdownDisplay.style.opacity = '0';
+              countdownDisplay.textContent = '';
+              countdownDisplay.classList.remove('boom');
+              countdownInterval = null;
+            }
+          }, BONUS_DURATION);
+        }
+        if (zombieModeActive || chaosModeActive) {
+          eyeHealth = Math.min(100, eyeHealth + healthBoost);
+          document.getElementById('eyeHealthValue').textContent = Math.floor(eyeHealth);
+        }
+        if (timeTravelModeActive || chaosModeActive) {
+          timeTravelTimer = TIME_TRAVEL_TIME_LIMIT;
+          lastTimeTravelJump = Date.now();
+          eyeX = Math.random() * (canvas.width - 2 * eyeRadius) + eyeRadius;
+          eyeY = Math.random() * (canvas.height - 2 * eyeRadius) + eyeRadius;
+          timeTravelEyeVisible = true;
+          timeTravelLastShowTime = Date.now();
+          timeTravelJumpCount++;
+          if (timeTravelJumpCount >= TIME_TRAVEL_MAX_JUMPS) {
+            triggerGameOver();
+            return;
+          }
+        }
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem('highScore', highScore);
+          showRecordText();
+          highScoreDisplay.style.transform = 'scale(1.4)';
+          highScoreDisplay.style.opacity = '0.8';
+          setTimeout(() => {
+            highScoreDisplay.style.transform = '';
+            highScoreDisplay.style.opacity = '';
+          }, 200);
+        }
+        updateDisplay();
+        showScorePopup('+' + points, mouseX, mouseY);
+        scoreDisplay.style.transform = 'scale(1.4)';
+        scoreDisplay.style.opacity = '0.8';
+        setTimeout(() => {
+          scoreDisplay.style.transform = '';
+          scoreDisplay.style.opacity = '';
+        }, 200);
+        updateBar(mouseX - eyeX);
+        setTimeout(resetBar, 200);
+      } catch (e) {
+        console.error("Error handling canvas click:", e);
+      }
+    }
+
+    function drawEye() {
+      try {
+        const speedFactor = currentMode === 'timed' ? 1 + ((60 - timer) / 60) * 0.5 : 1;
+        const moveSpeed = (freakyModeActive ? FREAKY_MOVE_SPEED : (chaosModeActive ? CHAOS_MOVE_SPEED : STANDARD_MOVE_SPEED)) * speedFactor;
+        const blinkFactor = (freakyModeActive ? FREAKY_BLINK_SPEED : (timeTravelModeActive ? Math.random() * 0.5 + 0.3 : (chaosModeActive ? CHAOS_BLINK_SPEED : STANDARD_BLINK_SPEED))) * speedFactor;
+        blinkSpeed = blinkFactor;
+        if (blinking) {
+          blinkProgress += blinkSpeed * blinkDirection;
+          if (blinkProgress >= 1) blinkDirection = -1;
+          else if (blinkProgress <= 0) {
+            blinkDirection = 1;
+            blinking = false;
+          }
+        }
+        if (!timeTravelModeActive && !chaosModeActive) {
+          let t = Date.now() * moveSpeed;
+          if (freakyModeActive) {
+            t += Math.sin(t * 0.8) * 0.3;
+            t += Math.cos(t * 0.3) * 0.2;
+          }
+          const range = freakyModeActive ? FREAKY_MOVE_RANGE * (canvas.width / 1080) : STANDARD_MOVE_RANGE * (canvas.width / 1080);
+          eyeX = canvas.width / 2 + Math.sin(t) * range + Math.sin(t * 0.5) * 10;
+          eyeY = canvas.height / 2 + Math.cos(t * 1.3) * range + Math.sin(t * 0.3) * 10;
+        } else if (chaosModeActive) {
+          if (chaosEffect === 'timetravel') {
+            const now = Date.now();
+            if (timeTravelEyeVisible && (now - timeTravelLastShowTime > TIME_TRAVEL_SHOW_DURATION)) {
+              timeTravelEyeVisible = false;
+            }
+          } else {
+            let t = Date.now() * moveSpeed;
+            const range = FREAKY_MOVE_RANGE * (canvas.width / 1080);
+            t += Math.sin(t * 0.8) * 0.3;
+            t += Math.cos(t * 0.3) * 0.2;
+            eyeX = canvas.width / 2 + Math.sin(t) * range + Math.sin(t * 0.5) * 10;
+            eyeY = canvas.height / 2 + Math.cos(t * 1.3) * range + Math.sin(t * 0.3) * 10;
+          }
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBoomEffect();
+        if ((timeTravelModeActive || (chaosModeActive && chaosEffect === 'timetravel')) && !timeTravelEyeVisible) return;
+        if (zombieModeActive || (chaosModeActive && chaosEffect === 'zombie')) {
+          const healthRatio = eyeHealth / 100;
+          const r = Math.floor(255 * healthRatio + 51 * (1 - healthRatio));
+          const g = Math.floor(255 * healthRatio + 51 * (1 - healthRatio));
+          const b = Math.floor(255 * healthRatio + 51 * (1 - healthRatio));
+          ctx.fillStyle = `rgb(${r},${g},${b})`;
+          ctx.globalAlpha = 1;
+        } else if (currentMode === 'timed') {
+          ctx.fillStyle = `rgb(${255 * ((60 - timer) / 60)},${255 * (1 - ((60 - timer) / 60))},0)`;
+          ctx.globalAlpha = 1;
+        } else {
+          ctx.fillStyle = (freakyModeActive || (chaosModeActive && chaosEffect === 'freaky')) ? FREAKY_EYE_COLOR : '#fff';
+          ctx.globalAlpha = shadowModeActive ? 0.6 : 1;
+        }
+        ctx.beginPath();
+        ctx.arc(eyeX, eyeY, eyeRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = (freakyModeActive || (chaosModeActive && chaosEffect === 'freaky')) ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 5; i++) {
+          ctx.beginPath();
+          const angle = Math.random() * Math.PI * 2;
+          const length = Math.random() * (eyeRadius - irisRadius);
+          const startX = eyeX + Math.cos(angle) * irisRadius;
+          const startY = eyeY + Math.sin(angle) * irisRadius;
+          const endX = eyeX + Math.cos(angle) * (irisRadius + length);
+          const endY = eyeY + Math.sin(angle) * (irisRadius + length);
+          ctx.moveTo(startX, startY);
+          ctx.quadraticCurveTo(
+            startX + (endX - startX) / 2 + (Math.random() - 0.5) * 20,
+            startY + (endY - startY) / 2 + (Math.random() - 0.5) * 20,
+            endX, endY
+          );
+          ctx.stroke();
+        }
+        if (blinkProgress < 0.9) {
+          const dx = mouseX - eyeX;
+          const dy = mouseY - eyeY;
+          let angle = Math.atan2(dy, dx);
+          if (freakyModeActive || (chaosModeActive && chaosEffect === 'freaky')) angle += Math.sin(Date.now() * 0.005) * 0.3;
+          irisX = eyeX + Math.cos(angle) * (eyeRadius - irisRadius - 10);
+          irisY = eyeY + Math.sin(angle) * (eyeRadius - irisRadius - 10);
+          let irisColor;
+          if (freakyModeActive || (chaosModeActive && chaosEffect === 'freaky')) {
+            irisColor = FREAKY_IRIS_COLOR;
+          } else if (currentMode === 'standard' && bonusActive) {
+            const elapsed = Date.now() - bonusStartTime;
+            currentColorIndex = Math.floor(elapsed / COLOR_CYCLE_INTERVAL) % COLOR_CYCLONE_COLORS.length;
+            irisColor = COLOR_CYCLONE_COLORS[currentColorIndex].color;
+          } else {
+            irisColor = '#ff0000';
+          }
+          ctx.beginPath();
+          ctx.arc(irisX, irisY, irisRadius * ((zombieModeActive || (chaosModeActive && chaosEffect === 'zombie')) ? (eyeHealth / 100) : 1) * (shadowModeActive ? 0.7 : 1), 0, Math.PI * 2);
+          ctx.fillStyle = shadowModeActive ? 'rgba(255,0,0,0.5)' : irisColor;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(irisX, irisY, pupilRadius * ((zombieModeActive || (chaosModeActive && chaosEffect === 'zombie')) ? (eyeHealth / 100) : 1) * (shadowModeActive ? 0.6 : 1), 0, Math.PI * 2);
+          ctx.fillStyle = shadowModeActive ? 'rgba(0,0,0,0.4)' : '#000';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(irisX - irisRadius * 0.3, irisY - irisRadius * 0.3, irisRadius * 0.2, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.fill();
+        }
+        if (blinkProgress > 0) {
+          ctx.fillStyle = '#000';
+          ctx.fillRect(eyeX - eyeRadius - 5, eyeY - eyeRadius - 5, (eyeRadius + 5) * 2, (eyeRadius + 5) * blinkProgress);
+          ctx.fillRect(eyeX - eyeRadius - 5, eyeY + eyeRadius - (eyeRadius + 5) * blinkProgress, (eyeRadius + 5) * 2, (eyeRadius + 5) * blinkProgress);
+        }
+        if (blinkProgress < 0.5) {
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = 2;
+          const numLashes = 8;
+          for (let i = 0; i < numLashes; i++) {
+            const angle = Math.PI * (i / (numLashes - 1)) - Math.PI / 2;
+            const lashLength = 15 * (1 - blinkProgress);
+            const startX = eyeX + Math.cos(angle) * eyeRadius;
+            const startY = eyeY + Math.sin(angle) * eyeRadius;
+            const endX = startX + Math.cos(angle) * lashLength;
+            const endY = startY + Math.sin(angle) * lashLength;
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+          }
+        }
+      } catch (e) {
+        console.error("Error drawing eye:", e);
+      }
+    }
+
+    function gameLoop() {
+      try {
+        if (!gameOver) {
+          if (zombieModeActive || (chaosModeActive && chaosEffect === 'zombie')) {
+            const now = Date.now();
+            const deltaTime = (now - lastHealthUpdate) / 1000;
+            eyeHealth = Math.max(0, eyeHealth - (chaosModeActive ? CHAOS_HEALTH_DECAY : ZOMBIE_HEALTH_DECAY) * deltaTime);
+            lastHealthUpdate = now;
+            if (eyeHealth <= 0) {
+              triggerGameOver();
+              return;
+            }
+            updateDisplay();
+          }
+          if (timeTravelModeActive || (chaosModeActive && chaosEffect === 'timetravel')) {
+            const now = Date.now();
+            const deltaTime = (now - lastTimeTravelUpdate) / 1000;
+            timeTravelTimer = Math.max(0, timeTravelTimer - deltaTime);
+            lastTimeTravelUpdate = now;
+            if (timeTravelTimer <= 0 && timeTravelEyeVisible) {
+              triggerGameOver();
+              return;
+            }
+            updateDisplay();
+          }
+          if (chaosModeActive) {
+            const now = Date.now();
+            if (now - lastChaosSwitch > CHAOS_MODE_SWITCH_INTERVAL) {
+              const effects = ['freaky', 'zombie', 'timetravel'];
+              chaosEffect = effects[Math.floor(Math.random() * effects.length)];
+              lastChaosSwitch = now;
+              if (chaosEffect === 'timetravel') {
+                eyeX = Math.random() * (canvas.width - 2 * eyeRadius) + eyeRadius;
+                eyeY = Math.random() * (canvas.height - 2 * eyeRadius) + eyeRadius;
+                timeTravelTimer = TIME_TRAVEL_TIME_LIMIT;
+                timeTravelEyeVisible = true;
+                timeTravelLastShowTime = now;
+              }
+            }
+          }
+          drawEye();
+        }
+        requestAnimationFrame(gameLoop);
+      } catch (e) {
+        console.error("Error in game loop:", e);
+      }
+    }
+
+    function updateSoundVolume() {
+      try {
+        soundVolume = parseFloat(soundRange.value);
+        mp3Sound.volume = soundVolume;
+        localStorage.setItem('soundVolume', soundVolume);
+      } catch (e) {
+        console.error("Error updating sound volume:", e);
+      }
+    }
+
+    function updateMusicVolume() {
+      try {
+        musicVolume = parseFloat(musicRange.value);
+        bgMusic.volume = musicVolume;
+        localStorage.setItem('musicVolume', musicVolume);
+        if (musicVolume > 0 && !gameOver && bgMusic.paused) {
+          bgMusic.play().catch(e => console.error("Error playing background music:", e));
+        } else if (musicVolume === 0 || gameOver) {
+          bgMusic.pause();
+        }
+      } catch (e) {
+        console.error("Error updating music volume:", e);
+      }
+    }
+
+    function saveMusicType() {
+      try {
+        const musicSelect = document.getElementById('musicType');
+        const selectedFile = musicSelect.value;
+        localStorage.setItem('musicFile', selectedFile);
+        const bgMusic = document.getElementById('bgMusic');
+        const source = document.getElementById('bgMusicSource');
+        source.src = selectedFile;
+        bgMusic.load();
+        if (musicVolume > 0) {
+          bgMusic.play().catch(e => console.error("Error playing music:", e));
+        }
+      } catch (e) {
+        console.error("Error saving music type:", e);
+      }
+    }
+
+    function saveSoundType() {
+      try {
+        soundType = soundTypeSelect.value;
+        localStorage.setItem('soundType', soundType);
+      } catch (e) {
+        console.error("Error saving sound type:", e);
+      }
+    }
+
+    function returnToMainMenu() {
+      try {
+        gameOverScreen.style.opacity = '0';
+        setTimeout(() => {
+          gameOverScreen.style.display = 'none';
+          canvas.style.display = 'none';
+          gameMenu.style.display = 'none';
+          menuButton.style.display = 'none';
+          document.querySelector('.bar-container').style.display = 'none';
+          startScreen.style.display = 'flex';
+          bgMusic.pause();
+          mp3Sound.pause();
+          setTimeout(() => startScreen.style.opacity = '1', 10);
+        }, 600);
+        gameOver = false;
+        resetGameState();
+      } catch (e) {
+        console.error("Error returning to main menu:", e);
+      }
+    }
+
+    function resetGameState() {
+      try {
+        score = 0;
+        eyeHealth = 100;
+        timeTravelTimer = TIME_TRAVEL_TIME_LIMIT;
+        timeTravelJumpCount = 0;
+        timeTravelEyeVisible = false;
+        timeTravelLastShowTime = 0;
+        blinkProgress = 0;
+        blinking = false;
+        gameOver = false;
+        bonusActive = false;
+        boomEffectActive = false;
+        boomParticles = [];
+        bonusStartTime = 0;
+        bonusCount = 0;
+        currentColorIndex = 0;
+        perfectHitsDuringBonus = 0;
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+        }
+        countdownDisplay.style.opacity = '0';
+        countdownDisplay.textContent = '';
+        countdownDisplay.classList.remove('boom');
+        STANDARD_MOVE_SPEED = 0.006;
+        STANDARD_BLINK_SPEED = 0.3;
+        resetRadii();
+        updateDisplay();
+        resetBar();
+        clearInterval(timerInterval);
+        timerDisplay.style.display = 'none';
+        eyeHealthDisplay.style.display = 'none';
+        timeTravelTimerDisplay.style.display = 'none';
+        timer = 60;
+        lastHealthUpdate = Date.now();
+        lastTimeTravelJump = Date.now();
+        lastTimeTravelUpdate = Date.now();
+        chaosEffect = 'freaky';
+        lastChaosSwitch = Date.now();
+      } catch (e) {
+        console.error("Error resetting game state:", e);
+      }
+    }
+
+    function resetHighScore() {
+      try {
+        highScore = 0;
+        localStorage.setItem('highScore', 0);
+        highScoreDisplay.textContent = 0;
+        alert(translations[currentLanguage].highScoreReset);
+      } catch (e) {
+        console.error("Error resetting high score:", e);
+      }
+    }
+
+    function scheduleTimeTravelJump() {
+      try {
+        const interval = Math.random() * (TIME_TRAVEL_JUMP_INTERVAL_MAX - TIME_TRAVEL_JUMP_INTERVAL_MIN) + TIME_TRAVEL_JUMP_INTERVAL_MIN;
+        setTimeout(() => {
+          if (!gameOver && (timeTravelModeActive || chaosModeActive)) {
+            timeTravelJumpCount++;
+            if (timeTravelJumpCount >= TIME_TRAVEL_MAX_JUMPS) {
+              triggerGameOver();
+              return;
+            }
+            eyeX = Math.random() * (canvas.width - 2 * eyeRadius) + eyeRadius;
+            eyeY = Math.random() * (canvas.height - 2 * eyeRadius) + eyeRadius;
+            timeTravelTimer = TIME_TRAVEL_TIME_LIMIT;
+            lastTimeTravelJump = Date.now();
+            timeTravelEyeVisible = true;
+            timeTravelLastShowTime = Date.now();
+            updateDisplay();
+            scheduleTimeTravelJump();
+          }
+        }, interval);
+      } catch (e) {
+        console.error("Error scheduling time travel jump:", e);
+      }
+    }
+
+    function startTimedMode() {
+      try {
+        timer = 60;
+        timerDisplay.style.display = 'block';
+        document.getElementById('timeValue').textContent = timer + 's';
+        timerInterval = setInterval(() => {
+          timer--;
+          eyeRadius = baseEyeRadius * (timer / 60) * (canvas.width / 1080);
+          irisRadius = baseIrisRadius * (timer / 60) * (canvas.width / 1080);
+          pupilRadius = basePupilRadius * (timer / 60) * (canvas.width / 1080);
+          document.getElementById('timeValue').textContent = timer + 's';
+          if (timer <= 10) {
+            timerDisplay.style.color = '#ff0000';
+            timerDisplay.style.fontWeight = 'bold';
+          }
+          if (timer <= 0) {
+            clearInterval(timerInterval);
+            triggerGameOver();
+          }
+        }, 800);
+      } catch (e) {
+        console.error("Error starting timed mode:", e);
+      }
+    }
+
+    function updateDisplay() {
+      try {
+        scoreDisplay.textContent = Math.floor(score);
+        highScoreDisplay.textContent = Math.floor(highScore);
+        if (zombieModeActive || chaosModeActive) document.getElementById('eyeHealthValue').textContent = Math.floor(eyeHealth);
+        if (timeTravelModeActive || chaosModeActive) document.getElementById('timeTravelValue').textContent = timeTravelTimer.toFixed(1) + 's';
+      } catch (e) {
+        console.error("Error updating display:", e);
+      }
+    }
+
+    function updateBar(dx) {
+      try {
+        const dir = dx < 0 ? -1 : 1, w = Math.min(Math.abs(dx), 200 * (canvas.width / 1080));
+        bar.style.width = w + 'px';
+        bar.style.left = '50%';
+        bar.style.transform = `translateX(${dir * w / 2}px)`;
+      } catch (e) {
+        console.error("Error updating bar:", e);
+      }
+    }
+
+    function resetBar() {
+      try {
+        bar.style.width = '0';
+        bar.style.transform = 'translateX(-50%)';
+      } catch (e) {
+        console.error("Error resetting bar:", e);
+      }
+    }
+
+    function resetRadii() {
+      try {
+        const scaleFactor = canvas.width / 1080;
+        eyeRadius = baseEyeRadius * scaleFactor;
+        irisRadius = baseIr
+System: isRadius * scaleFactor;
+        pupilRadius = basePupilRadius * scaleFactor;
+      } catch (e) {
+        console.error("Error resetting radii:", e);
+      }
+    }
+
+    function triggerGameOver() {
+      try {
+        gameOver = true;
+        gameOverScreen.style.display = 'flex';
+        setTimeout(() => gameOverScreen.style.opacity = '1', 10);
+        menuButton.style.display = 'none';
+        bgMusic.pause();
+        mp3Sound.pause();
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+          countdownDisplay.style.opacity = '0';
+          countdownDisplay.textContent = '';
+          countdownDisplay.classList.remove('boom');
+        }
+        boomEffectActive = false;
+        boomParticles = [];
+      } catch (e) {
+        console.error("Error triggering game over:", e);
+      }
+    }
+
+    function restartGame() {
+      try {
+        resetGameState();
+        gameOverScreen.style.opacity = '0';
+        setTimeout(() => {
+          gameOverScreen.style.display = 'none';
+          menuButton.style.display = 'block';
+          if (currentMode === 'timed') startTimedMode();
+          if (timeTravelModeActive || chaosModeActive) scheduleTimeTravelJump();
+          scheduleBlink();
+          lastHealthUpdate = Date.now();
+          lastTimeTravelJump = Date.now();
+          lastTimeTravelUpdate = Date.now();
+          if (zombieModeActive || chaosModeActive) {
+            eyeHealthDisplay.style.display = 'block';
+            document.getElementById('eyeHealthValue').textContent = Math.floor(eyeHealth);
+          }
+          if (timeTravelModeActive || chaosModeActive) {
+            timeTravelTimerDisplay.style.display = 'block';
+            document.getElementById('timeTravelValue').textContent = timeTravelTimer.toFixed(1) + 's';
+            timeTravelEyeVisible = false;
+            timeTravelJumpCount = 0;
+            timeTravelLastShowTime = 0;
+          }
+          updateMusicVolume();
+        }, 600);
+      } catch (e) {
+        console.error("Error restarting game:", e);
+      }
+    }
+
+    function showPerfectText() {
+      try {
+        const t = document.getElementById('perfectText');
+        t.style.opacity = '1';
+        setTimeout(() => t.style.opacity = '0', 600);
+      } catch (e) {
+        console.error("Error showing perfect text:", e);
+      }
+    }
+
+    function showRecordText() {
+      try {
+        const t = document.getElementById('recordText');
+        t.style.opacity = '1';
+        setTimeout(() => t.style.opacity = '0', 1200);
+      } catch (e) {
+        console.error("Error showing record text:", e);
+      }
+    }
+
+    function showScorePopup(txt, x, y) {
+      try {
+        const p = document.getElementById('scorePopup');
+        p.textContent = txt;
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        p.style.opacity = '1';
+        p.style.transform = 'translate(-50%,-50%) scale(1.2)';
+        setTimeout(() => {
+          p.style.opacity = '0';
+          p.style.transform = 'translate(-50%,-50%) scale(1)';
+        }, 600);
+      } catch (e) {
+        console.error("Error showing score popup:", e);
+      }
+    }
+
+    function setRangeColor(range) {
+      try {
+        const pct = (range.value - range.min) / (range.max - range.min) * 100;
+        range.style.background = `linear-gradient(to right,#ff0000 0%,#ff0000 ${pct}%,#333 ${pct}%,#333 100%)`;
+      } catch (e) {
+        console.error("Error setting range color:", e);
+      }
+    }
+  </script>
+</body>
+</html>
