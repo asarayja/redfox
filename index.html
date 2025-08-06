@@ -1,598 +1,2054 @@
-<!DOCTYPE html>
-<html lang="no">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Redfox sin verden</title>
-  <!-- Webfont for Comic Sans MS -->
-  <link href="https://fonts.cdnfonts.com/css/comic-sans-ms" rel="stylesheet">
-  <style>
-    /* === Dark Redfox Theme === */
-    body {
-      margin: 0;
-      background-color: #1e1e1e;
-      color: #f0f0f0;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-    }
-    header {
-      background-color: #3b0000;
-      text-align: center;
-      padding: 20px;
-      border-bottom: 3px solid #a70101;
-    }
-    header img {
-      max-width: 180px;
-      height: auto;
-      margin: 0 auto 10px;
-      display: block;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2em;
-    }
-    #langToggle {
-      margin-top: 10px;
-      padding: 5px 10px;
-      background-color: #292929;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    #langToggle:hover {
-      background-color: #7a0000;
-    }
-    nav {
-      background-color: #2e2e2e;
-      border-bottom: 3px solid #a70101;
-    }
-    nav ul {
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      padding: 0;
-      margin: 0;
-    }
-    nav li {
-      margin: 0;
-    }
-    nav a {
-      display: block;
-      padding: 15px 25px;
-      text-decoration: none;
-      color: #fff;
-      background-color: #292929;
-      border-bottom: 3px solid transparent;
-      transition: background-color 0.3s ease;
-    }
-    nav a:hover {
-      background-color: #7a0000;
-    }
-    nav a.active {
-      background-color: #a70101;
-    }
-	nav {
-  position: sticky;
-  top: 0;
-  z-index: 999;
-}
-    section {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-    #about h1,
-    #music h1,
-    #gallery h1 {
-      margin-top: 0;
-	  color: #a70101;
-    }
-    /* About */
-    #about h1 {
-      color: #a70101;
-    }
-    /* Music */
-    #music h1 {
-      color: #ffffff;
-    }
-    .album {
-      margin-bottom: 40px;
-    }
-    .album h2 {
-      color: #a70101;
-      margin-bottom: 10px;
-    }
-    .album audio {
-      width: 100%;
-      background-color: transparent;
-      border-radius: 5px;
-    }
-    .playlist {
-      list-style: none;
-      padding: 0;
-      margin: 10px 0 0;
-    }
-    .playlist li {
-      padding: 8px;
-      cursor: pointer;
-      color: #cccccc;
-      border-radius: 4px;
-      transition: background-color 0.2s, color 0.2s;
-    }
-    .playlist li:hover {
-      background-color: #a70101;
-      color: #ffffff;
-    }
-    .playlist li.playing {
-      color: #ff4444;	  background: red;
-      font-weight: bold;
-    }
-    .image-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .image-grid img {
-      width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      transition: transform 0.3s ease;
-      cursor: pointer;
-    }
-    .image-grid img:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 15px rgba(255,26,64,0.5);
-    }
-    /* Lightbox */
-    #lightbox {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.9);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-    }
-    #lightbox img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 10px;
-      box-shadow: 0 0 30px rgba(255,26,64,0.4);
-    }
-    #lightbox-close {
-      position: absolute;
-      top: 20px; right: 30px;
-      font-size: 40px;
-      color: #fff;
-      cursor: pointer;
-      z-index: 1000;
-      font-weight: bold;
-    }
-	/* Gå‑til‑toppen knapp */
-#backToTop {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 48px;
-  height: 48px;
-  background-color: #a70101;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  font-size: 24px;
-  line-height: 1;
-  display: none;                /* skjult til scroll */
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 1000;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  transition: opacity 0.3s;
-  font-size: 32px;       /* gjør pilen større */
-  font-weight: 900;      /* gjør linjene tykkere */
-  /* valgfritt: outline‑effekt med text‑shadow */
-  text-shadow:
-    1px 0   0 currentColor,
-   -1px 0   0 currentColor,
-    0   1px 0 currentColor,
-    0  -1px  0 currentColor;
-}
-#backToTop.show {
-  display: flex;
-  opacity: 0.8;
-}
-#backToTop:hover {
-  opacity: 1;
-}
-	.subsection {
-  margin-top: 30px;
-  padding-top: 10px;
-  border-top: 2px solid #444;   /* Tydelig separasjon */
-}
-.subsection h2 {
-  color: #a70101;               /* Samme farge som “Om Meg”-overskriften */
-  margin-bottom: 10px;
-}
-.subsection p {
-  margin: 6px 0;
-}
-.subsection p strong {
-  display: inline-block;
-  width: 120px;                /* Juster for jevn linje */
-}
-    @media (max-width: 600px) {
-      header img { max-width: 100px; }
-      nav ul { flex-direction: column; }
-    }
-	.image-grid figure {
-  margin: 0;
-}
-.image-grid figcaption
-  </style>
-</head>
-<body>
-  <!-- Header + språkknapp -->
-  <header>
-    <img src="https://i.imgur.com/pMJfpb3.png" alt="Redfox logo">
-    <h1 data-i18n="site_title">Velkommen til Redfox sin verden!</h1>
-    <button id="langToggle">English</button>
-  </header>
-
-  <!-- Navigasjon -->
-  <nav>
-  <ul>
-    <li><a href="#" id="menu-about"   class="active" data-i18n="nav_about">Om Meg</a></li>
-    <li><a href="#" id="menu-music"             data-i18n="nav_music">Musikk</a></li>
-    <li><a href="#" id="menu-gallery"           data-i18n="nav_gallery">Bilder</a></li>
-  </ul>
-</nav>
-
-  <!-- Om Meg -->
-  <section id="about">
-  <h1 data-i18n="about_title">Om Redfox</h1>
-
-  <!-- Personlig profil -->
-  <div class="subsection" id="personal-profile">
-    <h2 data-i18n="personal_title">Personlig Profil</h2>
-    <p>
-      <strong data-i18n="about_label_name">Navn:</strong>
-      <span    data-i18n="about_value_name">Redfox</span>
-    </p>
-    <p>
-      <strong data-i18n="about_label_birthday">Bursdag:</strong>
-      <span    data-i18n="about_value_birthday">30. november</span>
-    </p>
-    <p>
-      <strong data-i18n="about_label_age">Alder:</strong>
-      <span    data-i18n="about_value_age">37 år</span>
-    </p>
-    <p>
-      <strong data-i18n="about_label_interests">Interesser:</strong>
-      <span    data-i18n="about_value_interests">Spille pc‑spill og se serier</span>
-    </p>
-    <p>
-      <strong data-i18n="about_label_likes">Liker:</strong>
-      <span    data-i18n="about_value_likes">
-        Gå turer, være med venner, være kreativ i furry‑fellesskapet og le
-      </span>
-    </p>
-	<p>
-      <strong data-i18n="about_label_favgame">Favoritt	spill:</strong>
-      <span    data-i18n="about_value_favgame">
-        VR Chat
-      </span>
-    </p>
-  </div>
-
-  <!-- Fursona‑profil -->
-  <div class="subsection" id="fursona-profile">
-    <h2 data-i18n="fursona_title">Fursona‑profil</h2>
-    <p>
-      <strong data-i18n="fursona_label_name">Navn:</strong>
-      <span    data-i18n="fursona_value_name">Redfox</span>
-    </p>
-	<p>
-      <strong data-i18n="fursona_label_fursona">Fursona:</strong>
-      <span    data-i18n="fursona_value_fursona">Rev</span>
-    </p>
-    <p>
-      <strong data-i18n="fursona_label_origin">Opprinnelse:</strong>
-      <span    data-i18n="fursona_value_origin">Nordisk ørkenrev</span>
-    </p>
-    <p>
-      <strong data-i18n="fursona_label_traits">Egenskaper:</strong>
-      <span    data-i18n="fursona_value_traits">Lur, leken, nysgjerrig</span>
-    </p>
-    <p>
-      <strong data-i18n="fursona_label_story">Bakgrunn:</strong>
-      <span    data-i18n="fursona_value_story">Vokste opp på tundraen, elsker eventyr og samspill med venner.</span>
-    </p>
-    <!-- Du kan legge til flere felter som "Favorittmat", "Favorittleker" osv. -->
-  </div>
-</section>
-
-
-  <!-- Musikk -->
-  <section id="music" style="display: none;">
-    <h1 data-i18n="music_title">Musikk</h1>
-
-    <!-- Album 1: Full Rulle -->
-  <div class="album">
-    <h2 data-i18n="album1_title">Album: Redfox – Full Rulle</h2>
-    <audio controls></audio>
-    <ul class="playlist">
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Kveldens_Leveranse.mp3">
-        Redfox – Kveldens Leveranse
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Sparkesykkel_Syndrom.mp3">
-        Redfox – Sparkesykkel Syndrom
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Vannverk_i_Varsel.mp3">
-        Redfox – Vannverk i Varsel
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Fjertelykke.mp3">
-        Redfox – Fjertelykke
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Fisefart_i_VR.mp3">
-        Redfox – Fisefart i VR
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Tryne med_Stil.mp3">
-        Redfox – Tryne med Stil
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Kenguvogn.mp3">
-        Redfox – Kenguvogn
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Latterlig_Sjanse.mp3">
-        Redfox – Latterlig Sjanse
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Bortevekk_med_Vind_i_Pelsen.mp3">
-        Redfox – Bortevekk med Vind i Pelsen
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Slipp_Latteren_Fri.mp3">
-        Redfox – Slipp Latteren Fri
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Redfox_Theme.mp3">
-        Redfox – Theme
-      </li>
-    </ul>
-  </div>
-
-    <!-- Album 2: Turbopels og Tøys -->
-  <div class="album">
-    <h2 data-i18n="album2_title">Album: Redfox – Turbopels og Tøys</h2>
-    <audio controls></audio>
-    <ul class="playlist">
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Rev_i_Rute.mp3">
-        Redfox – Rev i Rute
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Gullfisk_rapp.mp3">
-        Redfox – Gullfisk-rapp
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Tulle_Tirsdag.mp3">
-        Redfox – Tulle-Tirsdag
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Kabelflukt.mp3">
-        Redfox – Kabelflukt
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Fjellrev_Funk.mp3">
-        Redfox – Fjellrev Funk
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Refleksrock.mp3">
-        Redfox – Refleksrock
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Snakkes_med_Snabel_A.mp3">
-        Redfox – Snakkes med Snabel-A
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Rulle_Rave.mp3">
-        Redfox – Rulle-Rave
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Sprettball_i_Skogen.mp3">
-        Redfox – Sprettball i Skogen
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Regler_Verden.mp3">
-        Redfox – Regler Verden
-      </li>
-    </ul>
-  </div>
-
-  <!-- Album 3: Tails of Trouble -->
-<div class="album">
-  <h2 data-i18n="album3_title">Album: Redfox – Tails of Trouble</h2>
-  <audio controls></audio>
-  <ul class="playlist">
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Skater_on_the_Moon.mp3">
-      Redfox – Skater on the Moon
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Flush_the_Funk.mp3">
-      Redfox – Flush the Funk
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Laugh_Attack.mp3">
-      Redfox – Laugh Attack
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Goldfish_Parade.mp3">
-      Redfox – Goldfish Parade
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Headset_Hero.mp3">
-      Redfox – Headset Hero
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Disco_Detour.mp3">
-      Redfox – Disco Detour
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Trail_Tricks.mp3">
-      Redfox – Trail Tricks
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Rocket_Sneakers.mp3">
-      Redfox – Rocket Sneakers
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Windchaser.mp3">
-      Redfox – Windchaser
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Toilet_Paper_Tango.mp3">
-      Redfox – Toilet Paper Tango
-    </li>
-  </ul>
-</div>
-
-<!-- Album 4: Linje 9 er Opptatt -->
-<div class="album">
-  <h2 data-i18n="album4_title">Album: Redfox – Linje 9 er Opptatt</h2>
-  <audio controls></audio>
-  <ul class="playlist">
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Sentralen_AS.mp3">
-      Redfox – Sentralen AS
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Alarm_i_Arkivet.mp3">
-      Redfox – Alarm i Arkivet
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox//Redfox_Linje_9_er_Opptatt/Redfox_Linje_9_er_Opptatt.mp3">
-      Redfox – Linje 9 er Opptatt
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Videresendt_til_Feil_Rev.mp3">
-      Redfox – Videresendt til Feil Rev
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Fax_med_F%C3%B8lelser.mp3">
-      Redfox – Fax med Følelser
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Timeout_p%C3%A5_Tast%203.mp3">
-      Redfox – Timeout på Tast 3
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Ror_ikke_Kabler.mp3">
-      Redfox – Rør ikke Kabler
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Feil_Tilkoblet.mp3">
-      Redfox – Feil Tilkoblet
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Vennligst_Hold_Linjen.mp3">
-      Redfox – Vennligst Hold Linjen
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Koble_Meg_Fri.mp3">
-      Redfox – Koble Meg Fri
-    </li>
-  </ul>
-</div>
-  
-  <!-- Album 5: Toalettrock -->
-<div class="album">
-  <h2 data-i18n="album5_title">Album: Redfox – Toalettrock</h2>
-  <audio controls></audio>
-  <ul class="playlist">
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Papirpanikk.mp3">
-      Redfox – Papirpanikk
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Sprekk%20i%20Setet.mp3">
-      Redfox – Sprekk i Setet
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Doborste_Boogie.mp3">
-      Redfox – Dobørste Boogie
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Luktalarm.mp3">
-      Redfox – Luktalarm
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Rull%20for%20Livet.mp3">
-      Redfox – Rull for Livet
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Bom_i_Buksa.mp3">
-      Redfox – Bom i Buksa
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Do_p%C3%A5_Dora.mp3">
-      Redfox – Do på Døra
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Saapedans.mp3">
-      Redfox – Såpedans
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Nodrull.mp3">
-      Redfox – Nødrull
-    </li>
-    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Ikke_Snakk_Til_Meg_N%C3%A5.mp3">
-      Redfox – Ikke Snakk Til Meg Nå
-    </li>
-  </ul>
-</div>
-  <!-- Album 6: Redfox – Furry med Fullt Register -->
-  <div class="album">
-    <h2 data-i18n="album6_title">Album: Redfox – Furry med Fullt Register</h2>
-    <audio controls></audio>
-    <ul class="playlist">
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_sangen.mp3">
-        Redfox – Redfox sangen
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Den_Rode_Furry_Reven.mp3">
-        Redfox – Den Røde Furry Reven
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Sangen_om_Redfox.mp3">
-        Redfox – Sangen om Redfox
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox//Redfox_Furry_med_Fullt_Register/Redfox_Redfox_du_e_vår helt.mp3">
-        Redfox – Redfox, du e’ vår helt
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Kongen_av_sprell.mp3">
-        Redfox – Kongen av sprell
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_I_Sommervær.mp3">
-        Redfox – I Sommervær
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Naken_og_Fri.mp3">
-        Redfox – Naken og Fri
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_på_Leting.mp3">
-        Redfox – Redfox på Leting
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_Rocker.mp3">
-        Redfox – Redfox Rocker
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_Skogens_Spellemester.mp3">
-        Redfox – Redfox, Skogens Spellemester
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_og_Pekkene.mp3">
-        Redfox – Redfox og Pekkene
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Skogens_Ville_Sjarmør.mp3">
-        Redfox – Skogens Ville Sjarmør
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_paa_Tur.mp3">
-        Redfox – Redfox på Tur
-      </li>
-      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_s_Reise.mp3">
-        Redfox – Redfox’s Reise
-      </li>
-    </ul>
-  </div> <!-- Album 7: Redfox – Full – Systemfeil --><div class="album">  <h2 data-i18n="album7_title">Album: Redfox – Full Systemfeil</h2>  <audio controls></audio>  <ul class="playlist">    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Matpakke_Med_Mot.mp3">      Redfox – Matpakke Med Mot    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Kontaktløs_Kaos.mp3">      Redfox – Kontaktløs Kaos    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Såpeglatt_Show.mp3">      Redfox – Såpeglatt Show    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Feil_Dør_Feil_Fest.mp3">      Redfox – Feil Dør Feil Fest    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Trykk_på_Knappen.mp3">      Redfox – Trykk på Knappen    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Handlepose_med_Hull.mp3">      Redfox – Handlepose med Hull    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Snooze_knappens_Herre.mp3">      Redfox – Snooze-knappens Herre    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Brev_uten_Porto.mp3">      Redfox – Brev uten Porto    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Trodlos_Trobbel.mp3">      Redfox – Trådløs Trøbbel    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Tastetrykk_Tornado.mp3">      Redfox – Tastetrykk-Tornado    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Heis_med_Hikke.mp3">      Redfox – Heis med Hikke    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Skjermfrosset_Farse.mp3">      Redfox – Skjermfrosset Farse    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Pakke_Paa_Avveie.mp3">      Redfox – Pakke På Avveie    </li>    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Klokka_Slaar_Tilbake.mp3">      Redfox – Klokka Slår Tilbake    </li>  </ul></div>
-  </section>
-
-  <!-- Bilder -->
-  <section id="gallery" style="display: none;">
-  <h1 data-i18n="gallery_title">Bilder</h1>
-  <div class="image-grid">
-    <figure>
-      <img src="https://i.imgur.com/pMJfpb3.png" alt="Redfox-logo">
-      <figcaption data-i18n="gallery_caption1">Redfox-logo</figcaption>
-    </figure>
-	<figure>
-      <img src="https://asarayja.github.io/redfox/bilder/2.jpg" alt="VR Redfox">
-      <figcaption data-i18n="gallery_caption2">VR Redfox</figcaption>
-    </figure>
-	<figure>
-      <img src="https://asarayja.github.io/redfox/bilder/3.jpg" alt="VR Redfox>
-      <figcaption data-i18n="gallery_caption3">VR Redfox</figcaption>
-    </figure>
-	<figure>
-      <img src="https://asarayja.github.io/redfox/bilder/4.jpg" alt="Real Redfox">
-      <figcaption data-i18n="gallery_caption4">Real Redfox</figcaption>
-    </figure>
-    <!-- Legg til flere <figure>…</figure> for hvert bilde -->
-  </div>
-</section>
-
-  <!-- Lightbox -->
-  <div id="lightbox">
-    <span id="lightbox-close">&times;</span>
-    <img id="lightbox-img" src="" alt="">
-  </div>
-<button id="backToTop" aria-label="Gå til toppen">↑</button>
-  <!-- Skript: navigasjon, audio, lightbox, språk -->
-  <script>  document.addEventListener('DOMContentLoaded', function () {    // Menyvisning    const menuAbout = document.getElementById('menu-about');    const menuMusic = document.getElementById('menu-music');    const menuGallery = document.getElementById('menu-gallery');    const aboutSection = document.getElementById('about');    const musicSection = document.getElementById('music');    const gallerySection = document.getElementById('gallery');    function showSection(sec) {      [aboutSection, musicSection, gallerySection].forEach(s => s.style.display = 'none');      [menuAbout, menuMusic, menuGallery].forEach(a => a.classList.remove('active'));      sec.style.display = 'block';      if (sec === aboutSection) menuAbout.classList.add('active');      if (sec === musicSection) menuMusic.classList.add('active');      if (sec === gallerySection) menuGallery.classList.add('active');    }    menuAbout.onclick = e => { e.preventDefault(); showSection(aboutSection); };    menuMusic.onclick = e => { e.preventDefault(); showSection(musicSection); };    menuGallery.onclick = e => { e.preventDefault(); showSection(gallerySection); };    // Audio/playlist – oppdatert med støtte for album 7 og fremtidige album    function pauseAll(curr) {      document.querySelectorAll('.album audio').forEach(p => {        if (p !== curr) p.pause();      });    }    document.getElementById('music').addEventListener('click', function (e) {      const li = e.target.closest('li[data-src]');      if (!li) return;      const album = li.closest('.album');      const aud = album.querySelector('audio');      if (!aud) return;      pauseAll(aud);      aud.src = li.getAttribute('data-src');      aud.load();      aud.play();      document.querySelectorAll('.playlist li.playing').forEach(el =>        el.classList.remove('playing')      );      li.classList.add('playing');    });    // Pause andre spillere hvis én spiller    document.querySelectorAll('.album audio').forEach(p =>      p.addEventListener('play', () => pauseAll(p))    );    // Lightbox for bilder    const lb = document.getElementById('lightbox');    const lbImg = document.getElementById('lightbox-img');    const lbClose = document.getElementById('lightbox-close');    document.querySelectorAll('.image-grid img').forEach(img => {      img.onclick = () => {        lbImg.src = img.src;        lb.style.display = 'flex';      };    });    lbClose.onclick = () => { lb.style.display = 'none'; };    lb.onclick = e => { if (e.target === lb) lb.style.display = 'none'; };    // Språk    const translations = {      no: {        site_title: "Velkommen til Redfox sin verden!",        nav_about: "Om Meg",        nav_music: "Musikk",        nav_gallery: "Bilder",        about_title: "Om Redfox",        personal_title: "Personlig Profil",        about_label_name: "Navn:",        about_value_name: "Redfox",        about_label_birthday: "Bursdag:",        about_value_birthday: "30. november",        about_label_age: "Alder:",        about_value_age: "37 år",        about_label_interests: "Interesser:",        about_value_interests: "Spille pc‑spill og se serier",        about_label_likes: "Liker:",        about_value_likes: "Gå turer, være med venner, være kreativ i furry‑fellesskapet og le",        about_label_favcolor: "Favorittfarge:",        about_value_favcolor: "Grønn, blå og hvit",        about_label_favgame: "Favorittspill:",        about_value_favgame: "VR Chat",        fursona_title: "Fursona‑profil",        fursona_label_name: "Navn:",        fursona_value_name: "Redfox",        fursona_label_Fursona: "Fursona:",        fursona_value_fursona: "Rev",        fursona_label_origin: "Opprinnelse:",        fursona_value_origin: "Nordisk ørkenrev",        fursona_label_traits: "Egenskaper:",        fursona_value_traits: "Lur, leken, nysgjerrig",        fursona_label_story: "Bakgrunn:",        fursona_value_story: "Vokste opp på tundraen, elsker eventyr og samspill med venner.",        music_title: "Musikk",        album1_title: "Album: Redfox – Full Rulle (Norsk album)",        album2_title: "Album: Redfox – Turbopels og Tøys (Norsk album)",        album3_title: "Album: Redfox – Haler av problemer (Engelsk album)",        album4_title: "Album: Redfox – Linje 9 er Opptatt (Norsk album)",        album5_title: "Album: Redfox – Toalettrock (Norsk album)",        album6_title: "Album: Redfox – Furry med Fullt Register (Norsk album)",        album7_title: "Album: Redfox – Full – Systemfeil (Norsk album)",        gallery_title: "Bilder",        gallery_caption1: "Redfox-logo",        gallery_caption2: "VR Redfox",        gallery_caption3: "VR Redfox",        gallery_caption4: "Ekte Redfox"      },      en: {        site_title: "Welcome to Redfox’s world!",        nav_about: "About Me",        nav_music: "Music",        nav_gallery: "Gallery",        about_title: "About Redfox",        personal_title: "Personal Profile",        about_label_name: "Name:",        about_value_name: "Redfox",        about_label_birthday: "Birthday:",        about_value_birthday: "November 30",        about_label_age: "Age:",        about_value_age: "37 years",        about_label_interests: "Interests:",        about_value_interests: "Playing PC games and watching series",        about_label_likes: "Likes:",        about_value_likes: "Going for walks, hanging out with friends, being creative in the furry community and laughing",        about_label_favcolor: "Favorite color:",        about_value_favcolor: "Green, blue and white",        about_label_favgame: "Favorite game:",        about_value_favgame: "VR Chat",        fursona_title: "Fursona Profile",        fursona_label_name: "Name:",        fursona_value_name: "Redfox",        fursona_label_Fursona: "Fursona:",        fursona_value_fursona: "Fox",        fursona_label_origin: "Origin:",        fursona_value_origin: "Nordic desert fox",        fursona_label_traits: "Traits:",        fursona_value_traits: "Cunning, playful, curious",        fursona_label_story: "Background:",        fursona_value_story: "Grew up on the tundra, loves adventure and hanging out with friends.",        music_title: "Music",        album1_title: "Album: Redfox – Full Throttle (Norwegian album)",        album2_title: "Album: Redfox – Turbofur & Tomfoolery (Norwegian album)",        album3_title: "Album: Redfox – Tails of Trouble (English album)",        album4_title: "Album: Redfox – Line 9 is Busy (Norwegian album)",        album5_title: "Album: Redfox – Toiletrock (Norwegian album)",        album6_title: "Album: Redfox – Furry with Full Register (Norwegian album)",        album7_title: "Album: Redfox – Full System Failure (Norwegian album)",        gallery_title: "Pictures",        gallery_caption1: "Redfox-logo",        gallery_caption2: "VR Redfox",        gallery_caption3: "VR Redfox",        gallery_caption4: "Real Redfox"      }    };    let currentLang = 'no';    const elems = document.querySelectorAll('[data-i18n]');    function updateLang(lang) {      elems.forEach(el => {        const key = el.getAttribute('data-i18n');        if (translations[lang][key]) el.textContent = translations[lang][key];      });      document.getElementById('langToggle').textContent = lang === 'no' ? 'English' : 'Norsk';      document.documentElement.lang = lang;      currentLang = lang;    }    document.getElementById('langToggle').onclick = () => {      updateLang(currentLang === 'no' ? 'en' : 'no');    };    updateLang(currentLang);    showSection(aboutSection); // Start med "Om Meg"  });  // Scroll til toppen-knapp  const backToTop = document.getElementById('backToTop');  window.addEventListener('scroll', () => {    if (window.scrollY > 300) {      backToTop.classList.add('show');    } else {      backToTop.classList.remove('show');    }  });  backToTop.addEventListener('click', () => {    window.scrollTo({ top: 0, behavior: 'smooth' });  });</script>
-</body>
-</html>
+<!DOCTYPE html>
+
+<html lang="no">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Redfox sin verden</title>
+
+  <!-- Webfont for Comic Sans MS -->
+
+  <link href="https://fonts.cdnfonts.com/css/comic-sans-ms" rel="stylesheet">
+
+  <style>
+
+    /* === Dark Redfox Theme === */
+
+    body {
+
+      margin: 0;
+
+      background-color: #2a2a2a;
+
+      color: #f0f0f0;
+
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+
+    }
+
+    header {
+
+      background-color: #3b0000;
+
+      text-align: center;
+
+      padding: 20px;
+
+      border-bottom: 3px solid #a70101;
+
+    }
+
+    header img {
+
+      max-width: 180px;
+
+      height: auto;
+
+      margin: 0 auto 10px;
+
+      display: block;
+
+    }
+
+    header h1 {
+
+      margin: 0;
+
+      font-size: 2em;
+
+    }
+
+    #langToggle {
+
+      margin-top: 10px;
+
+      padding: 5px 10px;
+
+      background-color: #292929;
+
+      color: #fff;
+
+      border: none;
+
+      border-radius: 4px;
+
+      cursor: pointer;
+
+      transition: background-color 0.3s ease;
+
+    }
+
+    #langToggle:hover {
+
+      background-color: #7a0000;
+
+    }
+
+    nav {
+
+      background-color: #2e2e2e;
+
+      border-bottom: 3px solid #a70101;
+
+    }
+
+    nav ul {
+
+      list-style: none;
+
+      display: flex;
+
+      justify-content: center;
+
+      padding: 0;
+
+      margin: 0;
+
+    }
+
+    nav li {
+
+      margin: 0;
+
+    }
+
+    nav a {
+
+      display: block;
+
+      padding: 15px 25px;
+
+      text-decoration: none;
+
+      color: #fff;
+
+      background-color: #2E2E2E;
+
+      border-bottom: 3px solid transparent;
+
+      transition: background-color 0.3s ease;
+
+    }
+
+    nav a:hover {
+
+      background-color: #7a0000;
+
+    }
+
+    nav a.active {
+
+      background-color: #a70101;
+
+    }
+
+	nav {
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 999;
+
+}
+
+    section {
+
+      padding: 20px;
+
+      max-width: 900px;
+
+      margin: auto;
+
+    }
+
+    #about h1,
+
+    #music h1,
+
+    #gallery h1 {
+
+      margin-top: 0;
+
+	  color: #a70101;
+
+    }
+
+    /* About */
+
+    #about h1 {
+
+      color: #a70101;
+
+    }
+
+    /* Music */
+
+    #music h1 {
+
+      color: #a70101;
+
+    }
+
+    .album {
+
+      margin-bottom: 40px;
+
+    }
+
+    .album h2 {
+
+      color: #a70101;
+
+      margin-bottom: 10px;
+
+    }
+
+    .album audio {
+
+      width: 100%;
+
+      background-color: transparent;
+
+      border-radius: 5px;
+
+    }
+
+    .playlist {
+
+      list-style: none;
+
+      padding: 0;
+
+      margin: 10px 0 0;
+
+    }
+
+    .playlist li {
+
+      padding: 8px;
+
+      cursor: pointer;
+
+      color: #cccccc;
+
+      border-radius: 4px;
+
+      transition: background-color 0.2s, color 0.2s;
+
+    }
+
+    .playlist li:hover {
+
+      background-color: #a70101;
+
+      color: #ffffff;
+
+    }
+
+    .playlist li.playing {
+      color: #ffffff;
+      background-color: #a70101;
+      font-weight: bold;
+      border-radius: 4px;
+      padding: 8px;
+    }
+
+    .image-grid {
+
+      display: grid;
+
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+
+      gap: 15px;
+
+      margin-top: 20px;
+
+    }
+
+    .image-grid img {
+
+      width: 100%;
+
+      border-radius: 8px;
+
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+
+      transition: transform 0.3s ease;
+
+      cursor: pointer;
+
+    }
+
+    .image-grid img:hover {
+
+      transform: scale(1.03);
+
+      box-shadow: 0 6px 15px rgba(255,26,64,0.5);
+
+    }
+
+    /* Lightbox */
+
+    #lightbox {
+
+      position: fixed;
+
+      top: 0; left: 0;
+
+      width: 100%; height: 100%;
+
+      background-color: rgba(0,0,0,0.9);
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      z-index: 999;
+
+    }
+
+    #lightbox img {
+
+      max-width: 90%;
+
+      max-height: 90%;
+
+      border-radius: 10px;
+
+      box-shadow: 0 0 30px rgba(255,26,64,0.4);
+
+    }
+
+    #lightbox-close {
+
+      position: absolute;
+
+      top: 20px; right: 30px;
+
+      font-size: 40px;
+
+      color: #fff;
+
+      cursor: pointer;
+
+      z-index: 1000;
+
+      font-weight: bold;
+
+    }
+
+	/* Gå‑til‑toppen knapp */
+
+#backToTop {
+
+  position: fixed;
+
+  bottom: 30px;
+
+  right: 30px;
+
+  width: 48px;
+
+  height: 48px;
+
+  background-color: #a70101;
+
+  color: #fff;
+
+  border: none;
+
+  border-radius: 50%;
+
+  font-size: 24px;
+
+  line-height: 1;
+
+  display: none;                /* skjult til scroll */
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+  z-index: 1000;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+
+  transition: opacity 0.3s;
+
+  font-size: 32px;       /* gjør pilen større */
+
+  font-weight: 900;      /* gjør linjene tykkere */
+
+  /* valgfritt: outline‑effekt med text‑shadow */
+
+  text-shadow:
+
+    1px 0   0 currentColor,
+
+   -1px 0   0 currentColor,
+
+    0   1px 0 currentColor,
+
+    0  -1px  0 currentColor;
+
+}
+
+#backToTop.show {
+
+  display: flex;
+
+  opacity: 0.8;
+
+}
+
+#backToTop:hover {
+
+  opacity: 1;
+
+}
+
+	.subsection {
+
+  margin-top: 30px;
+
+  padding-top: 10px;
+
+  border-top: 2px solid #444;   /* Tydelig separasjon */
+
+}
+
+.subsection h2 {
+
+  color: #a70101;               /* Samme farge som “Om Meg”-overskriften */
+
+  margin-bottom: 10px;
+
+}
+
+.subsection p {
+
+  margin: 6px 0;
+
+}
+
+.subsection p strong {
+
+  display: inline-block;
+
+  width: 120px;                /* Juster for jevn linje */
+
+}
+
+    @media (max-width: 600px) {
+
+      header img { max-width: 100px; }
+
+      nav ul { flex-direction: column; }
+
+    }
+
+	.image-grid figure {
+
+  margin: 0;
+
+}
+
+    .image-grid figcaption {
+      text-align: center;
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Music Search Styles */
+    .music-search {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #musicSearchInput {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #a70101;
+      border-radius: 5px;
+      background-color: #2a2a2a;
+      color: #f0f0f0;
+      font-size: 16px;
+    }
+
+    #musicSearchInput::placeholder {
+      color: rgba(240,240,240,0.6);
+    }
+
+    #clearSearch {
+      padding: 10px 15px;
+      background-color: #a70101;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    #clearSearch:hover {
+      background-color: #7a0000;
+    }
+
+    .search-match {
+      background-color: rgba(167,1,1,0.3);
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    /* Profile Picture Styles - Matching Asarayja Design */
+    .subsection img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin: 10px 0;
+      border: 3px solid #a70101;
+      box-shadow: 0 0 8px rgba(167, 1, 1, 0.6);
+      transition: all 0.3s ease;
+    }
+    .subsection img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(167,1,1,0.4);
+    }
+
+    /* Theme Toggle Button */
+    #themeToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(45deg, #a70101, #8b0000);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      cursor: pointer;
+      z-index: 1001;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #themeToggle:hover {
+      transform: scale(1.05);
+      background: linear-gradient(45deg, #8b0000, #6d0000);
+    }
+
+    /* Light Theme Music Search Styles */
+    .light-theme #musicSearchInput {
+      background-color: #ffffff !important;
+      color: #2c2c2c !important;
+      border: 2px solid #a70101 !important;
+    }
+    .light-theme #musicSearchInput::placeholder {
+      color: rgba(44,44,44,0.6) !important;
+    }
+    .light-theme #clearSearch {
+      background: linear-gradient(45deg, #a70101, #d63031) !important;
+      color: white !important;
+    }
+    .light-theme #clearSearch:hover {
+      background: linear-gradient(45deg, #d63031, #a70101) !important;
+    }
+    .light-theme .search-result {
+      border: 2px solid #e9ecef !important;
+      background: #ffffff !important;
+    }
+    .light-theme .search-result .album-header {
+      background: linear-gradient(45deg, #a70101, #d63031) !important;
+      color: white !important;
+    }
+    .light-theme .search-result .song-item {
+      color: #495057 !important;
+      border-bottom: 1px solid #e9ecef !important;
+    }
+    .light-theme .search-result .song-item:hover {
+      background: linear-gradient(135deg, rgba(167,1,1,0.1), rgba(214,48,49,0.1)) !important;
+      color: #a70101 !important;
+    }
+    .light-theme .search-match {
+      background-color: rgba(167,1,1,0.2) !important;
+      color: #a70101 !important;
+    }
+
+    /* === SIMPLE LIGHT THEME - SAME DESIGN AS DARK MODE === */
+    .light-theme {
+      background-color: #f5f5f5 !important;
+      color: #333 !important;
+    }
+    .light-theme header {
+      background-color: #ffffff !important;
+      color: #333 !important;
+      border-bottom: 3px solid #a70101 !important;
+    }
+    .light-theme nav {
+      background-color: #ffffff !important;
+      border-bottom: 3px solid #a70101 !important;
+    }
+    .light-theme nav a {
+      background-color: #f0f0f0 !important;
+      color: #333 !important;
+    }
+    .light-theme nav a:hover {
+      background-color: #a70101 !important;
+      color: #fff !important;
+    }
+    .light-theme nav a.active {
+      background-color: #a70101 !important;
+      color: #fff !important;
+    }
+    .light-theme #langToggle {
+      background-color: #e0e0e0 !important;
+      color: #333 !important;
+    }
+    .light-theme #langToggle:hover {
+      background-color: #d0d0d0 !important;
+    }
+    .light-theme .subsection {
+      border-top: 2px solid #ccc !important;
+    }
+    .light-theme .subsection img {
+      border: 3px solid #a70101 !important;
+      box-shadow: 0 0 8px rgba(167, 1, 1, 0.4) !important;
+    }
+    .light-theme .subsection img:hover {
+      box-shadow: 0 6px 15px rgba(167,1,1,0.3) !important;
+    }
+    .light-theme #lightbox-close {
+      color: #333 !important;
+    }
+    .light-theme #backToTop {
+      background-color: #a70101 !important;
+    }
+    .light-theme .search-match {
+      background-color: rgba(167,1,1,0.2) !important;
+    }
+
+    /* Light Theme Audio Player Fixes */
+    .light-theme .album audio {
+      filter: invert(1);
+      border: none !important;
+      background-color: transparent !important;
+    }
+
+    /* Light Theme Playlist Text Fixes */
+    .light-theme .playlist li {
+      color: #333 !important;
+    }
+    .light-theme .playlist li:hover {
+      background-color: #a70101 !important;
+      color: #ffffff !important;
+    }
+    .light-theme .playlist li.playing {
+      background-color: #a70101 !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Theme Toggle Button -->
+  <button id="themeToggle" title="Bytt tema">
+    🌙 <span id="themeText">Lys modus</span>
+  </button>
+
+  <!-- Header + språkknapp -->
+
+  <header>
+
+    <img src="https://i.imgur.com/pMJfpb3.png" alt="Redfox logo">
+
+    <h1 data-i18n="site_title">Velkommen til Redfox sin verden!</h1>
+
+    <button id="langToggle">English</button>
+
+  </header>
+
+
+
+  <!-- Navigasjon -->
+
+  <nav>
+
+  <ul>
+
+    <li><a href="#" id="menu-about"   class="active" data-i18n="nav_about">Om Meg</a></li>
+
+    <li><a href="#" id="menu-music"             data-i18n="nav_music">Musikk</a></li>
+
+    <li><a href="#" id="menu-gallery"           data-i18n="nav_gallery">Bilder</a></li>
+
+  </ul>
+
+</nav>
+
+
+
+  <!-- Om Meg -->
+
+  <section id="about">
+
+  <h1 data-i18n="about_title">Om Redfox</h1>
+
+  <!-- Personlig profil -->
+  <div class="subsection" id="personal-profile">
+
+    <h2 data-i18n="personal_title">Personlig Profil</h2>
+    
+    <img id="profilePicture" src="https://i.imgur.com/pMJfpb3.png" alt="Redfox Profile Picture" class="profile-picture">
+
+    <p>
+
+      <strong data-i18n="about_label_name">Navn:</strong>
+
+      <span    data-i18n="about_value_name">Redfox</span>
+
+    </p>
+
+    <p>
+
+      <strong data-i18n="about_label_birthday">Bursdag:</strong>
+
+      <span    data-i18n="about_value_birthday">30. november</span>
+
+    </p>
+
+    <p>
+
+      <strong data-i18n="about_label_age">Alder:</strong>
+
+      <span    data-i18n="about_value_age">37 år</span>
+
+    </p>
+
+    <p>
+
+      <strong data-i18n="about_label_interests">Interesser:</strong>
+
+      <span    data-i18n="about_value_interests">Spille pc‑spill og se serier</span>
+
+    </p>
+
+    <p>
+
+      <strong data-i18n="about_label_likes">Liker:</strong>
+
+      <span    data-i18n="about_value_likes">Gå turer, være med venner, være kreativ i furry‑fellesskapet og le</span>
+
+    </p>
+
+    <p>
+
+      <strong data-i18n="about_label_favgame">Favorittspill:</strong>
+
+      <span    data-i18n="about_value_favgame">VR Chat</span>
+
+    </p>
+
+  </div>
+
+
+
+  <!-- Fursona‑profil -->
+
+  <div class="subsection" id="fursona-profile">
+
+    <h2 data-i18n="fursona_title">Fursona‑profil</h2>
+
+    <p>
+
+      <strong data-i18n="fursona_label_name">Navn:</strong>
+
+      <span    data-i18n="fursona_value_name">Redfox</span>
+
+    </p>
+
+	<p>
+
+      <strong data-i18n="fursona_label_fursona">Fursona:</strong>
+
+      <span    data-i18n="fursona_value_fursona">Rev</span>
+
+    </p>
+
+    <p>
+
+      <strong data-i18n="fursona_label_origin">Opprinnelse:</strong>
+
+      <span    data-i18n="fursona_value_origin">Nordisk ørkenrev</span>
+
+    </p>
+
+    <p>
+
+      <strong data-i18n="fursona_label_traits">Egenskaper:</strong>
+
+      <span    data-i18n="fursona_value_traits">Lur, leken, nysgjerrig</span>
+
+    </p>
+
+    <p>
+
+      <strong data-i18n="fursona_label_story">Bakgrunn:</strong>
+
+      <span    data-i18n="fursona_value_story">Vokste opp på tundraen, elsker eventyr og samspill med venner.</span>
+
+    </p>
+
+    <!-- Du kan legge til flere felter som "Favorittmat", "Favorittleker" osv. -->
+
+  </div>
+
+</section>
+
+
+
+
+
+  <!-- Musikk -->
+
+  <section id="music" style="display: none;">
+
+    <h1 data-i18n="music_title">Musikk</h1>
+
+    <!-- Music Search -->
+    <div class="music-search">
+      <input type="text" id="musicSearchInput" placeholder="Søk i album og sanger..." data-i18n-placeholder="search_music">
+      <button id="clearSearch" data-i18n="clear_search">✕ Tøm søk</button>
+    </div>
+
+    <div id="musicResults">
+
+
+
+    <!-- Album 1: Full Rulle -->
+
+  <div class="album">
+
+    <h2 data-i18n="album1_title">Album: Redfox – Full Rulle</h2>
+
+    <audio controls></audio>
+
+    <ul class="playlist">
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Kveldens_Leveranse.mp3">
+
+        Redfox – Kveldens Leveranse
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Sparkesykkel_Syndrom.mp3">
+
+        Redfox – Sparkesykkel Syndrom
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Vannverk_i_Varsel.mp3">
+
+        Redfox – Vannverk i Varsel
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Fjertelykke.mp3">
+
+        Redfox – Fjertelykke
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Fisefart_i_VR.mp3">
+
+        Redfox – Fisefart i VR
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Tryne med_Stil.mp3">
+
+        Redfox – Tryne med Stil
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Kenguvogn.mp3">
+
+        Redfox – Kenguvogn
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Latterlig_Sjanse.mp3">
+
+        Redfox – Latterlig Sjanse
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Bortevekk_med_Vind_i_Pelsen.mp3">
+
+        Redfox – Bortevekk med Vind i Pelsen
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Slipp_Latteren_Fri.mp3">
+
+        Redfox – Slipp Latteren Fri
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Full_Rulle/Redfox_Redfox_Theme.mp3">
+
+        Redfox – Theme
+
+      </li>
+
+    </ul>
+
+  </div>
+
+
+
+    <!-- Album 2: Turbopels og Tøys -->
+
+  <div class="album">
+
+    <h2 data-i18n="album2_title">Album: Redfox – Turbopels og Tøys</h2>
+
+    <audio controls></audio>
+
+    <ul class="playlist">
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Rev_i_Rute.mp3">
+
+        Redfox – Rev i Rute
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Gullfisk_rapp.mp3">
+
+        Redfox – Gullfisk-rapp
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Tulle_Tirsdag.mp3">
+
+        Redfox – Tulle-Tirsdag
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Kabelflukt.mp3">
+
+        Redfox – Kabelflukt
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Fjellrev_Funk.mp3">
+
+        Redfox – Fjellrev Funk
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Refleksrock.mp3">
+
+        Redfox – Refleksrock
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Snakkes_med_Snabel_A.mp3">
+
+        Redfox – Snakkes med Snabel-A
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Rulle_Rave.mp3">
+
+        Redfox – Rulle-Rave
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Sprettball_i_Skogen.mp3">
+
+        Redfox – Sprettball i Skogen
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Turbopels_og_Toys/Redfox_Regler_Verden.mp3">
+
+        Redfox – Regler Verden
+
+      </li>
+
+    </ul>
+
+  </div>
+
+
+
+  <!-- Album 3: Tails of Trouble -->
+
+<div class="album">
+
+  <h2 data-i18n="album3_title">Album: Redfox – Tails of Trouble</h2>
+
+  <audio controls></audio>
+
+  <ul class="playlist">
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Skater_on_the_Moon.mp3">
+
+      Redfox – Skater on the Moon
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Flush_the_Funk.mp3">
+
+      Redfox – Flush the Funk
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Laugh_Attack.mp3">
+
+      Redfox – Laugh Attack
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Goldfish_Parade.mp3">
+
+      Redfox – Goldfish Parade
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Headset_Hero.mp3">
+
+      Redfox – Headset Hero
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Disco_Detour.mp3">
+
+      Redfox – Disco Detour
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Trail_Tricks.mp3">
+
+      Redfox – Trail Tricks
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Rocket_Sneakers.mp3">
+
+      Redfox – Rocket Sneakers
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Windchaser.mp3">
+
+      Redfox – Windchaser
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Tails_of_Trouble/Redfox_Toilet_Paper_Tango.mp3">
+
+      Redfox – Toilet Paper Tango
+
+    </li>
+
+  </ul>
+
+</div>
+
+
+
+<!-- Album 4: Linje 9 er Opptatt -->
+
+<div class="album">
+
+  <h2 data-i18n="album4_title">Album: Redfox – Linje 9 er Opptatt</h2>
+
+  <audio controls></audio>
+
+  <ul class="playlist">
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Sentralen_AS.mp3">
+
+      Redfox – Sentralen AS
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Alarm_i_Arkivet.mp3">
+
+      Redfox – Alarm i Arkivet
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox//Redfox_Linje_9_er_Opptatt/Redfox_Linje_9_er_Opptatt.mp3">
+
+      Redfox – Linje 9 er Opptatt
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Videresendt_til_Feil_Rev.mp3">
+
+      Redfox – Videresendt til Feil Rev
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Fax_med_F%C3%B8lelser.mp3">
+
+      Redfox – Fax med Følelser
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Timeout_p%C3%A5_Tast%203.mp3">
+
+      Redfox – Timeout på Tast 3
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Ror_ikke_Kabler.mp3">
+
+      Redfox – Rør ikke Kabler
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Feil_Tilkoblet.mp3">
+
+      Redfox – Feil Tilkoblet
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Vennligst_Hold_Linjen.mp3">
+
+      Redfox – Vennligst Hold Linjen
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Koble_Meg_Fri.mp3">
+
+      Redfox – Koble Meg Fri
+
+    </li>
+
+  </ul>
+
+</div>
+
+  
+
+  <!-- Album 5: Toalettrock -->
+
+<div class="album">
+
+  <h2 data-i18n="album5_title">Album: Redfox – Toalettrock</h2>
+
+  <audio controls></audio>
+
+  <ul class="playlist">
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Papirpanikk.mp3">
+
+      Redfox – Papirpanikk
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Sprekk%20i%20Setet.mp3">
+
+      Redfox – Sprekk i Setet
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Doborste_Boogie.mp3">
+
+      Redfox – Dobørste Boogie
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Luktalarm.mp3">
+
+      Redfox – Luktalarm
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Rull%20for%20Livet.mp3">
+
+      Redfox – Rull for Livet
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Bom_i_Buksa.mp3">
+
+      Redfox – Bom i Buksa
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Do_p%C3%A5_Dora.mp3">
+
+      Redfox – Do på Døra
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Saapedans.mp3">
+
+      Redfox – Såpedans
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Nodrull.mp3">
+
+      Redfox – Nødrull
+
+    </li>
+
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Toalettrock/Redfox_Ikke_Snakk_Til_Meg_N%C3%A5.mp3">
+
+      Redfox – Ikke Snakk Til Meg Nå
+
+    </li>
+
+  </ul>
+
+</div>
+
+  <!-- Album 6: Redfox – Furry med Fullt Register -->
+
+  <div class="album">
+
+    <h2 data-i18n="album6_title">Album: Redfox – Furry med Fullt Register</h2>
+
+    <audio controls></audio>
+
+    <ul class="playlist">
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_sangen.mp3">
+
+        Redfox – Redfox sangen
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Den_Rode_Furry_Reven.mp3">
+
+        Redfox – Den Røde Furry Reven
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Sangen_om_Redfox.mp3">
+
+        Redfox – Sangen om Redfox
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox//Redfox_Furry_med_Fullt_Register/Redfox_Redfox_du_e_vår helt.mp3">
+
+        Redfox – Redfox, du e’ vår helt
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Kongen_av_sprell.mp3">
+
+        Redfox – Kongen av sprell
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_I_Sommervær.mp3">
+
+        Redfox – I Sommervær
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Naken_og_Fri.mp3">
+
+        Redfox – Naken og Fri
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_på_Leting.mp3">
+
+        Redfox – Redfox på Leting
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_Rocker.mp3">
+
+        Redfox – Redfox Rocker
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_Skogens_Spellemester.mp3">
+
+        Redfox – Redfox, Skogens Spellemester
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_og_Pekkene.mp3">
+
+        Redfox – Redfox og Pekkene
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Skogens_Ville_Sjarmør.mp3">
+
+        Redfox – Skogens Ville Sjarmør
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_paa_Tur.mp3">
+
+        Redfox – Redfox på Tur
+
+      </li>
+
+      <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_s_Reise.mp3">
+
+        Redfox – Redfox’s Reise
+
+      </li>
+
+    </ul>
+
+  </div>
+
+ <!-- Album 7: Redfox – Full – Systemfeil -->
+<div class="album">
+  <h2 data-i18n="album7_title">Album: Redfox – Full Systemfeil</h2>
+  <audio controls></audio>
+  <ul class="playlist">
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Matpakke_Med_Mot.mp3">
+      Redfox – Matpakke Med Mot
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Kontaktløs_Kaos.mp3">
+      Redfox – Kontaktløs Kaos
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Såpeglatt_Show.mp3">
+      Redfox – Såpeglatt Show
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Feil_Dør_Feil_Fest.mp3">
+      Redfox – Feil Dør Feil Fest
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Trykk_på_Knappen.mp3">
+      Redfox – Trykk på Knappen
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Handlepose_med_Hull.mp3">
+      Redfox – Handlepose med Hull
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Snooze_knappens_Herre.mp3">
+      Redfox – Snooze-knappens Herre
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Brev_uten_Porto.mp3">
+      Redfox – Brev uten Porto
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Trodlos_Trobbel.mp3">
+      Redfox – Trådløs Trøbbel
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Tastetrykk_Tornado.mp3">
+      Redfox – Tastetrykk-Tornado
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Heis_med_Hikke.mp3">
+      Redfox – Heis med Hikke
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Skjermfrosset_Farse.mp3">
+      Redfox – Skjermfrosset Farse
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Pakke_Paa_Avveie.mp3">
+      Redfox – Pakke På Avveie
+    </li>
+    <li data-src="https://asarayja.github.io/redfox/Redfox/Redfox/Redfox_Full_Systemfeil/Redfox_Klokka_Slaar_Tilbake.mp3">
+      Redfox – Klokka Slår Tilbake
+    </li>
+  </ul>
+  </div>
+
+  </div>
+
+  </section>
+
+
+
+  <!-- Bilder -->  <section id="gallery" style="display: none;">
+
+  <h1 data-i18n="gallery_title">Bilder</h1>
+
+  <div class="image-grid">
+
+    <figure>
+
+      <img src="https://i.imgur.com/pMJfpb3.png" alt="Redfox-logo">
+
+      <figcaption data-i18n="gallery_caption1">Redfox-logo</figcaption>
+
+    </figure>
+
+	<figure>
+
+      <img src="https://asarayja.github.io/redfox/bilder/2.jpg" alt="VR Redfox">
+
+      <figcaption data-i18n="gallery_caption2">VR Redfox</figcaption>
+
+    </figure>
+
+	<figure>
+
+      <img src="https://asarayja.github.io/redfox/bilder/3.jpg" alt="VR Redfox>
+
+      <figcaption data-i18n="gallery_caption3">VR Redfox</figcaption>
+
+    </figure>
+
+	<figure>
+
+      <img src="https://asarayja.github.io/redfox/bilder/4.jpg" alt="Real Redfox">
+
+      <figcaption data-i18n="gallery_caption4">Real Redfox</figcaption>
+
+    </figure>
+
+    <!-- Legg til flere <figure>…</figure> for hvert bilde -->
+
+  </div>
+
+</section>
+
+
+
+  <!-- Lightbox -->
+
+  <div id="lightbox">
+
+    <span id="lightbox-close">&times;</span>
+
+    <img id="lightbox-img" src="" alt="">
+
+  </div>
+
+<button id="backToTop" aria-label="Gå til toppen">↑</button>
+
+  <!-- Skript: navigasjon, audio, lightbox, språk -->
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const themeText = document.getElementById('themeText');
+    
+    // Load saved theme
+    const savedTheme = localStorage.getItem('redfox-theme') || 'dark';
+    applyTheme(savedTheme);
+    
+    themeToggle.addEventListener('click', function() {
+      const currentTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+      localStorage.setItem('redfox-theme', newTheme);
+    });
+    
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggle.innerHTML = '☀️ <span id="themeText" data-i18n="theme_dark">Mørk modus</span>';
+      } else {
+        document.body.classList.remove('light-theme');
+        themeToggle.innerHTML = '🌙 <span id="themeText" data-i18n="theme_light">Lys modus</span>';
+      }
+    }
+
+    // Music Search Functionality
+    const musicSearchInput = document.getElementById('musicSearchInput');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    const musicResults = document.getElementById('musicResults');
+    
+    // All albums data for search
+    // Search functionality
+    musicSearchInput.addEventListener('input', function() {
+      const searchTerm = this.value.trim().toLowerCase();
+      if (searchTerm === '') {
+        displayAllAlbums();
+      } else {
+        performSearch(searchTerm);
+      }
+    });
+
+    clearSearchBtn.addEventListener('click', function() {
+      musicSearchInput.value = '';
+      displayAllAlbums();
+    });
+
+    function displayAllAlbums() {
+      // Show all original albums that are in the DOM
+      const originalAlbums = document.querySelectorAll('#musicResults .album');
+      originalAlbums.forEach(album => {
+        album.style.display = 'block';
+      });
+      
+      // Clear any search-generated content
+      const searchResults = document.querySelectorAll('#musicResults .search-result');
+      searchResults.forEach(result => result.remove());
+    }
+
+    function performSearch(searchTerm) {
+      if (!searchTerm) {
+        displayAllAlbums();
+        return;
+      }
+      
+      // Søk gjennom eksisterende album elements i DOM
+      const originalAlbums = document.querySelectorAll('#musicResults .album:not(.search-result)');
+      const results = [];
+      
+      originalAlbums.forEach(albumElement => {
+        const albumMatch = checkAlbumMatch(albumElement, searchTerm);
+        if (albumMatch) {
+          results.push(albumMatch);
+        }
+      });
+      
+      displaySearchResults(results, searchTerm);
+    }
+
+    function checkAlbumMatch(albumElement, searchTerm) {
+      const albumTitle = albumElement.querySelector('h2');
+      const playlist = albumElement.querySelectorAll('.playlist li');
+      
+      // Get current album title (with translations)
+      const albumTitleText = albumTitle.textContent.toLowerCase();
+      const albumMatches = albumTitleText.includes(searchTerm.toLowerCase());
+      
+      // Check song matches
+      const matchingSongs = [];
+      const allSongs = [];
+      
+      playlist.forEach(songLi => {
+        const songTitle = songLi.textContent.toLowerCase();
+        const songData = {
+          element: songLi,
+          title: songLi.textContent,
+          url: songLi.getAttribute('data-src')
+        };
+        
+        allSongs.push(songData);
+        
+        if (songTitle.includes(searchTerm.toLowerCase())) {
+          matchingSongs.push(songData);
+        }
+      });
+      
+      // If album matches, return all songs. If songs match, return all songs too (full album)
+      if (albumMatches || matchingSongs.length > 0) {
+        return {
+          title: albumTitle.innerHTML, // Keep original HTML with i18n attributes
+          songs: allSongs, // Always return ALL songs for full album experience
+          titleElement: albumTitle,
+          originalElement: albumElement
+        };
+      }
+      
+      return null;
+    }
+
+    function displaySearchResults(results, searchTerm) {
+      // Hide original albums
+      const originalAlbums = document.querySelectorAll('#musicResults .album:not(.search-result)');
+      originalAlbums.forEach(album => {
+        album.style.display = 'none';
+      });
+      
+      // Remove previous search results
+      const oldSearchResults = document.querySelectorAll('#musicResults .search-result');
+      oldSearchResults.forEach(result => result.remove());
+      
+      if (results.length === 0) {
+        const noResultsDiv = document.createElement('div');
+        noResultsDiv.className = 'search-result album';
+        const noResultsText = currentLang === 'no' ? 'Ingen resultater funnet' : 'No results found';
+        const tryAnotherText = currentLang === 'no' ? 'Prøv et annet søkeord' : 'Try another search term';
+        noResultsDiv.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: #a70101;">
+            <h3>${noResultsText}</h3>
+            <p>${tryAnotherText}</p>
+          </div>
+        `;
+        musicResults.appendChild(noResultsDiv);
+        return;
+      }
+      
+      results.forEach(album => {
+        const albumDiv = document.createElement('div');
+        albumDiv.className = 'search-result album';
+        albumDiv.innerHTML = `
+          <h2>${highlightMatch(album.title, searchTerm)}</h2>
+          <audio controls></audio>
+          <ul class="playlist">
+            ${album.songs.map(song => 
+              `<li data-src="${song.url}">${highlightMatch(song.title, searchTerm)}</li>`
+            ).join('')}
+          </ul>
+        `;
+        musicResults.appendChild(albumDiv);
+      });
+      
+      // Apply translations to new elements
+      updateTranslations();
+    }
+
+    function updateTranslations() {
+      // Apply translations to any newly created elements
+      const newElems = document.querySelectorAll('[data-i18n]');
+      newElems.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+    }
+
+    function displayAllAlbums() {
+      // Show all original albums
+      const originalAlbums = document.querySelectorAll('#musicResults .album:not(.search-result)');
+      originalAlbums.forEach(album => {
+        album.style.display = '';
+      });
+      
+      // Remove search results
+      const searchResults = document.querySelectorAll('#musicResults .search-result');
+      searchResults.forEach(result => result.remove());
+    }
+
+    function highlightMatch(text, searchTerm) {
+      if (!searchTerm) return text;
+      const regex = new RegExp(`(${searchTerm})`, 'gi');
+      return text.replace(regex, '<mark style="background-color: #a70101; color: #fff; padding: 1px 3px; border-radius: 2px;">$1</mark>');
+    }
+
+    // Menyvisning
+    const menuAbout = document.getElementById('menu-about');
+    const menuMusic = document.getElementById('menu-music');
+    const menuGallery = document.getElementById('menu-gallery');
+    const aboutSection = document.getElementById('about');
+    const musicSection = document.getElementById('music');
+    const gallerySection = document.getElementById('gallery');
+
+    function showSection(sec) {
+      [aboutSection, musicSection, gallerySection].forEach(s => s.style.display = 'none');
+      [menuAbout, menuMusic, menuGallery].forEach(a => a.classList.remove('active'));
+      
+      // Also hide all custom page sections and remove their active class
+      document.querySelectorAll('[id^="section-"]').forEach(s => s.style.display = 'none');
+      document.querySelectorAll('[data-custom-page] a').forEach(a => a.classList.remove('active'));
+      
+      sec.style.display = 'block';
+      if (sec === aboutSection) menuAbout.classList.add('active');
+      if (sec === musicSection) menuMusic.classList.add('active');
+      if (sec === gallerySection) menuGallery.classList.add('active');
+    }
+
+    menuAbout.onclick = e => { e.preventDefault(); showSection(aboutSection); };
+    menuMusic.onclick = e => { e.preventDefault(); showSection(musicSection); };
+    menuGallery.onclick = e => { e.preventDefault(); showSection(gallerySection); };
+
+    // Audio/playlist – oppdatert med støtte for album 7 og fremtidige album
+    function pauseAll(curr) {
+      document.querySelectorAll('.album audio').forEach(p => {
+        if (p !== curr) p.pause();
+      });
+    }
+
+    document.getElementById('music').addEventListener('click', function (e) {
+      const li = e.target.closest('li[data-src]');
+      if (!li) return;
+
+      const album = li.closest('.album');
+      const aud = album.querySelector('audio');
+      if (!aud) return;
+
+      pauseAll(aud);
+      aud.src = li.getAttribute('data-src');
+      aud.load();
+      aud.play();
+
+      document.querySelectorAll('.playlist li.playing').forEach(el =>
+        el.classList.remove('playing')
+      );
+      li.classList.add('playing');
+    });
+
+    // Pause andre spillere hvis én spiller
+    document.querySelectorAll('.album audio').forEach(p =>
+      p.addEventListener('play', () => pauseAll(p))
+    );
+
+    // Lightbox for bilder
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    const lbClose = document.getElementById('lightbox-close');
+
+    document.querySelectorAll('.image-grid img').forEach(img => {
+      img.onclick = () => {
+        lbImg.src = img.src;
+        lb.style.display = 'flex';
+      };
+    });
+
+    lbClose.onclick = () => { lb.style.display = 'none'; };
+    lb.onclick = e => { if (e.target === lb) lb.style.display = 'none'; };
+
+    // Språk
+    const translations = {
+      no: {
+        site_title: "Velkommen til Redfox sin verden!",
+        nav_about: "Om Meg",
+        nav_music: "Musikk",
+        nav_gallery: "Bilder",
+        about_title: "Om Redfox",
+        personal_title: "Personlig Profil",
+        about_label_name: "Navn:",
+        about_value_name: "Redfox",
+        about_label_birthday: "Bursdag:",
+        about_value_birthday: "30. november",
+        about_label_age: "Alder:",
+        about_value_age: "37 år",
+        about_label_interests: "Interesser:",
+        about_value_interests: "Spille pc‑spill og se serier",
+        about_label_likes: "Liker:",
+        about_value_likes: "Gå turer, være med venner, være kreativ i furry‑fellesskapet og le",
+        about_label_favcolor: "Favorittfarge:",
+        about_value_favcolor: "Grønn, blå og hvit",
+        about_label_favgame: "Favorittspill:",
+        about_value_favgame: "VR Chat",
+        fursona_title: "Fursona‑profil",
+        fursona_label_name: "Navn:",
+        fursona_value_name: "Redfox",
+        fursona_label_Fursona: "Fursona:",
+        fursona_value_fursona: "Rev",
+        fursona_label_origin: "Opprinnelse:",
+        fursona_value_origin: "Nordisk ørkenrev",
+        fursona_label_traits: "Egenskaper:",
+        fursona_value_traits: "Lur, leken, nysgjerrig",
+        fursona_label_story: "Bakgrunn:",
+        fursona_value_story: "Vokste opp på tundraen, elsker eventyr og samspill med venner.",
+        music_title: "Musikk",
+        search_music: "Søk i album og sanger...",
+        clear_search: "✕ Tøm søk",
+        no_results: "Ingen resultater funnet",
+        try_another: "Prøv et annet søkeord...",
+        theme_dark: "Mørk modus",
+        theme_light: "Lys modus",
+        album1_title: "Album: Redfox – Full Rulle (Norsk album)",
+        album2_title: "Album: Redfox – Turbopels og Tøys (Norsk album)",
+        album3_title: "Album: Redfox – Haler av problemer (Engelsk album)",
+        album4_title: "Album: Redfox – Linje 9 er Opptatt (Norsk album)",
+        album5_title: "Album: Redfox – Toalettrock (Norsk album)",
+        album6_title: "Album: Redfox – Furry med Fullt Register (Norsk album)",
+        album7_title: "Album: Redfox – Full – Systemfeil (Norsk album)",
+        gallery_title: "Bilder",
+        gallery_caption1: "Redfox-logo",
+        gallery_caption2: "VR Redfox",
+        gallery_caption3: "VR Redfox",
+        gallery_caption4: "Ekte Redfox"
+      },
+      en: {
+        site_title: "Welcome to Redfox’s world!",
+        nav_about: "About Me",
+        nav_music: "Music",
+        nav_gallery: "Gallery",
+        about_title: "About Redfox",
+        personal_title: "Personal Profile",
+        about_label_name: "Name:",
+        about_value_name: "Redfox",
+        about_label_birthday: "Birthday:",
+        about_value_birthday: "November 30",
+        about_label_age: "Age:",
+        about_value_age: "37 years",
+        about_label_interests: "Interests:",
+        about_value_interests: "Playing PC games and watching series",
+        about_label_likes: "Likes:",
+        about_value_likes: "Going for walks, hanging out with friends, being creative in the furry community and laughing",
+        about_label_favcolor: "Favorite color:",
+        about_value_favcolor: "Green, blue and white",
+        about_label_favgame: "Favorite game:",
+        about_value_favgame: "VR Chat",
+        fursona_title: "Fursona Profile",
+        fursona_label_name: "Name:",
+        fursona_value_name: "Redfox",
+        fursona_label_Fursona: "Fursona:",
+        fursona_value_fursona: "Fox",
+        fursona_label_origin: "Origin:",
+        fursona_value_origin: "Nordic desert fox",
+        fursona_label_traits: "Traits:",
+        fursona_value_traits: "Cunning, playful, curious",
+        fursona_label_story: "Background:",
+        fursona_value_story: "Grew up on the tundra, loves adventure and hanging out with friends.",
+        music_title: "Music",
+        search_music: "Search albums and songs...",
+        clear_search: "✕ Clear search",
+        no_results: "No results found",
+        try_another: "Try another search term...",
+        theme_dark: "Dark mode",
+        theme_light: "Light mode",
+        album1_title: "Album: Redfox – Full Throttle (Norwegian album)",
+        album2_title: "Album: Redfox – Turbofur & Tomfoolery (Norwegian album)",
+        album3_title: "Album: Redfox – Tails of Trouble (English album)",
+        album4_title: "Album: Redfox – Line 9 is Busy (Norwegian album)",
+        album5_title: "Album: Redfox – Toiletrock (Norwegian album)",
+        album6_title: "Album: Redfox – Furry with Full Register (Norwegian album)",
+        album7_title: "Album: Redfox – Full System Failure (Norwegian album)",
+        gallery_title: "Pictures",
+        gallery_caption1: "Redfox-logo",
+        gallery_caption2: "VR Redfox",
+        gallery_caption3: "VR Redfox",
+        gallery_caption4: "Real Redfox"
+      }
+    };
+
+    let currentLang = 'no';
+    const elems = document.querySelectorAll('[data-i18n]');
+
+    function updateThemeText() {
+      const themeTextEl = document.getElementById('themeText');
+      if (themeTextEl) {
+        const key = themeTextEl.getAttribute('data-i18n');
+        if (key && translations[currentLang][key]) {
+          themeTextEl.textContent = translations[currentLang][key];
+        }
+      }
+    }
+
+    function updateLang(lang) {
+      elems.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+      });
+      
+      // Update placeholders
+      const placeholderElems = document.querySelectorAll('[data-i18n-placeholder]');
+      placeholderElems.forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) el.placeholder = translations[lang][key];
+      });
+      
+      document.getElementById('langToggle').textContent = lang === 'no' ? 'English' : 'Norsk';
+      document.documentElement.lang = lang;
+      currentLang = lang;
+      
+      // Update theme text
+      updateThemeText();
+      
+      // Update custom pages content and navigation
+      updateCustomPagesContent();
+    }
+
+    document.getElementById('langToggle').onclick = () => {
+      updateLang(currentLang === 'no' ? 'en' : 'no');
+    };
+
+    updateLang(currentLang);
+    
+    // Load custom pages from admin data
+    loadCustomPages();
+    
+    showSection(aboutSection); // Start med "Om Meg"
+  });
+
+  // Listen for localStorage changes to update custom pages
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'redfoxAdminData') {
+      loadCustomPages();
+    }
+  });
+
+  // Also check for changes when window gets focus (for same-tab updates)
+  window.addEventListener('focus', function() {
+    loadCustomPages();
+  });
+
+  // Function to load custom pages
+  function loadCustomPages() {
+    // Ensure currentLang is available, fallback to 'no'
+    const lang = typeof currentLang !== 'undefined' ? currentLang : 'no';
+    
+    const adminData = localStorage.getItem('redfoxAdminData');
+    if (!adminData) {
+      return;
+    }
+    
+    try {
+      const data = JSON.parse(adminData);
+      const pages = data.pages || [];
+      
+      // Filter out standard pages
+      const customPages = pages.filter(page => !['about', 'music', 'gallery'].includes(page.name));
+      
+      const nav = document.querySelector('nav ul');
+      
+      // Remove any existing custom pages from nav
+      const existingCustomPages = nav.querySelectorAll('[data-custom-page]');
+      existingCustomPages.forEach(page => page.remove());
+      
+      // Add custom pages to navigation
+      customPages.forEach(page => {
+        const li = document.createElement('li');
+        li.setAttribute('data-custom-page', page.name);
+        
+        const a = document.createElement('a');
+        a.href = '#';
+        a.id = `menu-${page.name}`;
+        a.textContent = lang === 'no' ? page.titleNo : page.titleEn;
+        a.onclick = (e) => {
+          e.preventDefault();
+          showCustomPage(page);
+        };
+        
+        li.appendChild(a);
+        nav.appendChild(li);
+      });
+      
+      // Add custom page sections to the document
+      customPages.forEach(page => {
+        // Remove existing section if it exists
+        const existingSection = document.getElementById(`section-${page.name}`);
+        if (existingSection) {
+          existingSection.remove();
+        }
+        
+        // Create new section
+        const section = document.createElement('section');
+        section.id = `section-${page.name}`;
+        section.style.display = 'none';
+        
+        const h1 = document.createElement('h1');
+        h1.textContent = lang === 'no' ? page.titleNo : page.titleEn;
+        section.appendChild(h1);
+        
+        const content = document.createElement('div');
+        content.innerHTML = formatPageContent(lang === 'no' ? page.contentNo : page.contentEn);
+        section.appendChild(content);
+        
+        // Insert before backToTop button
+        const backToTop = document.getElementById('backToTop');
+        document.body.insertBefore(section, backToTop);
+      });
+      
+    } catch (error) {
+      console.log('Error loading custom pages:', error);
+    }
+  }
+
+  // Function to show custom page
+  function showCustomPage(page) {
+    // Hide all sections
+    const sections = document.querySelectorAll('section');
+    sections.forEach(s => s.style.display = 'none');
+    
+    // Remove active class from all nav links
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(a => a.classList.remove('active'));
+    
+    // Show the custom page section
+    const section = document.getElementById(`section-${page.name}`);
+    if (section) {
+      section.style.display = 'block';
+    }
+    
+    // Add active class to the nav link
+    const navLink = document.getElementById(`menu-${page.name}`);
+    if (navLink) {
+      navLink.classList.add('active');
+    }
+  }
+
+  // Format page content with simple markdown-like formatting
+  function formatPageContent(content) {
+    if (!content) return '';
+    
+    return content
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+      .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;">')
+      .replace(/\[img:(.*?)\]/g, '<img src="https://asarayja.github.io/redfox/bilder/$1" alt="Bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;">')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/^(.*)$/gim, '<p>$1</p>')
+      .replace(/<p><\/p>/g, '')
+      .replace(/<p>(<h[1-6]>.*?<\/h[1-6]>)<\/p>/g, '$1')
+      .replace(/<p>(<img.*?>)<\/p>/g, '$1');
+  }
+
+  // Function to update custom pages content and navigation when language changes
+  function updateCustomPagesContent() {
+    // Ensure currentLang is available, fallback to 'no'
+    const lang = typeof currentLang !== 'undefined' ? currentLang : 'no';
+    
+    const adminData = localStorage.getItem('redfoxAdminData');
+    if (!adminData) return;
+    
+    try {
+      const data = JSON.parse(adminData);
+      const pages = data.pages || [];
+      const customPages = pages.filter(page => !['about', 'music', 'gallery'].includes(page.name));
+      
+      // Update navigation links
+      customPages.forEach(page => {
+        const navLink = document.getElementById(`menu-${page.name}`);
+        if (navLink) {
+          navLink.textContent = lang === 'no' ? page.titleNo : page.titleEn;
+        }
+        
+        // Update section content
+        const section = document.getElementById(`section-${page.name}`);
+        if (section) {
+          const h1 = section.querySelector('h1');
+          if (h1) {
+            h1.textContent = lang === 'no' ? page.titleNo : page.titleEn;
+          }
+          
+          const content = section.querySelector('div');
+          if (content) {
+            content.innerHTML = formatPageContent(lang === 'no' ? page.contentNo : page.contentEn);
+          }
+        }
+      });
+      
+    } catch (error) {
+      console.log('Error updating custom pages content:', error);
+    }
+  }
+
+  // Scroll til toppen-knapp
+  const backToTop = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTop.classList.add('show');
+    } else {
+      backToTop.classList.remove('show');
+    }
+  });
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+
+</body>
+
+</html>
+
