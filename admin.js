@@ -1801,6 +1801,8 @@ function autoFillFileName(index) {
         // Convert title to filename format
         let fileName = titleInput.value
             .trim()
+            .replace(/\s*–\s*/g, '_')  // Replace em-dash (–) with underscore
+            .replace(/\s*-\s*/g, '_')  // Replace hyphen (-) with underscore
             .replace(/\s+/g, '_')  // Replace spaces with underscores
             .replace(/[æ]/gi, 'ae') // Replace Norwegian characters (case insensitive)
             .replace(/[ø]/gi, 'o')
