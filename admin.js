@@ -1527,8 +1527,15 @@ function login() {
     let validUsers;
     
     if (storedUsers) {
-        validUsers = JSON.parse(storedUsers);
-    } else {
+        try {
+            validUsers = JSON.parse(storedUsers);
+        } catch (e) {
+            // If parsing fails, reset to defaults
+            validUsers = null;
+        }
+    }
+    
+    if (!validUsers) {
         // Default users with encrypted passwords
         validUsers = {
             'redfox': hashPassword('M1ttNavn3rRedfox2025?'),
