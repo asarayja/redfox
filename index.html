@@ -1908,19 +1908,24 @@
     // Load custom pages from admin data
     loadCustomPages();
     
+    // Load albums from admin data
+    loadAlbumsFromAdmin();
+    
     showSection(aboutSection); // Start med "Om Meg"
   });
 
-  // Listen for localStorage changes to update custom pages
+  // Listen for localStorage changes to update custom pages and albums
   window.addEventListener('storage', function(e) {
     if (e.key === 'redfoxAdminData') {
       loadCustomPages();
+      loadAlbumsFromAdmin();
     }
   });
 
   // Also check for changes when window gets focus (for same-tab updates)
   window.addEventListener('focus', function() {
     loadCustomPages();
+    loadAlbumsFromAdmin();
   });
 
   // Function to load custom pages
@@ -1992,6 +1997,57 @@
       
     } catch (error) {
       console.log('Error loading custom pages:', error);
+    }
+  }
+
+  // Function to load albums from admin data
+  function loadAlbumsFromAdmin() {
+    const adminData = localStorage.getItem('redfoxAdminData');
+    if (!adminData) {
+      return;
+    }
+    
+    try {
+      const data = JSON.parse(adminData);
+      const albums = data.albums || [];
+      
+      // Get the musicResults container
+      const musicResults = document.getElementById('musicResults');
+      if (!musicResults) {
+        return;
+      }
+      
+      // Remove existing dynamic albums (keep original hardcoded ones)
+      const existingDynamicAlbums = musicResults.querySelectorAll('.dynamic-album');
+      existingDynamicAlbums.forEach(album => album.remove());
+      
+      // Add dynamic albums from admin data
+      albums.forEach(album => {
+        const albumDiv = document.createElement('div');
+        albumDiv.className = 'album dynamic-album';
+        
+        const title = currentLang === 'no' ? album.titleNo : album.titleEn;
+        const languageSuffix = currentLang === 'no' 
+          ? (album.language === 'norwegian' ? ' (norsk album)' : ' (engelsk album)')
+          : (album.language === 'norwegian' ? ' (Norwegian album)' : ' (English album)');
+        
+        albumDiv.innerHTML = `
+          <h2>Album: ${title}${languageSuffix}</h2>
+          <audio controls></audio>
+          <ul class="playlist">
+            ${album.songs.map(song => `
+              <li data-src="https://asarayja.github.io/redfox/Redfox/${album.name}/${song.fileName}">
+                ${song.title}
+              </li>
+            `).join('')}
+          </ul>
+        `;
+        
+        musicResults.appendChild(albumDiv);
+      });
+      
+    } catch (error) {
+      console.log('Error loading albums:', error);
     }
   }
 
@@ -2088,6 +2144,22 @@
             content.innerHTML = formatPageContent(lang === 'no' ? page.contentNo : page.contentEn);
           }
         }
+      });
+      
+      // Update dynamic albums language
+      const albums = data.albums || [];
+      albums.forEach(album => {
+        const albumElements = document.querySelectorAll('.dynamic-album h2');
+        albumElements.forEach(h2 => {
+          const title = lang === 'no' ? album.titleNo : album.titleEn;
+          const languageSuffix = lang === 'no' 
+            ? (album.language === 'norwegian' ? ' (norsk album)' : ' (engelsk album)')
+            : (album.language === 'norwegian' ? ' (Norwegian album)' : ' (English album)');
+          
+          if (h2.textContent.includes(album.titleNo) || h2.textContent.includes(album.titleEn)) {
+            h2.textContent = `Album: ${title}${languageSuffix}`;
+          }
+        });
       });
       
     } catch (error) {
