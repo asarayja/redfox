@@ -1419,6 +1419,79 @@ class RedfoxAdmin {
 // Global admin instance
 let admin;
 
+// Load saved credentials on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadSavedCredentials();
+});
+
+function loadSavedCredentials() {
+    const savedCredentials = localStorage.getItem('redfoxSavedCredentials');
+    if (savedCredentials) {
+        try {
+            const credentials = JSON.parse(savedCredentials);
+            document.getElementById('adminUsername').value = credentials.username || '';
+            
+            // Decrypt and restore password if it exists
+            if (credentials.encryptedPassword) {
+                const decryptedPassword = simpleDecrypt(credentials.encryptedPassword);
+                document.getElementById('adminPassword').value = decryptedPassword;
+            }
+            
+            document.getElementById('rememberMe').checked = true;
+        } catch (error) {
+            console.log('Error loading saved credentials');
+        }
+    }
+    
+    // Add listener for remember me checkbox
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+    if (rememberMeCheckbox) {
+        rememberMeCheckbox.addEventListener('change', function() {
+            if (!this.checked) {
+                localStorage.removeItem('redfoxSavedCredentials');
+            }
+        });
+    }
+}
+
+function saveCredentials(username, password) {
+    const rememberMe = document.getElementById('rememberMe').checked;
+    
+    if (rememberMe) {
+        const credentials = {
+            username: username,
+            encryptedPassword: simpleEncrypt(password)
+        };
+        localStorage.setItem('redfoxSavedCredentials', JSON.stringify(credentials));
+    } else {
+        localStorage.removeItem('redfoxSavedCredentials');
+    }
+}
+
+// Simple encryption/decryption functions for password storage
+function simpleEncrypt(text) {
+    const key = 'redfoxkey2025';
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+        const textChar = text.charCodeAt(i);
+        const keyChar = key.charCodeAt(i % key.length);
+        result += String.fromCharCode(textChar ^ keyChar);
+    }
+    return btoa(result); // Base64 encode
+}
+
+function simpleDecrypt(encryptedText) {
+    const key = 'redfoxkey2025';
+    const decoded = atob(encryptedText); // Base64 decode
+    let result = '';
+    for (let i = 0; i < decoded.length; i++) {
+        const encodedChar = decoded.charCodeAt(i);
+        const keyChar = key.charCodeAt(i % key.length);
+        result += String.fromCharCode(encodedChar ^ keyChar);
+    }
+    return result;
+}
+
 // Login functionality
 function handleLoginKeypress(event) {
     if (event.key === 'Enter') {
@@ -1449,6 +1522,9 @@ function login() {
     
     // Check if username exists and password matches
     if (validUsers[username] && inputPasswordHash === validUsers[username]) {
+        // Save credentials if remember me is checked
+        saveCredentials(username, password);
+        
         // Set session with 24 hour expiry
         const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
         localStorage.setItem('redfoxAdminSession', sessionExpiry.toString());
@@ -1475,8 +1551,16 @@ function logout() {
     
     document.getElementById('loginScreen').style.display = 'block';
     document.getElementById('adminPanel').style.display = 'none';
-    document.getElementById('adminUsername').value = '';
-    document.getElementById('adminPassword').value = '';
+    
+    // Only clear credentials if "remember me" is not checked
+    const rememberMe = document.getElementById('rememberMe').checked;
+    if (!rememberMe) {
+        document.getElementById('adminUsername').value = '';
+        document.getElementById('adminPassword').value = '';
+        localStorage.removeItem('redfoxSavedCredentials');
+    }
+    // If remember me is checked, keep the fields as they are
+    
     document.getElementById('loginError').textContent = '';
     document.getElementById('currentUserDisplay').textContent = '';
 }
