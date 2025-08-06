@@ -1736,6 +1736,7 @@ function addNewAlbum() {
     document.getElementById('albumName').value = '';
     document.getElementById('albumTitleNo').value = '';
     document.getElementById('albumTitleEn').value = '';
+    document.getElementById('albumLanguage').value = 'norwegian';
     document.getElementById('songList').innerHTML = '';
     document.getElementById('albumModal').style.display = 'block';
 }
@@ -1755,6 +1756,7 @@ function editAlbum(albumId) {
     document.getElementById('albumName').value = album.name || '';
     document.getElementById('albumTitleNo').value = album.titleNo;
     document.getElementById('albumTitleEn').value = album.titleEn;
+    document.getElementById('albumLanguage').value = album.language || 'norwegian';
     
     const songList = document.getElementById('songList');
     songList.innerHTML = '';
@@ -1855,6 +1857,7 @@ function saveAlbum() {
     const albumName = document.getElementById('albumName').value;
     const titleNo = document.getElementById('albumTitleNo').value;
     const titleEn = document.getElementById('albumTitleEn').value;
+    const language = document.getElementById('albumLanguage').value;
     
     if (!albumName || !titleNo || !titleEn) {
         admin.showErrorMessage('Album navn og begge titler må fylles ut!');
@@ -1878,11 +1881,14 @@ function saveAlbum() {
         admin.currentAlbum.name = albumName;
         admin.currentAlbum.titleNo = titleNo;
         admin.currentAlbum.titleEn = titleEn;
+        admin.currentAlbum.language = language;
         admin.currentAlbum.songs = songs;
         
-        // Update translations for the existing album
-        admin.adminData.translations.no[`album${admin.currentAlbum.id}_title`] = titleNo;
-        admin.adminData.translations.en[`album${admin.currentAlbum.id}_title`] = titleEn;
+        // Update translations for the existing album with language suffix
+        const noSuffix = language === 'norwegian' ? ' (norsk album)' : ' (engelsk album)';
+        const enSuffix = language === 'norwegian' ? ' (Norwegian album)' : ' (English album)';
+        admin.adminData.translations.no[`album${admin.currentAlbum.id}_title`] = titleNo + noSuffix;
+        admin.adminData.translations.en[`album${admin.currentAlbum.id}_title`] = titleEn + enSuffix;
     } else {
         // Add new
         const newId = Math.max(...admin.adminData.albums.map(a => a.id), 0) + 1;
@@ -1891,12 +1897,15 @@ function saveAlbum() {
             name: albumName,
             titleNo,
             titleEn,
+            language,
             songs
         });
         
-        // Add translations for the new album
-        admin.adminData.translations.no[`album${newId}_title`] = titleNo;
-        admin.adminData.translations.en[`album${newId}_title`] = titleEn;
+        // Add translations for the new album with language suffix
+        const noSuffix = language === 'norwegian' ? ' (norsk album)' : ' (engelsk album)';
+        const enSuffix = language === 'norwegian' ? ' (Norwegian album)' : ' (English album)';
+        admin.adminData.translations.no[`album${newId}_title`] = titleNo + noSuffix;
+        admin.adminData.translations.en[`album${newId}_title`] = titleEn + enSuffix;
     }
     
     admin.saveData();
