@@ -1443,6 +1443,10 @@
   <!-- Skript: navigasjon, audio, lightbox, språk -->
 
   <script>
+  // Global variables that need to be accessible everywhere
+  let currentLang = 'no';
+  let currentActiveSection = null; // Track which section is currently active
+
   document.addEventListener('DOMContentLoaded', function () {
     
     // Theme Toggle Functionality
@@ -1654,9 +1658,18 @@
       document.querySelectorAll('[data-custom-page] a').forEach(a => a.classList.remove('active'));
       
       sec.style.display = 'block';
-      if (sec === aboutSection) menuAbout.classList.add('active');
-      if (sec === musicSection) menuMusic.classList.add('active');
-      if (sec === gallerySection) menuGallery.classList.add('active');
+      if (sec === aboutSection) {
+        menuAbout.classList.add('active');
+        currentActiveSection = { type: 'standard', section: aboutSection };
+      }
+      if (sec === musicSection) {
+        menuMusic.classList.add('active');
+        currentActiveSection = { type: 'standard', section: musicSection };
+      }
+      if (sec === gallerySection) {
+        menuGallery.classList.add('active');
+        currentActiveSection = { type: 'standard', section: gallerySection };
+      }
     }
 
     menuAbout.onclick = e => { e.preventDefault(); showSection(aboutSection); };
@@ -1817,7 +1830,6 @@
       }
     };
 
-    let currentLang = 'no';
     const elems = document.querySelectorAll('[data-i18n]');
 
     function updateThemeText() {
@@ -1850,8 +1862,41 @@
       // Update theme text
       updateThemeText();
       
-      // Update custom pages content and navigation
+      // Update custom pages content and navigation first
       updateCustomPagesContent();
+      
+      // Then maintain current page state after all content updates are done
+      // Use setTimeout to ensure DOM updates are complete
+      setTimeout(() => {
+        maintainCurrentPageState();
+      }, 0);
+    }
+
+    function maintainCurrentPageState() {
+      if (currentActiveSection) {
+        if (currentActiveSection.type === 'standard') {
+          // Re-show the current standard section
+          showSection(currentActiveSection.section);
+        } else if (currentActiveSection.type === 'custom') {
+          // For custom pages, we need to get the updated page data from localStorage
+          const adminData = localStorage.getItem('redfoxAdminData');
+          if (adminData) {
+            try {
+              const data = JSON.parse(adminData);
+              const pages = data.pages || [];
+              const updatedPage = pages.find(page => page.name === currentActiveSection.page.name);
+              if (updatedPage) {
+                // Update the stored page reference with current data
+                currentActiveSection.page = updatedPage;
+                // Re-show the custom page with updated content
+                showCustomPage(updatedPage);
+              }
+            } catch (error) {
+              console.log('Error maintaining custom page state:', error);
+            }
+          }
+        }
+      }
     }
 
     document.getElementById('langToggle').onclick = () => {
@@ -1880,9 +1925,6 @@
 
   // Function to load custom pages
   function loadCustomPages() {
-    // Ensure currentLang is available, fallback to 'no'
-    const lang = typeof currentLang !== 'undefined' ? currentLang : 'no';
-    
     const adminData = localStorage.getItem('redfoxAdminData');
     if (!adminData) {
       return;
@@ -1896,6 +1938,9 @@
       const customPages = pages.filter(page => !['about', 'music', 'gallery'].includes(page.name));
       
       const nav = document.querySelector('nav ul');
+      if (!nav) {
+        return;
+      }
       
       // Remove any existing custom pages from nav
       const existingCustomPages = nav.querySelectorAll('[data-custom-page]');
@@ -1909,7 +1954,7 @@
         const a = document.createElement('a');
         a.href = '#';
         a.id = `menu-${page.name}`;
-        a.textContent = lang === 'no' ? page.titleNo : page.titleEn;
+        a.textContent = currentLang === 'no' ? page.titleNo : page.titleEn;
         a.onclick = (e) => {
           e.preventDefault();
           showCustomPage(page);
@@ -1933,11 +1978,11 @@
         section.style.display = 'none';
         
         const h1 = document.createElement('h1');
-        h1.textContent = lang === 'no' ? page.titleNo : page.titleEn;
+        h1.textContent = currentLang === 'no' ? page.titleNo : page.titleEn;
         section.appendChild(h1);
         
         const content = document.createElement('div');
-        content.innerHTML = formatPageContent(lang === 'no' ? page.contentNo : page.contentEn);
+        content.innerHTML = formatPageContent(currentLang === 'no' ? page.contentNo : page.contentEn);
         section.appendChild(content);
         
         // Insert before backToTop button
@@ -1964,6 +2009,19 @@
     const section = document.getElementById(`section-${page.name}`);
     if (section) {
       section.style.display = 'block';
+      
+      // Update content with current language
+      const h1 = section.querySelector('h1');
+      if (h1) {
+        const title = currentLang === 'no' ? page.titleNo : page.titleEn;
+        h1.textContent = title;
+      }
+      
+      const content = section.querySelector('div');
+      if (content) {
+        const pageContent = currentLang === 'no' ? page.contentNo : page.contentEn;
+        content.innerHTML = formatPageContent(pageContent);
+      }
     }
     
     // Add active class to the nav link
@@ -1971,6 +2029,9 @@
     if (navLink) {
       navLink.classList.add('active');
     }
+    
+    // Track current custom page
+    currentActiveSection = { type: 'custom', page: page };
   }
 
   // Format page content with simple markdown-like formatting
@@ -1983,8 +2044,9 @@
       .replace(/^### (.*$)/gim, '<h3>$1</h3>')
       .replace(/^## (.*$)/gim, '<h2>$1</h2>')
       .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-      .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;">')
-      .replace(/\[img:(.*?)\]/g, '<img src="https://asarayja.github.io/redfox/bilder/$1" alt="Bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;">')
+      .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px; display: block;">')
+      .replace(/\[img:(.*?)\]/g, '<img src="https://asarayja.github.io/redfox/bilder/$1" alt="Repository bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px; display: block;">')
+      .replace(/\[img-url:(.*?)\]/g, '<img src="$1" alt="Ekstern bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px; display: block;">')
       .replace(/\n\n/g, '</p><p>')
       .replace(/\n/g, '<br>')
       .replace(/^(.*)$/gim, '<p>$1</p>')
@@ -1995,8 +2057,8 @@
 
   // Function to update custom pages content and navigation when language changes
   function updateCustomPagesContent() {
-    // Ensure currentLang is available, fallback to 'no'
-    const lang = typeof currentLang !== 'undefined' ? currentLang : 'no';
+    // Use the current global currentLang value
+    const lang = currentLang;
     
     const adminData = localStorage.getItem('redfoxAdminData');
     if (!adminData) return;

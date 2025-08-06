@@ -29,7 +29,6 @@
             <h1>🦊 Redfox Admin Panel</h1>
             <div class="header-controls">
                 <span id="currentUserDisplay" class="user-info"></span>
-                <button onclick="previewSite()" class="preview-btn">👁️ Forhåndsvis Side</button>
                 <button onclick="exportData()" class="export-btn">💾 Eksporter Data</button>
                 <button onclick="logout()" class="logout-btn">🚪 Logg Ut</button>
             </div>
@@ -199,7 +198,7 @@
                 <h2>🎵 Musikkbehandling</h2>
                 
                 <div class="music-controls">
-                    <button onclick="addNewAlbum()" class="add-btn">➕ Nytt Album</button>
+                    <button onclick="addNewAlbum()" class="add-btn" id="newAlbumBtn">➕ Nytt Album</button>
                 </div>
 
                 <div id="albumList" class="album-list">
@@ -300,7 +299,7 @@
             </div>
             <div class="form-group">
                 <label>Album Tittel (Norsk):</label>
-                <input type="text" id="albumTitleNo" class="form-input">
+                <input type="text" id="albumTitleNo" class="form-input" onblur="autoFillAlbumName()">
             </div>
             <div class="form-group">
                 <label>Album Tittel (Engelsk):</label>
@@ -322,11 +321,27 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('imageModal')">&times;</span>
             <h3 id="imageModalTitle">Rediger Bilde</h3>
-            <div class="form-group">
-                <label>Bildefil (kun filnavn, f.eks: redfox.png):</label>
-                <input type="text" id="imageFileName" class="form-input" placeholder="redfox.png">
-                <small style="color: #999;">Bildet vil bli lagt til: https://asarayja.github.io/redfox/bilder/</small>
+            
+            <!-- Repository-baserte bilder (kun for asarayja) -->
+            <div id="repositoryImageSection" class="form-section">
+                <h4>📁 Repository Bilde</h4>
+                <div class="form-group">
+                    <label>Bildefil (kun filnavn, f.eks: redfox.png):</label>
+                    <input type="text" id="imageFileName" class="form-input" placeholder="redfox.png">
+                    <small style="color: #999;">Bildet vil bli lagt til: https://asarayja.github.io/redfox/bilder/</small>
+                </div>
             </div>
+            
+            <!-- URL-baserte bilder (for alle brukere) -->
+            <div id="urlImageSection" class="form-section">
+                <h4>🔗 Ekstern URL</h4>
+                <div class="form-group">
+                    <label>Bilde URL (f.eks: fra Imgur):</label>
+                    <input type="url" id="imageUrl" class="form-input" placeholder="https://i.imgur.com/example.jpg">
+                    <small style="color: #999;">Last opp bildet til Imgur eller annen bildetjeneste først</small>
+                </div>
+            </div>
+            
             <div class="form-group">
                 <label>Alt tekst:</label>
                 <input type="text" id="imageAlt" class="form-input">
@@ -363,23 +378,38 @@
                     <h4>Farger</h4>
                     <div class="form-group">
                         <label>Bakgrunnsfarge:</label>
-                        <input type="color" id="themeBackground" class="color-input">
+                        <div class="color-input-group">
+                            <input type="color" id="themeBackground" class="color-input" onchange="updateHexInput('themeBackground', 'themeBackgroundHex')">
+                            <input type="text" id="themeBackgroundHex" class="hex-input" placeholder="#000000" onchange="updateColorPicker('themeBackgroundHex', 'themeBackground')">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Tekst farge:</label>
-                        <input type="color" id="themeTextColor" class="color-input">
+                        <div class="color-input-group">
+                            <input type="color" id="themeTextColor" class="color-input" onchange="updateHexInput('themeTextColor', 'themeTextColorHex')">
+                            <input type="text" id="themeTextColorHex" class="hex-input" placeholder="#ffffff" onchange="updateColorPicker('themeTextColorHex', 'themeTextColor')">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Header farge:</label>
-                        <input type="color" id="themeHeaderColor" class="color-input">
+                        <div class="color-input-group">
+                            <input type="color" id="themeHeaderColor" class="color-input" onchange="updateHexInput('themeHeaderColor', 'themeHeaderColorHex')">
+                            <input type="text" id="themeHeaderColorHex" class="hex-input" placeholder="#a70101" onchange="updateColorPicker('themeHeaderColorHex', 'themeHeaderColor')">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Accent farge:</label>
-                        <input type="color" id="themeAccentColor" class="color-input">
+                        <div class="color-input-group">
+                            <input type="color" id="themeAccentColor" class="color-input" onchange="updateHexInput('themeAccentColor', 'themeAccentColorHex')">
+                            <input type="text" id="themeAccentColorHex" class="hex-input" placeholder="#ff6b6b" onchange="updateColorPicker('themeAccentColorHex', 'themeAccentColor')">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Navigasjon farge:</label>
-                        <input type="color" id="themeNavColor" class="color-input">
+                        <div class="color-input-group">
+                            <input type="color" id="themeNavColor" class="color-input" onchange="updateHexInput('themeNavColor', 'themeNavColorHex')">
+                            <input type="text" id="themeNavColorHex" class="hex-input" placeholder="#333333" onchange="updateColorPicker('themeNavColorHex', 'themeNavColor')">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -407,6 +437,21 @@
                 <input type="text" id="pageTitleEn" class="form-input">
             </div>
             
+            <!-- Shared Image Section -->
+            <div class="form-group">
+                <h4>📷 Felles Bildebehandling</h4>
+                <div class="image-info">
+                    <p><strong>Slik bruker du bilder:</strong></p>
+                    <ol style="color: #ccc; margin-left: 20px;">
+                        <li>Skriv teksten din i både norsk og engelsk feltene</li>
+                        <li>Klikk "Legg til bilde" når du vil ha et bilde</li>
+                        <li>Bildet settes automatisk inn på samme sted i begge språk</li>
+                        <li>Fortsett å skrive - neste bilde havner under ny tekst</li>
+                    </ol>
+                </div>
+                <button type="button" onclick="insertImageBothLanguages()" class="format-btn large-btn">🖼️ Legg til bilde (norsk og engelsk)</button>
+            </div>
+
             <!-- Norwegian Content Editor -->
             <div class="form-group">
                 <label>Innhold (Norsk):</label>
@@ -426,7 +471,6 @@
                             <option value="large">Stor</option>
                             <option value="x-large">Ekstra stor</option>
                         </select>
-                        <button type="button" onclick="insertImage('pageContentNo')" class="format-btn">🖼️ Bilde</button>
                     </div>
                     <textarea id="pageContentNo" class="form-textarea large content-editor"></textarea>
                 </div>
@@ -453,7 +497,6 @@
                             <option value="large">Large</option>
                             <option value="x-large">Extra large</option>
                         </select>
-                        <button type="button" onclick="insertImage('pageContentEn')" class="format-btn">🖼️ Image</button>
                     </div>
                     <textarea id="pageContentEn" class="form-textarea large content-editor"></textarea>
                 </div>

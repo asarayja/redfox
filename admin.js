@@ -327,6 +327,19 @@ class RedfoxAdmin {
         this.loadImages();
         this.loadThemes();
         this.loadPages();
+        this.updateUserSpecificElements();
+    }
+    
+    // Update user-specific elements based on current user
+    updateUserSpecificElements() {
+        const currentUser = localStorage.getItem('redfoxCurrentUser');
+        const isAsarayja = currentUser === 'Asarayja';
+        
+        // Show/hide "Nytt Album" button
+        const newAlbumBtn = document.getElementById('newAlbumBtn');
+        if (newAlbumBtn) {
+            newAlbumBtn.style.display = isAsarayja ? 'block' : 'none';
+        }
     }
 
     // Save data to localStorage
@@ -513,6 +526,9 @@ class RedfoxAdmin {
         const container = document.getElementById('albumList');
         container.innerHTML = '';
         
+        const currentUser = localStorage.getItem('redfoxCurrentUser');
+        const isAsarayja = currentUser === 'Asarayja';
+        
         this.adminData.albums.forEach(album => {
             const div = document.createElement('div');
             div.className = 'album-item';
@@ -520,8 +536,8 @@ class RedfoxAdmin {
                 <div class="item-title">${album.titleNo}</div>
                 <div>Sanger: ${album.songs.length}</div>
                 <div class="item-actions">
-                    <button class="edit-btn" onclick="admin.editAlbum(${album.id})">✏️ Rediger</button>
-                    <button class="delete-btn" onclick="admin.deleteAlbum(${album.id})">🗑️ Slett</button>
+                    ${isAsarayja ? `<button class="edit-btn" onclick="editAlbum(${album.id})">✏️ Rediger</button>` : ''}
+                    ${isAsarayja ? `<button class="delete-btn" onclick="admin.deleteAlbum(${album.id})">🗑️ Slett</button>` : ''}
                 </div>
             `;
             container.appendChild(div);
@@ -669,11 +685,14 @@ class RedfoxAdmin {
             .replace(/<small>(.*?)<\/small>/g, '<span style="font-size: 0.8em;">$1</span>')
             .replace(/<large>(.*?)<\/large>/g, '<span style="font-size: 1.2em;">$1</span>')
             .replace(/<xlarge>(.*?)<\/xlarge>/g, '<span style="font-size: 1.4em;">$1</span>')
+            .replace(/\[img:(.*?)\]/g, '<img src="https://asarayja.github.io/redfox/bilder/$1" alt="Repository bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px; display: block;">')
+            .replace(/\[img-url:(.*?)\]/g, '<img src="$1" alt="Ekstern bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px; display: block;">')
             .replace(/\n\n/g, '</p><p>')
             .replace(/\n/g, '<br>')
             .replace(/^(.*)$/gim, '<p>$1</p>')
             .replace(/<p><\/p>/g, '')
-            .replace(/<p>(<h[1-6]>.*?<\/h[1-6]>)<\/p>/g, '$1');
+            .replace(/<p>(<h[1-6]>.*?<\/h[1-6]>)<\/p>/g, '$1')
+            .replace(/<p>(<img.*?>)<\/p>/g, '$1');
     }
 
     generateSiteHTML() {
@@ -1706,6 +1725,12 @@ function closeModal(modalId) {
 
 // Album functions
 function addNewAlbum() {
+    const currentUser = localStorage.getItem('redfoxCurrentUser');
+    if (currentUser !== 'Asarayja') {
+        admin.showErrorMessage('Kun Asarayja kan legge til nye album');
+        return;
+    }
+    
     admin.currentAlbum = null;
     document.getElementById('albumModalTitle').textContent = 'Nytt Album';
     document.getElementById('albumName').value = '';
@@ -1716,6 +1741,12 @@ function addNewAlbum() {
 }
 
 function editAlbum(albumId) {
+    const currentUser = localStorage.getItem('redfoxCurrentUser');
+    if (currentUser !== 'Asarayja') {
+        admin.showErrorMessage('Kun Asarayja kan redigere album');
+        return;
+    }
+    
     const album = admin.adminData.albums.find(a => a.id === albumId);
     if (!album) return;
     
@@ -1728,12 +1759,17 @@ function editAlbum(albumId) {
     const songList = document.getElementById('songList');
     songList.innerHTML = '';
     
+    // Ensure album.songs exists and is an array
+    if (!album.songs || !Array.isArray(album.songs)) {
+        album.songs = [];
+    }
+    
     album.songs.forEach((song, index) => {
         const div = document.createElement('div');
         div.className = 'song-item';
         div.innerHTML = `
-            <input type="text" placeholder="Sangtittel" value="${song.title}" class="form-input" data-field="title" data-index="${index}">
-            <input type="text" placeholder="Filnavn (f.eks: sang.mp3)" value="${song.fileName || ''}" class="form-input" data-field="fileName" data-index="${index}">
+            <input type="text" placeholder="Sangtittel (f.eks: Bortevekk med Vind i Pelsen)" value="${song.title || ''}" class="form-input" data-field="title" data-index="${index}" onblur="autoFillFileName(${index})">
+            <input type="text" placeholder="Filnavn genereres automatisk..." value="${song.fileName || ''}" class="form-input" data-field="fileName" data-index="${index}" style="background-color: #f5f5f5;" readonly>
             <button class="song-remove" onclick="removeSong(${index})">×</button>
         `;
         songList.appendChild(div);
@@ -1749,11 +1785,55 @@ function addSong() {
     const div = document.createElement('div');
     div.className = 'song-item';
     div.innerHTML = `
-        <input type="text" placeholder="Sangtittel" value="" class="form-input" data-field="title" data-index="${index}">
-        <input type="text" placeholder="Filnavn (f.eks: sang.mp3)" value="" class="form-input" data-field="fileName" data-index="${index}">
+        <input type="text" placeholder="Sangtittel (f.eks: Bortevekk med Vind i Pelsen)" value="" class="form-input" data-field="title" data-index="${index}" onblur="autoFillFileName(${index})">
+        <input type="text" placeholder="Filnavn genereres automatisk..." value="" class="form-input" data-field="fileName" data-index="${index}" style="background-color: #f5f5f5;" readonly>
         <button class="song-remove" onclick="removeSong(${index})">×</button>
     `;
     songList.appendChild(div);
+}
+
+// Auto-fill filename based on song title
+function autoFillFileName(index) {
+    const titleInput = document.querySelector(`input[data-field="title"][data-index="${index}"]`);
+    const fileNameInput = document.querySelector(`input[data-field="fileName"][data-index="${index}"]`);
+    
+    if (titleInput.value && !fileNameInput.value) {
+        // Convert title to filename format
+        let fileName = titleInput.value
+            .trim()
+            .replace(/\s+/g, '_')  // Replace spaces with underscores
+            .replace(/[æ]/gi, 'ae') // Replace Norwegian characters (case insensitive)
+            .replace(/[ø]/gi, 'o')
+            .replace(/[å]/gi, 'aa')
+            .replace(/[^a-zA-Z0-9_]/g, '') // Remove special characters except underscores
+            .replace(/_+/g, '_') // Replace multiple underscores with single
+            .replace(/^_|_$/g, ''); // Remove leading/trailing underscores
+        
+        // Add Redfox prefix and .mp3 extension
+        fileNameInput.value = 'Redfox_' + fileName + '.mp3';
+    }
+}
+
+// Auto-fill album name based on Norwegian title
+function autoFillAlbumName() {
+    const titleNoInput = document.getElementById('albumTitleNo');
+    const albumNameInput = document.getElementById('albumName');
+    
+    if (titleNoInput.value && !albumNameInput.value) {
+        // Convert title to album name format
+        let albumName = titleNoInput.value
+            .trim()
+            .replace(/\s+/g, '_')  // Replace spaces with underscores
+            .replace(/[æ]/gi, 'ae') // Replace Norwegian characters (case insensitive)
+            .replace(/[ø]/gi, 'o')
+            .replace(/[å]/gi, 'aa')
+            .replace(/[^a-zA-Z0-9_]/g, '') // Remove special characters except underscores
+            .replace(/_+/g, '_') // Replace multiple underscores with single
+            .replace(/^_|_$/g, ''); // Remove leading/trailing underscores
+        
+        // Add Redfox prefix
+        albumNameInput.value = 'Redfox_' + albumName;
+    }
 }
 
 function removeSong(index) {
@@ -1823,6 +1903,12 @@ function saveAlbum() {
 }
 
 function deleteAlbum(albumId) {
+    const currentUser = localStorage.getItem('redfoxCurrentUser');
+    if (currentUser !== 'Asarayja') {
+        admin.showErrorMessage('Kun Asarayja kan slette album');
+        return;
+    }
+    
     const confirmation = prompt('For å slette dette albumet, skriv "SLETT" i store bokstaver:');
     if (confirmation === 'SLETT') {
         admin.adminData.albums = admin.adminData.albums.filter(a => a.id !== albumId);
@@ -1839,10 +1925,30 @@ function addNewImage() {
     admin.currentImage = null;
     document.getElementById('imageModalTitle').textContent = 'Nytt Bilde';
     document.getElementById('imageFileName').value = '';
+    document.getElementById('imageUrl').value = '';
     document.getElementById('imageAlt').value = '';
     document.getElementById('imageCaptionNo').value = '';
     document.getElementById('imageCaptionEn').value = '';
+    
+    // Show/hide sections based on user
+    updateImageModalSections();
+    
     document.getElementById('imageModal').style.display = 'block';
+}
+
+function updateImageModalSections() {
+    const currentUser = localStorage.getItem('redfoxCurrentUser');
+    const isAsarayja = currentUser === 'Asarayja';
+    
+    const repositorySection = document.getElementById('repositoryImageSection');
+    const urlSection = document.getElementById('urlImageSection');
+    
+    if (repositorySection) {
+        repositorySection.style.display = isAsarayja ? 'block' : 'none';
+    }
+    if (urlSection) {
+        urlSection.style.display = 'block'; // Alle kan bruke URL
+    }
 }
 
 function editImage(imageId) {
@@ -1852,36 +1958,54 @@ function editImage(imageId) {
     admin.currentImage = image;
     document.getElementById('imageModalTitle').textContent = 'Rediger Bilde';
     document.getElementById('imageFileName').value = image.fileName || '';
+    document.getElementById('imageUrl').value = image.url || '';
     document.getElementById('imageAlt').value = image.alt;
     document.getElementById('imageCaptionNo').value = image.captionNo;
     document.getElementById('imageCaptionEn').value = image.captionEn;
+    
+    // Show/hide sections based on user
+    updateImageModalSections();
+    
     document.getElementById('imageModal').style.display = 'block';
 }
 
 function saveImage() {
     const fileName = document.getElementById('imageFileName').value;
+    const imageUrl = document.getElementById('imageUrl').value;
     const alt = document.getElementById('imageAlt').value;
     const captionNo = document.getElementById('imageCaptionNo').value;
     const captionEn = document.getElementById('imageCaptionEn').value;
     
-    if (!fileName || !alt || !captionNo || !captionEn) {
-        admin.showErrorMessage('Alle felter må fylles ut!');
+    // Check that we have either fileName OR imageUrl, plus all other required fields
+    if ((!fileName && !imageUrl) || !alt || !captionNo || !captionEn) {
+        admin.showErrorMessage('Du må fylle ut enten repository filnavn eller ekstern URL, samt alle andre felter!');
         return;
     }
     
-    // Generate URL from filename
-    let url;
-    if (fileName === 'logo.png' || fileName.includes('imgur.com') || fileName.startsWith('https://')) {
-        // Special case for logo or full URLs
-        url = fileName.startsWith('https://') ? fileName : 'https://i.imgur.com/pMJfpb3.png';
+    // Both fileName and imageUrl filled - this is not allowed
+    if (fileName && imageUrl) {
+        admin.showErrorMessage('Du kan kun bruke enten repository filnavn ELLER ekstern URL, ikke begge!');
+        return;
+    }
+    
+    // Determine the final URL
+    let finalUrl;
+    let usedFileName = '';
+    
+    if (imageUrl) {
+        // Using external URL
+        finalUrl = imageUrl;
+        usedFileName = ''; // No filename for external URLs
     } else {
-        url = `https://asarayja.github.io/redfox/bilder/${fileName}`;
+        // Using repository file
+        finalUrl = `https://asarayja.github.io/redfox/bilder/${fileName}`;
+        usedFileName = fileName;
     }
     
     if (admin.currentImage) {
         // Edit existing
-        admin.currentImage.fileName = fileName;
-        admin.currentImage.url = url;
+        admin.currentImage.fileName = usedFileName;
+        admin.currentImage.url = finalUrl;
         admin.currentImage.alt = alt;
         admin.currentImage.captionNo = captionNo;
         admin.currentImage.captionEn = captionEn;
@@ -1890,8 +2014,8 @@ function saveImage() {
         const newId = Math.max(...admin.adminData.images.map(i => i.id), 0) + 1;
         admin.adminData.images.push({
             id: newId,
-            fileName,
-            url,
+            fileName: usedFileName,
+            url: finalUrl,
             alt,
             captionNo,
             captionEn
@@ -1926,6 +2050,14 @@ function addNewTheme() {
     document.getElementById('themeHeaderColor').value = '#3b0000';
     document.getElementById('themeAccentColor').value = '#a70101';
     document.getElementById('themeNavColor').value = '#2e2e2e';
+    
+    // Initialize hex inputs
+    updateHexInput('themeBackground', 'themeBackgroundHex');
+    updateHexInput('themeTextColor', 'themeTextColorHex');
+    updateHexInput('themeHeaderColor', 'themeHeaderColorHex');
+    updateHexInput('themeAccentColor', 'themeAccentColorHex');
+    updateHexInput('themeNavColor', 'themeNavColorHex');
+    
     document.getElementById('themeModal').style.display = 'block';
 }
 
@@ -1942,7 +2074,48 @@ function editTheme(themeId) {
     document.getElementById('themeHeaderColor').value = theme.colors.headerColor;
     document.getElementById('themeAccentColor').value = theme.colors.accentColor;
     document.getElementById('themeNavColor').value = theme.colors.navColor;
+    
+    // Update hex inputs
+    updateHexInput('themeBackground', 'themeBackgroundHex');
+    updateHexInput('themeTextColor', 'themeTextColorHex');
+    updateHexInput('themeHeaderColor', 'themeHeaderColorHex');
+    updateHexInput('themeAccentColor', 'themeAccentColorHex');
+    updateHexInput('themeNavColor', 'themeNavColorHex');
+    
     document.getElementById('themeModal').style.display = 'block';
+}
+
+// Function to update hex input when color picker changes
+function updateHexInput(colorPickerId, hexInputId) {
+    const colorPicker = document.getElementById(colorPickerId);
+    const hexInput = document.getElementById(hexInputId);
+    if (colorPicker && hexInput) {
+        hexInput.value = colorPicker.value.toUpperCase();
+    }
+}
+
+// Function to update color picker when hex input changes
+function updateColorPicker(hexInputId, colorPickerId) {
+    const hexInput = document.getElementById(hexInputId);
+    const colorPicker = document.getElementById(colorPickerId);
+    
+    if (hexInput && colorPicker) {
+        let hexValue = hexInput.value.trim();
+        
+        // Add # if missing
+        if (!hexValue.startsWith('#')) {
+            hexValue = '#' + hexValue;
+        }
+        
+        // Validate hex format
+        if (/^#[0-9A-Fa-f]{6}$/.test(hexValue)) {
+            colorPicker.value = hexValue.toLowerCase();
+            hexInput.value = hexValue.toUpperCase();
+        } else {
+            // If invalid, reset to color picker value
+            hexInput.value = colorPicker.value.toUpperCase();
+        }
+    }
 }
 
 function saveTheme() {
@@ -2262,13 +2435,6 @@ function importData() {
     reader.readAsText(file);
 }
 
-function previewSite() {
-    const htmlContent = admin.generateMainSite();
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
-}
-
 // Simple hash function for password encryption
 function hashPassword(password) {
     let hash = 0;
@@ -2355,9 +2521,15 @@ function togglePreview(lang) {
             .replace(/<small>(.*?)<\/small>/g, '<span style="font-size: 0.8em;">$1</span>')
             .replace(/<large>(.*?)<\/large>/g, '<span style="font-size: 1.2em;">$1</span>')
             .replace(/<xlarge>(.*?)<\/xlarge>/g, '<span style="font-size: 1.4em;">$1</span>')
-            .replace(/\[img:(.*?)\]/g, '<img src="https://asarayja.github.io/redfox/bilder/$1" alt="Bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;">')
-            .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;">')
-            .replace(/\n/g, '<br>');
+            .replace(/\[img:(.*?)\]/g, '<img src="https://asarayja.github.io/redfox/bilder/$1" alt="Repository bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px; display: block;">')
+            .replace(/\[img-url:(.*?)\]/g, '<img src="$1" alt="Ekstern bilde" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px; display: block;">')
+            .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px; display: block;">')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>')
+            .replace(/^(.*)$/gim, '<p>$1</p>')
+            .replace(/<p><\/p>/g, '')
+            .replace(/<p>(<h[1-6]>.*?<\/h[1-6]>)<\/p>/g, '$1')
+            .replace(/<p>(<img.*?>)<\/p>/g, '$1');
         
         preview.innerHTML = html;
         preview.style.display = 'block';
@@ -2369,43 +2541,153 @@ function togglePreview(lang) {
     }
 }
 
+function insertImageBothLanguages() {
+    const textareaNo = document.getElementById('pageContentNo');
+    const textareaEn = document.getElementById('pageContentEn');
+    
+    if (!textareaNo || !textareaEn) {
+        alert('Feil: Kunne ikke finne tekstfeltene.');
+        return;
+    }
+    
+    const currentUser = localStorage.getItem('redfoxCurrentUser');
+    const isAsarayja = currentUser === 'Asarayja';
+    
+    let promptMessage;
+    if (isAsarayja) {
+        promptMessage = `📷 Legg til bilde i begge språk:
+
+Repository bilde: Skriv kun filnavnet (f.eks: 1.jpg, 2.jpg, 3.jpg, 4.jpg)
+Ekstern URL: Skriv full URL (f.eks: https://i.imgur.com/example.jpg)
+
+💡 Tips: Bildet settes automatisk inn på samme sted i både norsk og engelsk tekst.
+
+Skriv enten filnavn eller URL:`;
+    } else {
+        promptMessage = `📷 Legg til bilde i begge språk via ekstern URL:
+
+Eksempel: https://i.imgur.com/example.jpg
+
+💡 Tips: Bildet settes automatisk inn på samme sted i både norsk og engelsk tekst.
+
+Skriv inn URL:`;
+    }
+    
+    const input = prompt(promptMessage);
+    if (!input || !input.trim()) return;
+    
+    const trimmedInput = input.trim();
+    let imageTag;
+    
+    // Check if it's a URL or filename
+    if (trimmedInput.startsWith('http://') || trimmedInput.startsWith('https://')) {
+        // External URL
+        imageTag = `[img-url:${trimmedInput}]`;
+    } else {
+        // Repository filename
+        if (!isAsarayja) {
+            alert('Kun Asarayja kan bruke repository-bilder. Vennligst bruk en full URL som starter med http:// eller https://');
+            return;
+        }
+        
+        // Validate repository filename (optional - just accept any filename)
+        const availableImages = ['1.jpg', '2.jpg', '3.jpg', '4.jpg'];
+        if (!availableImages.includes(trimmedInput)) {
+            const confirm = window.confirm(`"${trimmedInput}" er ikke blant standard bildene (${availableImages.join(', ')}). Vil du fortsatt bruke dette filnavnet?`);
+            if (!confirm) return;
+        }
+        
+        imageTag = `[img:${trimmedInput}]`;
+    }
+    
+    // Insert image in both language text areas
+    insertImageAtEnd(textareaNo, imageTag);
+    insertImageAtEnd(textareaEn, imageTag);
+    
+    // Show success message
+    alert(`✅ Bilde lagt til i både norsk og engelsk tekst!\n\nBildekode: ${imageTag}`);
+}
+
 function insertImage(textareaId) {
+    // Legacy function - redirect to new function if no specific textarea
+    if (!textareaId) {
+        insertImageBothLanguages();
+        return;
+    }
+    
     const textarea = document.getElementById(textareaId);
     if (!textarea) return;
     
-    // Get available images from bilder folder
-    const availableImages = ['1.jpg', '2.jpg', '3.jpg', '4.jpg'];
+    const currentUser = localStorage.getItem('redfoxCurrentUser');
+    const isAsarayja = currentUser === 'Asarayja';
     
-    let imageOptions = 'Velg et bilde:\n\n';
-    availableImages.forEach((img, index) => {
-        imageOptions += `${index + 1}. ${img}\n`;
-    });
-    imageOptions += '\nSkriv inn nummeret på bildet du vil sette inn:';
-    
-    const choice = prompt(imageOptions);
-    
-    if (choice && !isNaN(choice)) {
-        const imageIndex = parseInt(choice) - 1;
-        if (imageIndex >= 0 && imageIndex < availableImages.length) {
-            const imageName = availableImages[imageIndex];
-            const imageTag = `[img:${imageName}]`;
-            
-            // Insert at cursor position
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const text = textarea.value;
-            
-            const beforeText = text.substring(0, start);
-            const afterText = text.substring(end, text.length);
-            
-            textarea.value = beforeText + imageTag + afterText;
-            textarea.focus();
-            
-            // Set cursor position after the image tag
-            const newPosition = start + imageTag.length;
-            textarea.setSelectionRange(newPosition, newPosition);
-        } else {
-            alert('Ugyldig valg. Velg et nummer mellom 1 og ' + availableImages.length);
-        }
+    let promptMessage;
+    if (isAsarayja) {
+        promptMessage = `Legg til bilde:
+
+Repository bilde: Skriv kun filnavnet (f.eks: 1.jpg, 2.jpg, 3.jpg, 4.jpg)
+Ekstern URL: Skriv full URL (f.eks: https://i.imgur.com/example.jpg)
+
+Skriv enten filnavn eller URL:`;
+    } else {
+        promptMessage = `Legg til bilde via ekstern URL:
+
+Eksempel: https://i.imgur.com/example.jpg
+
+Skriv inn URL:`;
     }
+    
+    const input = prompt(promptMessage);
+    if (!input || !input.trim()) return;
+    
+    const trimmedInput = input.trim();
+    
+    // Check if it's a URL or filename
+    if (trimmedInput.startsWith('http://') || trimmedInput.startsWith('https://')) {
+        // External URL
+        const imageTag = `[img-url:${trimmedInput}]`;
+        insertImageAtEnd(textarea, imageTag);
+    } else {
+        // Repository filename
+        if (!isAsarayja) {
+            alert('Kun Asarayja kan bruke repository-bilder. Vennligst bruk en full URL som starter med http:// eller https://');
+            return;
+        }
+        
+        // Validate repository filename (optional - just accept any filename)
+        const availableImages = ['1.jpg', '2.jpg', '3.jpg', '4.jpg'];
+        if (!availableImages.includes(trimmedInput)) {
+            const confirm = window.confirm(`"${trimmedInput}" er ikke blant standard bildene (${availableImages.join(', ')}). Vil du fortsatt bruke dette filnavnet?`);
+            if (!confirm) return;
+        }
+        
+        const imageTag = `[img:${trimmedInput}]`;
+        insertImageAtEnd(textarea, imageTag);
+    }
+}
+
+function insertImageAtEnd(textarea, imageTag) {
+    // Get current text
+    const currentText = textarea.value;
+    
+    // Add image at the end with proper line breaks
+    let newText;
+    if (currentText.trim() === '') {
+        // If textarea is empty, just add the image
+        newText = imageTag;
+    } else {
+        // If there's text, add two line breaks and then the image
+        newText = currentText + '\n\n' + imageTag;
+    }
+    
+    // Set the new text
+    textarea.value = newText;
+    textarea.focus();
+    
+    // Set cursor position at the very end
+    const endPosition = newText.length;
+    textarea.setSelectionRange(endPosition, endPosition);
+    
+    // Scroll to bottom to show the newly added image
+    textarea.scrollTop = textarea.scrollHeight;
 }
