@@ -1,3 +1,61 @@
+/* Vestfold fylke inspired color palette */
+:root {
+    --vf-blue: #3A5DAE;
+    --vf-plum: #6B2D5C;
+    --vf-water: #4C8C9B;
+    --vf-grass: #7BA05B;
+    --vf-rose: #C94F4F;
+    --vf-reed: #B2A97B;
+    --vf-spruce: #2C4A3A;
+    --vf-grain: #E2C785;
+    --vf-fjord: #5A7D9A;
+    --vf-sky: #A3C7E4;
+    --vf-bark: #7C5C3B;
+    --vf-beach: #EAD9B7;
+    --vf-black: #000;
+    --vf-yellow: #FFD600;
+    --vf-red: #E10600;
+}
+
+body {
+    background: linear-gradient(135deg, var(--vf-fjord) 0%, var(--vf-sky) 100%);
+    color: var(--vf-black);
+}
+
+.header {
+    background: var(--vf-water);
+    color: #fff;
+    padding: 2em 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+    font-size: 2em;
+    letter-spacing: 0.05em;
+}
+
+.button-primary {
+    background: var(--vf-yellow);
+    color: var(--vf-black);
+    border-radius: 2em;
+    padding: 0.8em 2em;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background 0.2s;
+    border: none;
+    cursor: pointer;
+}
+.button-primary:hover {
+    background: var(--vf-red);
+    color: #fff;
+}
+
+.card {
+    background: var(--vf-beach);
+    border-radius: 1.5em;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    padding: 2em;
+    margin: 2em 0;
+    color: var(--vf-bark);
+}
 /* Variables */
 :root {
     --primary-r: 0;
