@@ -1,61 +1,3 @@
-/* Vestfold fylke inspired color palette */
-:root {
-    --vf-blue: #3A5DAE;
-    --vf-plum: #6B2D5C;
-    --vf-water: #4C8C9B;
-    --vf-grass: #7BA05B;
-    --vf-rose: #C94F4F;
-    --vf-reed: #B2A97B;
-    --vf-spruce: #2C4A3A;
-    --vf-grain: #E2C785;
-    --vf-fjord: #5A7D9A;
-    --vf-sky: #A3C7E4;
-    --vf-bark: #7C5C3B;
-    --vf-beach: #EAD9B7;
-    --vf-black: #000;
-    --vf-yellow: #FFD600;
-    --vf-red: #E10600;
-}
-
-body {
-    background: linear-gradient(135deg, var(--vf-fjord) 0%, var(--vf-sky) 100%);
-    color: var(--vf-black);
-}
-
-.header {
-    background: var(--vf-water);
-    color: #fff;
-    padding: 2em 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    text-align: center;
-    font-size: 2em;
-    letter-spacing: 0.05em;
-}
-
-.button-primary {
-    background: var(--vf-yellow);
-    color: var(--vf-black);
-    border-radius: 2em;
-    padding: 0.8em 2em;
-    font-weight: bold;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-    transition: background 0.2s;
-    border: none;
-    cursor: pointer;
-}
-.button-primary:hover {
-    background: var(--vf-red);
-    color: #fff;
-}
-
-.card {
-    background: var(--vf-beach);
-    border-radius: 1.5em;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    padding: 2em;
-    margin: 2em 0;
-    color: var(--vf-bark);
-}
 /* Variables */
 :root {
     --primary-r: 0;
@@ -1248,4 +1190,235 @@ html,
     .layout-desktop #slides-container .button-container {
         top: calc(50% + 15vh) !important;
     }
+}
+
+/* =====================================================================
+   Responsive 4K / Large-display enhancement + Vestfold color palette
+   Applies clean overrides without changing Jellyfin core markup.
+   Notes:
+   - Physical inches can't be detected in CSS; we approximate "110 inch @ 4K"
+     using large viewport widths + high pixel density.
+   - Uses rem + clamp() to scale typography and touch targets smoothly.
+   Sources for palette: Vestfold fylkeskommune designmanual (RGB/HEX). 
+   ===================================================================== */
+
+/* --- Vestfold palette (HEX) as CSS custom properties --- */
+:root{
+  /* Core palette */
+  --vf-vann: #005260;   /* navigation color */
+  --vf-himmel: #009BC2; /* bright accent */
+  --vf-fjord: #14828C;
+  --vf-hav: #1C6C6C;
+  --vf-gran: #2F7542;
+  --vf-siv: #BC7726;
+  --vf-stein: #7B7B7A;
+  --vf-blaveis: #414681;
+  --vf-nype: #B7173D;
+  --vf-plomme: #5A2E61;
+
+  /* Dark UI neutrals tuned for TV/4K contrast */
+  --ui-bg-0: #0b0f12;     /* near-black */
+  --ui-bg-1: #10161a;     /* primary surfaces */
+  --ui-bg-2: #141c21;     /* secondary surfaces */
+  --ui-bg-3: #182229;     /* elevated surfaces */
+  --ui-fg-0: #f2f5f7;     /* primary text */
+  --ui-fg-1: #c9d3d8;     /* secondary text */
+  --ui-fg-2: #8ea0a9;     /* muted text */
+
+  /* Accent mapping (replaces old cyan) */
+  --primary-accent-color: var(--vf-himmel);
+  --secondary-accent-color: color-mix(in srgb, var(--vf-himmel) 16%, transparent);
+
+  /* Background mapping (keeps your overall dark look, but more consistent) */
+  --primary-background-color: var(--ui-bg-0);
+  --secondary-background-color: var(--ui-bg-2);
+  --primary-background-transparent: color-mix(in srgb, var(--ui-bg-3) 70%, transparent);
+  --secondary-background-transparent: color-mix(in srgb, #000 65%, transparent);
+  --tertiary-background-transparent: color-mix(in srgb, var(--ui-bg-3) 85%, transparent);
+
+  /* Scalable radius & blur */
+  --rounded-cards: clamp(0.75rem, 0.9vw, 1.25rem);
+  --blur: clamp(0.5rem, 0.8vw, 1rem);
+
+  /* Spacing scale */
+  --space-1: clamp(0.25rem, 0.35vw, 0.5rem);
+  --space-2: clamp(0.5rem, 0.6vw, 0.9rem);
+  --space-3: clamp(0.75rem, 0.9vw, 1.25rem);
+  --space-4: clamp(1rem, 1.2vw, 1.75rem);
+  --space-5: clamp(1.25rem, 1.6vw, 2.25rem);
+
+  /* Touch targets (TV / couch distance) */
+  --tap-min: clamp(2.75rem, 3.2vw, 3.5rem);
+
+  /* Typography scale */
+  --font-base: clamp(0.95rem, 0.55vw, 1.15rem);
+  --font-sm: clamp(0.85rem, 0.48vw, 1.05rem);
+  --font-lg: clamp(1.05rem, 0.75vw, 1.35rem);
+  --font-xl: clamp(1.25rem, 1.05vw, 1.8rem);
+
+  /* Focus/outline for accessibility */
+  --focus-ring: 0 0 0 clamp(0.12rem, 0.18vw, 0.2rem) color-mix(in srgb, var(--vf-himmel) 55%, transparent);
+}
+
+/* Fallback for browsers without color-mix() (older Safari/Chromium variants) */
+@supports not (color: color-mix(in srgb, white, black)) {
+  :root{
+    --secondary-accent-color: rgba(0, 155, 194, 0.16);
+    --primary-background-transparent: rgba(24, 34, 41, 0.70);
+    --secondary-background-transparent: rgba(0, 0, 0, 0.65);
+    --tertiary-background-transparent: rgba(24, 34, 41, 0.85);
+    --focus-ring: 0 0 0 0.18rem rgba(0,155,194,0.55);
+  }
+}
+
+/* --- Global type scaling (4K friendly) --- */
+html{
+  font-size: 16px; /* baseline for rem; scaled below */
+}
+body, .layout-desktop, .layout-tv, .layout-mobile{
+  font-size: var(--font-base);
+  color: var(--ui-fg-0);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Keep line-length readable on huge screens */
+.layout-desktop .detailSectionContent,
+.layout-desktop .trackSelections,
+.layout-desktop .itemDetailsGroup{
+  max-width: min(70rem, 92vw);
+}
+
+/* --- Replace a few key fixed sizes with scalable equivalents --- */
+
+/* Left drawer width: avoid being too huge on ultrawide, too tiny on 4K */
+.layout-desktop .mainDrawer{
+  width: clamp(14rem, 18vw, 22rem) !important;
+}
+.layout-desktop .libraryPage,
+.quickConnectSettingsContainer{
+  margin-left: clamp(14rem, 18vw, 22rem) !important;
+}
+.layout-desktop .mainDrawer-scrollContainer{
+  margin-top: clamp(4rem, 6vw, 7.5rem) !important;
+  margin-left: var(--space-2) !important;
+}
+
+/* Header padding & button sizing */
+.layout-desktop .skinHeader,
+.layout-tv .skinHeader{
+  padding-top: var(--space-3) !important;
+}
+.headerRight,
+.emby-tab-button{
+  height: var(--tap-min) !important;
+}
+.layout-desktop .headerRight{
+  padding: 0 var(--space-2) !important;
+}
+
+/* Navigation items: scalable height + better hit area */
+.navMenuOption,
+.navMenuOption:hover,
+.navMenuOption-selected{
+  height: var(--tap-min) !important;
+  width: min(92%, 22rem) !important;
+  margin: var(--space-1) auto !important;
+  padding-inline: var(--space-2) !important;
+  font-size: var(--font-sm) !important;
+}
+
+/* Cards & footers */
+.innerCardFooter{
+  margin-left: var(--space-1) !important;
+  margin-bottom: var(--space-1) !important;
+  padding: var(--space-1) var(--space-2) !important;
+}
+.itemProgressBar:not(.playbackProgress):not(.transcodingProgress):not(.backgroundProgress){
+  height: clamp(0.45rem, 0.55vw, 0.7rem) !important;
+}
+
+/* Login box: remove hard pixel widths */
+.layout-desktop #loginPage .padded-left.padded-right.padded-bottom-page.margin-auto-y{
+  width: min(42rem, 92vw) !important;
+  padding: var(--space-5) !important;
+  border-radius: clamp(1rem, 1.2vw, 1.75rem) !important;
+}
+.layout-desktop #loginPage .squareCard{
+  width: clamp(10rem, 18vw, 16rem) !important;
+}
+
+/* Buttons: consistent focus ring */
+.emby-button:focus-visible,
+.paper-icon-button-light:focus-visible,
+.emby-tab-button:focus-visible,
+.navMenuOption:focus-visible{
+  outline: none !important;
+  box-shadow: var(--focus-ring) !important;
+  border-radius: 999px !important;
+}
+
+/* --- 4K / large-display breakpoints --- */
+
+/* 2560+ (QHD and up): slightly larger base & more breathing room */
+@media (min-width: 2560px) {
+  :root{
+    --font-base: clamp(1.02rem, 0.55vw, 1.25rem);
+    --tap-min: clamp(3rem, 2.6vw, 3.75rem);
+  }
+  .layout-desktop .headerTabs{
+    margin-left: clamp(8rem, 10vw, 12rem) !important;
+  }
+}
+
+/* True 4K: keep UI proportionate, avoid over-stretch; increase text a touch */
+@media (min-width: 3840px), (min-resolution: 2.5dppx) {
+  :root{
+    --font-base: clamp(1.10rem, 0.50vw, 1.35rem);
+    --font-lg: clamp(1.20rem, 0.70vw, 1.55rem);
+    --font-xl: clamp(1.45rem, 0.95vw, 2.10rem);
+    --tap-min: clamp(3.25rem, 2.2vw, 4.0rem);
+    --space-5: clamp(1.5rem, 1.4vw, 2.75rem);
+  }
+
+  /* Keep drawer usable but not gigantic */
+  .layout-desktop .mainDrawer{
+    width: clamp(16rem, 14vw, 24rem) !important;
+  }
+  .layout-desktop .libraryPage,
+  .quickConnectSettingsContainer{
+    margin-left: clamp(16rem, 14vw, 24rem) !important;
+  }
+}
+
+/* TV / couch scenario: pointer coarse typically means remote/touch.
+   Boost targets and spacing without making everything cartoonishly large. */
+@media (pointer: coarse) and (min-width: 1920px){
+  :root{
+    --tap-min: clamp(3.25rem, 3.0vw, 4.5rem);
+    --font-base: clamp(1.05rem, 0.70vw, 1.45rem);
+  }
+  .layout-tv .headerRight,
+  .layout-tv .headerTabs{
+    padding: var(--space-3) var(--space-4) !important;
+  }
+}
+
+/* --- Small improvements to color usage (better contrast + consistency) --- */
+.playedIndicator{ background: var(--vf-gran) !important; }
+.recordingIcon{ color: var(--vf-nype) !important; }
+
+/* Make default card backgrounds harmonize with Vestfold palette */
+.defaultCardBackground1{ background-color: color-mix(in srgb, var(--vf-hav) 80%, black) !important; }
+.defaultCardBackground2{ background-color: color-mix(in srgb, var(--vf-fjord) 75%, black) !important; }
+.defaultCardBackground3{ background-color: color-mix(in srgb, var(--vf-vann) 70%, black) !important; }
+.defaultCardBackground4{ background-color: color-mix(in srgb, var(--vf-blaveis) 70%, black) !important; }
+.defaultCardBackground5{ background-color: color-mix(in srgb, var(--vf-plomme) 70%, black) !important; }
+
+@supports not (color: color-mix(in srgb, white, black)) {
+  .defaultCardBackground1{ background-color: #16343a !important; }
+  .defaultCardBackground2{ background-color: #16363b !important; }
+  .defaultCardBackground3{ background-color: #0b2a33 !important; }
+  .defaultCardBackground4{ background-color: #1c2140 !important; }
+  .defaultCardBackground5{ background-color: #24152b !important; }
 }
