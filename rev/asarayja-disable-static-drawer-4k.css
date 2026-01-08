@@ -1,0 +1,216 @@
+/* =====================================================================
+   disable-static-drawer.css (responsive / 4K / large-display enhanced)
+   - Replaces fixed px sizing with scalable rem/clamp() where practical
+   - Adds large-screen breakpoints (2560px, 3840px) for TV / 4K setups
+   - Keeps the original intent: drawer is off-canvas (not static), content
+     is not permanently shifted, hamburger/home buttons visible, etc.
+   - Uses existing theme variables when available (with safe fallbacks)
+   ===================================================================== */
+
+/* ---------- Scales (fallback-safe) ---------- */
+:root{
+  /* ---------- Vestfold palette + theme mapping (self-contained) ---------- */
+  /* Source: Vestfold fylkeskommune designmanual (farger). */
+  --vf-vann: #005260;
+  --vf-himmel: #009BC2;
+  --vf-fjord: #14828C;
+  --vf-hav: #1C6C6C;
+  --vf-gran: #2F7542;
+  --vf-siv: #BC7726;
+  --vf-stein: #7B7B7A;
+  --vf-blaveis: #414681;
+  --vf-nype: #B7173D;
+  --vf-plomme: #5A2E61;
+
+  /* Map Jellyfin theme variables (used by this file + common themes) */
+  --secondary-background-color: var(--vf-vann);
+  --primary-background-transparent: rgba(16, 22, 26, 0.72);
+  --rounded-cards: clamp(0.75rem, 0.9vw, 1.25rem);
+  --blur: clamp(0.5rem, 0.8vw, 1rem);
+
+  /* Spacing scale */
+  --ds-space-1: clamp(0.25rem, 0.35vw, 0.5rem);
+  --ds-space-2: clamp(0.5rem, 0.6vw, 0.9rem);
+  --ds-space-3: clamp(0.75rem, 0.9vw, 1.25rem);
+  --ds-space-4: clamp(1rem, 1.2vw, 1.75rem);
+
+  /* Drawer + header sizing */
+  --ds-drawer-width: clamp(16rem, 18vw, 22rem);          /* ~256–352px+ */
+  --ds-drawer-hidden-x: calc(var(--ds-drawer-width) * -1);
+  --ds-logo-h: clamp(1.6rem, 1.2vw, 2.2rem);
+  --ds-logo-w: clamp(5.5rem, 6.5vw, 8rem);
+
+  /* Touch target */
+  --ds-tap-min: clamp(2.75rem, 3.2vw, 3.6rem);
+
+  /* Rounding / blur fallbacks */
+  --ds-rounded: var(--rounded-cards, 1rem);
+  --ds-blur: var(--blur, 0.9rem);
+
+  /* Background fallbacks */
+  --ds-bg-solid: var(--secondary-background-color, rgba(20, 28, 33, 0.95));
+  --ds-bg-glass: var(--primary-background-transparent, rgba(20, 28, 33, 0.72));
+}
+
+/* ---------- Logo sizing (scales nicely on 4K) ---------- */
+.layout-desktop .pageTitleWithLogo{
+  height: var(--ds-logo-h) !important;
+  width: var(--ds-logo-w) !important;
+  margin: 0 var(--ds-space-3) 0 var(--ds-space-2) !important;
+}
+[dir="ltr"] .pageTitle{
+  margin: 0 var(--ds-space-3) 0 var(--ds-space-2) !important;
+}
+
+/* ---------- Un-static left drawer (off-canvas) ---------- */
+.layout-desktop .mainDrawer{
+  left: var(--ds-drawer-hidden-x) !important;
+  z-index: 1099 !important;
+  width: var(--ds-drawer-width) !important;
+  border-top-right-radius: var(--ds-rounded) !important;
+  border-bottom-right-radius: var(--ds-rounded) !important;
+  background: var(--ds-bg-solid) !important;
+  backdrop-filter: none !important;
+  /* Performance: prevent expensive paint on every frame */
+  will-change: transform, left;
+}
+
+/* When Jellyfin uses the blurred backdrop, match it (supports :has) */
+.layout-desktop:has(.backgroundContainer.withBackdrop) .mainDrawer{
+  width: var(--ds-drawer-width) !important;
+  background-color: var(--ds-bg-glass) !important;
+  backdrop-filter: blur(var(--ds-blur)) !important;
+}
+
+/* Fallback for browsers without :has() */
+@supports not selector(:has(*)) {
+  .layout-desktop .backgroundContainer.withBackdrop + div .mainDrawer{
+    background: var(--ds-bg-solid) !important;
+    backdrop-filter: none !important;
+  }
+  .layout-desktop #itemDetailPage.noBackdropTransparency::after{
+    display: none !important;
+  }
+}
+
+/* Lower drawer buttons (scalable) */
+.layout-desktop .mainDrawer-scrollContainer{
+  margin-top: var(--ds-space-3) !important;
+}
+
+/* Shift content back to the left (remove static drawer margin) */
+.layout-desktop .libraryPage{
+  margin-left: 0 !important;
+}
+/* Fix for Jellyfin Media Player */
+.quickConnectSettingsContainer{
+  margin-left: 0 !important;
+}
+
+/* Add transition back (keep original feel, slightly more resilient) */
+.layout-desktop .touch-menu-la.transition{
+  transition:
+    transform .24s ease-out,
+    left .26s ease-out,
+    -webkit-transform .24s ease-out !important;
+}
+
+/* Show hamburger button */
+.layout-desktop body:not(.hideMainDrawer) .mainDrawerButton{
+  display: inline-flex !important;
+  min-height: var(--ds-tap-min) !important;
+  min-width: var(--ds-tap-min) !important;
+}
+
+/* Re-center header buttons */
+.layout-desktop .headerTabs{
+  margin-left: 0 !important;
+}
+
+/* Re-enable home button */
+.layout-desktop body:not(.hideMainDrawer) .skinHeader:not(.noHomeButtonHeader) .headerHomeButton{
+  display: block !important;
+}
+
+/* Fix for scroll menus on home page (percentage already responsive) */
+.emby-scroller{
+  margin-right: 3.3% !important;
+}
+
+/* Background for top-left buttons (scalable padding/top/radius) */
+.layout-desktop body:not(.hideMainDrawer) .headerLeft:not(.libraryDocument:has(.videoPlayerContainer) .headerLeft){
+  padding: var(--ds-space-1) !important;
+  top: calc(var(--ds-space-1) * -0.6) !important;
+  background-color: var(--ds-bg-glass) !important;
+  border-radius: clamp(1.8rem, 2.6vw, 3.25rem) !important;
+  backdrop-filter: blur(var(--ds-blur)) !important;
+}
+/* Fix for JMP (no :has) */
+@supports not selector(:has(*)) {
+  .layout-desktop body:not(.hideMainDrawer) .headerLeft{
+    padding: var(--ds-space-1) !important;
+    top: calc(var(--ds-space-1) * -0.6) !important;
+    background-color: var(--ds-bg-glass) !important;
+    border-radius: clamp(1.8rem, 2.6vw, 3.25rem) !important;
+    backdrop-filter: blur(var(--ds-blur)) !important;
+  }
+}
+
+.headerLeft{
+  flex-grow: 0 !important;
+  -webkit-flex-grow: 0 !important;
+}
+.headerRight{
+  position: absolute !important;
+  right: var(--ds-space-4) !important;
+}
+
+/* Music Player */
+.layout-desktop .appfooter{
+  margin-left: var(--ds-space-3) !important;
+}
+
+/* Plugin support */
+
+/* Media Bar (make it scale on 4K/TV; avoid huge fixed px) */
+.layout-desktop #slides-container{
+  margin: clamp(4rem, 8vh, 8rem) clamp(1rem, 3vw, 3.25rem) 0 clamp(1rem, 3vw, 3.25rem) !important;
+}
+
+/* ---------- Large / 4K breakpoints ---------- */
+/* 1440p+ / ultrawide desktop */
+@media (min-width: 2560px){
+  :root{
+    --ds-drawer-width: clamp(18rem, 16vw, 24rem);
+    --ds-logo-h: clamp(1.8rem, 0.9vw, 2.4rem);
+    --ds-logo-w: clamp(6.0rem, 5.8vw, 8.5rem);
+  }
+  .headerRight{
+    right: clamp(1.25rem, 1.6vw, 2.25rem) !important;
+  }
+}
+
+/* True 4K / big TV use */
+@media (min-width: 3840px), (min-resolution: 2.5dppx){
+  :root{
+    --ds-drawer-width: clamp(20rem, 14vw, 26rem);
+    --ds-tap-min: clamp(3.2rem, 2.2vw, 4.1rem);
+    --ds-space-4: clamp(1.25rem, 1.1vw, 2.25rem);
+  }
+  /* Slightly larger buttons/hit areas */
+  .layout-desktop body:not(.hideMainDrawer) .mainDrawerButton{
+    min-height: var(--ds-tap-min) !important;
+    min-width: var(--ds-tap-min) !important;
+  }
+}
+
+/* Couch mode heuristic: large screens often use coarse pointer (remote) */
+@media (pointer: coarse){
+  .layout-desktop body:not(.hideMainDrawer) .mainDrawerButton{
+    min-height: clamp(3.25rem, 3.5vw, 4.25rem) !important;
+    min-width:  clamp(3.25rem, 3.5vw, 4.25rem) !important;
+  }
+  .navMenuOption, .navMenuOption-selected{
+    min-height: clamp(3.0rem, 3.0vw, 3.75rem) !important;
+  }
+}
