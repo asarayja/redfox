@@ -18,7 +18,7 @@
 
 :root {
 
---md-sys-color-primary: 				#5A2E61;
+--md-sys-color-primary: 				#b19ee0;
 --md-sys-color-secondary: 			#cbc2db;
 --md-sys-color-tertiary: 				#03a3dc;
 
@@ -32,7 +32,7 @@
 
 
 /* Light and Dark */  
-  --color-text-body:       				#5A2E61;         /* semi-transparent white */
+  --color-text-body:       				#ffffffcc;         /* semi-transparent white */
   --bg-color:                      		                #0b0b0b;         /* dark base background ^ Keep these opposites */
   --transparent-bg:           			        #00000000;  /* fully transparent */
 
