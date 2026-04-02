@@ -529,15 +529,18 @@ class RedfoxAdmin {
         const currentUser = localStorage.getItem('redfoxCurrentUser');
         const isAsarayja = currentUser === 'Asarayja';
         
+        const hardcodedIds = [1, 2, 3, 4, 5, 6, 7];
         this.adminData.albums.forEach(album => {
             const div = document.createElement('div');
             div.className = 'album-item';
+            const isHardcoded = hardcodedIds.includes(album.id);
             div.innerHTML = `
                 <div class="item-title">${album.titleNo}</div>
                 <div>Sanger: ${album.songs.length}</div>
+                ${isHardcoded ? '<div style="font-size:0.8em;opacity:0.6;">🔒 Innebygd album – kan ikke slettes</div>' : ''}
                 <div class="item-actions">
-                    ${isAsarayja ? `<button class="edit-btn" onclick="editAlbum(${album.id})">✏️ Rediger</button>` : ''}
-                    ${isAsarayja ? `<button class="delete-btn" onclick="admin.deleteAlbum(${album.id})">🗑️ Slett</button>` : ''}
+                    ${isAsarayja && !isHardcoded ? `<button class="edit-btn" onclick="editAlbum(${album.id})">✏️ Rediger</button>` : ''}
+                    ${isAsarayja && !isHardcoded ? `<button class="delete-btn" onclick="admin.deleteAlbum(${album.id})">🗑️ Slett</button>` : ''}
                 </div>
             `;
             container.appendChild(div);
