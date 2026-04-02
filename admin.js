@@ -57,7 +57,16 @@ class RedfoxAdmin {
                     titleNo: "Album: Redfox – Turbopels og Tøys",
                     titleEn: "Album: Redfox – Turbo Fur and Toys",
                     songs: [
-                        { title: "Redfox – Rev i Rute", fileName: "Redfox_Rev_i_Rute.mp3" }
+                        { title: "Redfox – Rev i Rute", fileName: "Redfox_Rev_i_Rute.mp3" },
+                        { title: "Redfox – Gullfisk-rapp", fileName: "Redfox_Gullfisk_rapp.mp3" },
+                        { title: "Redfox – Tulle-Tirsdag", fileName: "Redfox_Tulle_Tirsdag.mp3" },
+                        { title: "Redfox – Kabelflukt", fileName: "Redfox_Kabelflukt.mp3" },
+                        { title: "Redfox – Fjellrev Funk", fileName: "Redfox_Fjellrev_Funk.mp3" },
+                        { title: "Redfox – Refleksrock", fileName: "Redfox_Refleksrock.mp3" },
+                        { title: "Redfox – Snakkes med Snabel-A", fileName: "Redfox_Snakkes_med_Snabel_A.mp3" },
+                        { title: "Redfox – Rulle-Rave", fileName: "Redfox_Rulle_Rave.mp3" },
+                        { title: "Redfox – Sprettball i Skogen", fileName: "Redfox_Sprettball_i_Skogen.mp3" },
+                        { title: "Redfox – Regler Verden", fileName: "Redfox_Regler_Verden.mp3" }
                     ]
                 },
                 {
@@ -102,7 +111,16 @@ class RedfoxAdmin {
                     titleNo: "Album: Redfox – Toalettrock",
                     titleEn: "Album: Redfox – Toilet Rock",
                     songs: [
-                        { title: "Redfox – Bom i Buksa", fileName: "Redfox_Bom_i_Buksa.mp3" }
+                        { title: "Redfox – Papirpanikk", fileName: "Redfox_Papirpanikk.mp3" },
+                        { title: "Redfox – Sprekk i Setet", fileName: "Redfox_Sprekk i Setet.mp3" },
+                        { title: "Redfox – Dobørste Boogie", fileName: "Redfox_Doborste_Boogie.mp3" },
+                        { title: "Redfox – Luktalarm", fileName: "Redfox_Luktalarm.mp3" },
+                        { title: "Redfox – Rull for Livet", fileName: "Redfox_Rull for Livet.mp3" },
+                        { title: "Redfox – Bom i Buksa", fileName: "Redfox_Bom_i_Buksa.mp3" },
+                        { title: "Redfox – Do på Døra", fileName: "Redfox_Do_p%C3%A5_Dora.mp3" },
+                        { title: "Redfox – Såpedans", fileName: "Redfox_Saapedans.mp3" },
+                        { title: "Redfox – Nødrull", fileName: "Redfox_Nodrull.mp3" },
+                        { title: "Redfox – Ikke Snakk Til Meg Nå", fileName: "Redfox_Ikke_Snakk_Til_Meg_N%C3%A5.mp3" }
                     ]
                 },
                 {
