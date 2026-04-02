@@ -1539,7 +1539,7 @@ function login() {
         // Default users with encrypted passwords
         validUsers = {
             'redfox': hashPassword('M1ttNavn3rRedfox2025?'),
-            'Asarayja': hashPassword('JegH3terMel1ssa1dag2025?')
+            'Asarayja': hashPassword('Jegspiseris2025?')
         };
         localStorage.setItem('redfoxUsers', JSON.stringify(validUsers));
     }
