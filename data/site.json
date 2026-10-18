@@ -1,0 +1,875 @@
+{
+  "site": {
+    "title": {
+      "no": "Redfox sin verden",
+      "en": "Redfox's world"
+    },
+    "tagline": {
+      "no": "Den røde reven fra tundraen – med album fulle av tull, tøys og fengende låter.",
+      "en": "The red fox from the tundra – with albums full of mischief, silliness and catchy tunes."
+    },
+    "heroImage": "bilder/redfox-hode.webp",
+    "shareImage": "bilder/deling.jpg",
+    "intro": {
+      "no": "Trykk på et album for å se sangene, eller trykk «Spill alt» og la reven ta over.",
+      "en": "Tap an album to see the songs, or hit “Play all” and let the fox take over."
+    }
+  },
+  "about": {
+    "text": {
+      "no": "",
+      "en": ""
+    },
+    "facts": [
+      {
+        "label": {
+          "no": "Navn",
+          "en": "Name"
+        },
+        "value": {
+          "no": "Redfox",
+          "en": "Redfox"
+        }
+      },
+      {
+        "label": {
+          "no": "Bursdag",
+          "en": "Birthday"
+        },
+        "value": {
+          "no": "30. november",
+          "en": "November 30"
+        }
+      },
+      {
+        "label": {
+          "no": "Alder",
+          "en": "Age"
+        },
+        "value": {
+          "no": "38 år",
+          "en": "38 years"
+        }
+      },
+      {
+        "label": {
+          "no": "Interesser",
+          "en": "Interests"
+        },
+        "value": {
+          "no": "Spille pc-spill og se serier",
+          "en": "Playing PC games and watching series"
+        }
+      },
+      {
+        "label": {
+          "no": "Liker",
+          "en": "Likes"
+        },
+        "value": {
+          "no": "Gå turer, være med venner, være kreativ i furry-fellesskapet og le",
+          "en": "Going for walks, hanging out with friends, being creative in the furry community and laughing"
+        }
+      },
+      {
+        "label": {
+          "no": "Favorittfarge",
+          "en": "Favourite colour"
+        },
+        "value": {
+          "no": "Grønn, blå og hvit",
+          "en": "Green, blue and white"
+        }
+      },
+      {
+        "label": {
+          "no": "Favorittspill",
+          "en": "Favourite game"
+        },
+        "value": {
+          "no": "VR Chat",
+          "en": "VR Chat"
+        }
+      }
+    ]
+  },
+  "characters": [
+    {
+      "id": "redfox",
+      "name": "Redfox",
+      "emoji": "🦊",
+      "status": "ready",
+      "image": "bilder/redfox-hode.webp",
+      "avatar": "bilder/logo.webp",
+      "accent": "#ff5b2e",
+      "accent2": "#2ee59d",
+      "species": {
+        "no": "Rev",
+        "en": "Fox"
+      },
+      "tagline": {
+        "no": "Lur, leken, nysgjerrig",
+        "en": "Cunning, playful, curious"
+      },
+      "bio": {
+        "no": "Vokste opp på tundraen, elsker eventyr og samspill med venner.",
+        "en": "Grew up on the tundra, loves adventure and hanging out with friends."
+      },
+      "palette": [
+        "#d5321e",
+        "#7a3a1e",
+        "#f2dcc0",
+        "#2a7fb8",
+        "#1d1414"
+      ],
+      "facts": [
+        {
+          "label": {
+            "no": "Navn",
+            "en": "Name"
+          },
+          "value": {
+            "no": "Redfox",
+            "en": "Redfox"
+          }
+        },
+        {
+          "label": {
+            "no": "Fursona",
+            "en": "Fursona"
+          },
+          "value": {
+            "no": "Rev",
+            "en": "Fox"
+          }
+        },
+        {
+          "label": {
+            "no": "Opprinnelse",
+            "en": "Origin"
+          },
+          "value": {
+            "no": "Nordisk ørkenrev",
+            "en": "Nordic desert fox"
+          }
+        },
+        {
+          "label": {
+            "no": "Egenskaper",
+            "en": "Traits"
+          },
+          "value": {
+            "no": "Lur, leken, nysgjerrig",
+            "en": "Cunning, playful, curious"
+          }
+        }
+      ],
+      "gallery": [
+        {
+          "src": "bilder/logo.webp",
+          "caption": {
+            "no": "Redfox-logo",
+            "en": "Redfox logo"
+          }
+        },
+        {
+          "src": "bilder/1.jpg",
+          "caption": {
+            "no": "VR Redfox",
+            "en": "VR Redfox"
+          }
+        },
+        {
+          "src": "bilder/2.jpg",
+          "caption": {
+            "no": "VR Redfox",
+            "en": "VR Redfox"
+          }
+        },
+        {
+          "src": "bilder/3.jpg",
+          "caption": {
+            "no": "VR Redfox",
+            "en": "VR Redfox"
+          }
+        },
+        {
+          "src": "bilder/4.jpg",
+          "caption": {
+            "no": "Ekte Redfox",
+            "en": "Real Redfox"
+          }
+        }
+      ]
+    }
+  ],
+  "music": {
+    "albums": [
+      {
+        "id": "full-rulle",
+        "title": {
+          "no": "Full Rulle",
+          "en": "Full Throttle"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Norsk album",
+          "en": "Norwegian album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Kveldens Leveranse",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Kveldens_Leveranse.mp3",
+            "duration": 192
+          },
+          {
+            "title": "Sparkesykkel Syndrom",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Sparkesykkel_Syndrom.mp3",
+            "duration": 192
+          },
+          {
+            "title": "Vannverk i Varsel",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Vannverk_i_Varsel.mp3",
+            "duration": 203
+          },
+          {
+            "title": "Fjertelykke",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Fjertelykke.mp3",
+            "duration": 208
+          },
+          {
+            "title": "Fisefart i VR",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Fisefart_i_VR.mp3",
+            "duration": 206
+          },
+          {
+            "title": "Tryne med Stil",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Tryne med_Stil.mp3",
+            "duration": 212
+          },
+          {
+            "title": "Kenguvogn",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Kenguvogn.mp3",
+            "duration": 184
+          },
+          {
+            "title": "Latterlig Sjanse",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Latterlig_Sjanse.mp3",
+            "duration": 196
+          },
+          {
+            "title": "Bortevekk med Vind i Pelsen",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Bortevekk_med_Vind_i_Pelsen.mp3",
+            "duration": 185
+          },
+          {
+            "title": "Slipp Latteren Fri",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Slipp_Latteren_Fri.mp3",
+            "duration": 198
+          },
+          {
+            "title": "Theme",
+            "src": "Redfox/Redfox_Full_Rulle/Redfox_Redfox_Theme.mp3",
+            "duration": 200
+          }
+        ]
+      },
+      {
+        "id": "turbopels-og-toys",
+        "title": {
+          "no": "Turbopels og Tøys",
+          "en": "Turbofur & Tomfoolery"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Norsk album",
+          "en": "Norwegian album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Rev i Rute",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Rev_i_Rute.mp3",
+            "duration": 194
+          },
+          {
+            "title": "Gullfisk-rapp",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Gullfisk_rapp.mp3",
+            "duration": 154
+          },
+          {
+            "title": "Tulle-Tirsdag",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Tulle_Tirsdag.mp3",
+            "duration": 186
+          },
+          {
+            "title": "Kabelflukt",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Kabelflukt.mp3",
+            "duration": 198
+          },
+          {
+            "title": "Fjellrev Funk",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Fjellrev_Funk.mp3",
+            "duration": 192
+          },
+          {
+            "title": "Refleksrock",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Refleksrock.mp3",
+            "duration": 187
+          },
+          {
+            "title": "Snakkes med Snabel-A",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Snakkes_med_Snabel_A.mp3",
+            "duration": 164
+          },
+          {
+            "title": "Rulle-Rave",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Rulle_Rave.mp3",
+            "duration": 192
+          },
+          {
+            "title": "Sprettball i Skogen",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Sprettball_i_Skogen.mp3",
+            "duration": 199
+          },
+          {
+            "title": "Regler Verden",
+            "src": "Redfox/Redfox_Turbopels_og_Toys/Redfox_Regler_Verden.mp3",
+            "duration": 177
+          }
+        ]
+      },
+      {
+        "id": "tails-of-trouble",
+        "title": {
+          "no": "Tails of Trouble",
+          "en": "Tails of Trouble"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Engelsk album",
+          "en": "English album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Skater on the Moon",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Skater_on_the_Moon.mp3",
+            "duration": 173
+          },
+          {
+            "title": "Flush the Funk",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Flush_the_Funk.mp3",
+            "duration": 203
+          },
+          {
+            "title": "Laugh Attack",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Laugh_Attack.mp3",
+            "duration": 187
+          },
+          {
+            "title": "Goldfish Parade",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Goldfish_Parade.mp3",
+            "duration": 186
+          },
+          {
+            "title": "Headset Hero",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Headset_Hero.mp3",
+            "duration": 161
+          },
+          {
+            "title": "Disco Detour",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Disco_Detour.mp3",
+            "duration": 204
+          },
+          {
+            "title": "Trail Tricks",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Trail_Tricks.mp3",
+            "duration": 217
+          },
+          {
+            "title": "Rocket Sneakers",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Rocket_Sneakers.mp3",
+            "duration": 188
+          },
+          {
+            "title": "Windchaser",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Windchaser.mp3",
+            "duration": 182
+          },
+          {
+            "title": "Toilet Paper Tango",
+            "src": "Redfox/Redfox_Tails_of_Trouble/Redfox_Toilet_Paper_Tango.mp3",
+            "duration": 176
+          }
+        ]
+      },
+      {
+        "id": "linje-9-er-opptatt",
+        "title": {
+          "no": "Linje 9 er Opptatt",
+          "en": "Line 9 is Busy"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Norsk album",
+          "en": "Norwegian album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Sentralen AS",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Sentralen_AS.mp3",
+            "duration": 183
+          },
+          {
+            "title": "Alarm i Arkivet",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Alarm_i_Arkivet.mp3",
+            "duration": 204
+          },
+          {
+            "title": "Linje 9 er Opptatt",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Linje_9_er_Opptatt.mp3",
+            "duration": 170
+          },
+          {
+            "title": "Videresendt til Feil Rev",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Videresendt_til_Feil_Rev.mp3",
+            "duration": 196
+          },
+          {
+            "title": "Fax med Følelser",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Fax_med_Folelser.mp3",
+            "duration": 198
+          },
+          {
+            "title": "Timeout på Tast 3",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Timeout_på_Tast 3.mp3",
+            "duration": 161
+          },
+          {
+            "title": "Rør ikke Kabler",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Ror_ikke_Kabler.mp3",
+            "duration": 161
+          },
+          {
+            "title": "Feil Tilkoblet",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Feil_Tilkoblet.mp3",
+            "duration": 159
+          },
+          {
+            "title": "Vennligst Hold Linjen",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Vennligst_Hold_Linjen.mp3",
+            "duration": 197
+          },
+          {
+            "title": "Koble Meg Fri",
+            "src": "Redfox/Redfox_Linje_9_er_Opptatt/Redfox_Koble_Meg_Fri.mp3",
+            "duration": 171
+          }
+        ]
+      },
+      {
+        "id": "toalettrock",
+        "title": {
+          "no": "Toalettrock",
+          "en": "Toiletrock"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Norsk album",
+          "en": "Norwegian album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Papirpanikk",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Papirpanikk.mp3",
+            "duration": 180
+          },
+          {
+            "title": "Sprekk i Setet",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Sprekk i Setet.mp3",
+            "duration": 152
+          },
+          {
+            "title": "Dobørste Boogie",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Doborste_Boogie.mp3",
+            "duration": 153
+          },
+          {
+            "title": "Luktalarm",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Luktalarm.mp3",
+            "duration": 182
+          },
+          {
+            "title": "Rull for Livet",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Rull for Livet.mp3",
+            "duration": 179
+          },
+          {
+            "title": "Bom i Buksa",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Bom_i_Buksa.mp3",
+            "duration": 164
+          },
+          {
+            "title": "Do på Døra",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Do_på_Dora.mp3",
+            "duration": 201
+          },
+          {
+            "title": "Såpedans",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Saapedans.mp3",
+            "duration": 165
+          },
+          {
+            "title": "Nødrull",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Nodrull.mp3",
+            "duration": 175
+          },
+          {
+            "title": "Ikke Snakk Til Meg Nå",
+            "src": "Redfox/Redfox_Toalettrock/Redfox_Ikke_Snakk_Til_Meg_Naa.mp3",
+            "duration": 156
+          }
+        ]
+      },
+      {
+        "id": "furry-med-fullt-register",
+        "title": {
+          "no": "Furry med Fullt Register",
+          "en": "Furry with Full Register"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Norsk album",
+          "en": "Norwegian album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Redfox sangen",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_sangen.mp3",
+            "duration": 221
+          },
+          {
+            "title": "Den Røde Furry Reven",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Den_Rode_Furry_Reven.mp3",
+            "duration": 177
+          },
+          {
+            "title": "Sangen om Redfox",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Sangen_om_Redfox.mp3",
+            "duration": 181
+          },
+          {
+            "title": "Redfox, du e’ vår helt",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_du_e_vår helt.mp3",
+            "duration": 157
+          },
+          {
+            "title": "Kongen av sprell",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Kongen_av_sprell.mp3",
+            "duration": 155
+          },
+          {
+            "title": "I Sommervær",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_I_Sommervær.mp3",
+            "duration": 240
+          },
+          {
+            "title": "Naken og Fri",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Naken_og_Fri.mp3",
+            "duration": 173
+          },
+          {
+            "title": "Redfox på Leting",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_på_Leting.mp3",
+            "duration": 188
+          },
+          {
+            "title": "Redfox Rocker",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_Rocker.mp3",
+            "duration": 157
+          },
+          {
+            "title": "Redfox, Skogens Spellemester",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_Skogens_Spellemester.mp3",
+            "duration": 186
+          },
+          {
+            "title": "Redfox og Pekkene",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_og_Pekkene.mp3",
+            "duration": 220
+          },
+          {
+            "title": "Skogens Ville Sjarmør",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Skogens_Ville_Sjarmør.mp3",
+            "duration": 165
+          },
+          {
+            "title": "Redfox på Tur",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_paa_Tur.mp3",
+            "duration": 155
+          },
+          {
+            "title": "Redfox’s Reise",
+            "src": "Redfox/Redfox_Furry_med_Fullt_Register/Redfox_Redfox_s_Reise.mp3",
+            "duration": 180
+          }
+        ]
+      },
+      {
+        "id": "full-systemfeil",
+        "title": {
+          "no": "Full Systemfeil",
+          "en": "Full System Failure"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Norsk album",
+          "en": "Norwegian album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Matpakke Med Mot",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Matpakke_Med_Mot.mp3",
+            "duration": 179
+          },
+          {
+            "title": "Kontaktløs Kaos",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Kontaktløs_Kaos.mp3",
+            "duration": 216
+          },
+          {
+            "title": "Såpeglatt Show",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Såpeglatt_Show.mp3",
+            "duration": 211
+          },
+          {
+            "title": "Feil Dør Feil Fest",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Feil_Dør_Feil_Fest.mp3",
+            "duration": 179
+          },
+          {
+            "title": "Trykk på Knappen",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Trykk_på_Knappen.mp3",
+            "duration": 171
+          },
+          {
+            "title": "Handlepose med Hull",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Handlepose_med_Hull.mp3",
+            "duration": 216
+          },
+          {
+            "title": "Snooze-knappens Herre",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Snooze_knappens_Herre.mp3",
+            "duration": 171
+          },
+          {
+            "title": "Brev uten Porto",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Brev_uten_Porto.mp3",
+            "duration": 169
+          },
+          {
+            "title": "Trådløs Trøbbel",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Trodlos_Trobbel.mp3",
+            "duration": 164
+          },
+          {
+            "title": "Tastetrykk-Tornado",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Tastetrykk_Tornado.mp3",
+            "duration": 178
+          },
+          {
+            "title": "Skjermfrosset Farse",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Skjermfrosset_Farse.mp3",
+            "duration": 159
+          },
+          {
+            "title": "Pakke På Avveie",
+            "src": "Redfox/Redfox_Full_Systemfeil/Redfox_Pakke_Paa_Avveie.mp3",
+            "duration": 144
+          }
+        ]
+      },
+      {
+        "id": "shenanigans",
+        "title": {
+          "no": "Shenanigans",
+          "en": "Shenanigans"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Norsk album",
+          "en": "Norwegian album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Buksa som ville mer",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Buksa_som_ville_mer.mp3",
+            "duration": 198
+          },
+          {
+            "title": "Film-maraton i pels",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Film_maraton_i_pels.mp3",
+            "duration": 182
+          },
+          {
+            "title": "Furry-fest med spøk",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Furry_fest_med_spøk.mp3",
+            "duration": 162
+          },
+          {
+            "title": "Glidelåsens Hemmelighet",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Glidelåsens_Hemmelighet.mp3",
+            "duration": 217
+          },
+          {
+            "title": "Luktalarm i Lunsjen",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Luktalarm_i_Lunsjen.mp3",
+            "duration": 160
+          },
+          {
+            "title": "Overrasket mor",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Overrasket_mor.mp3",
+            "duration": 186
+          },
+          {
+            "title": "Prompekongen på Trikken",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Prompekongen_på_Trikken.mp3",
+            "duration": 219
+          },
+          {
+            "title": "Prompeorkester",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Prompeorkester.mp3",
+            "duration": 155
+          },
+          {
+            "title": "Sprell og spill",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_Sprell og spill.mp3",
+            "duration": 161
+          },
+          {
+            "title": "VR Chat-kaos",
+            "src": "Redfox/Redfox_Shenanigans/Redfox_VR_Chat_kaos.mp3",
+            "duration": 176
+          }
+        ]
+      },
+      {
+        "id": "casino",
+        "title": {
+          "no": "Redfox på Casino",
+          "en": "Redfox at the Casino"
+        },
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
+        "tag": {
+          "no": "Norsk album",
+          "en": "Norwegian album"
+        },
+        "description": {
+          "no": "",
+          "en": ""
+        },
+        "tracks": [
+          {
+            "title": "Alt på et kast",
+            "src": "Redfox/redfox_paa_casino/redfox_alt_paa_et_kast.mp3",
+            "duration": 199
+          },
+          {
+            "title": "Bak de lukkede dørene",
+            "src": "Redfox/redfox_paa_casino/redfox_bak_de_lukkede_dorene.mp3",
+            "duration": 297
+          },
+          {
+            "title": "Bare ett spill til",
+            "src": "Redfox/redfox_paa_casino/redfox_bare_ett_spill_til.mp3",
+            "duration": 242
+          },
+          {
+            "title": "Hele rommet lever",
+            "src": "Redfox/redfox_paa_casino/redfox_hele_rommet_lever.mp3",
+            "duration": 226
+          },
+          {
+            "title": "Ingen pauser nå",
+            "src": "Redfox/redfox_paa_casino/redfox_ingen_pauser_naa.mp3",
+            "duration": 179
+          },
+          {
+            "title": "Jeg styrer spillet",
+            "src": "Redfox/redfox_paa_casino/redfox_jeg_styrer_spillet.mp3",
+            "duration": 299
+          },
+          {
+            "title": "La den spinne",
+            "src": "Redfox/redfox_paa_casino/redfox_la_den_spinne.mp3",
+            "duration": 220
+          },
+          {
+            "title": "Når alt faller på plass",
+            "src": "Redfox/redfox_paa_casino/redfox_naar_alt_faller_paa_plass.mp3",
+            "duration": 302
+          },
+          {
+            "title": "Siste runde nå",
+            "src": "Redfox/redfox_paa_casino/redfox_siste_runde_naa.mp3",
+            "duration": 309
+          },
+          {
+            "title": "Velkommen til spillet",
+            "src": "Redfox/redfox_paa_casino/redfox_velkommen_til_spillet.mp3",
+            "duration": 234
+          }
+        ]
+      }
+    ]
+  }
+}
