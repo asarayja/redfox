@@ -305,9 +305,32 @@
   let lbItems = [];
   let lastRoute = '';
 
+  // Språket står i adressen, så en engelsk lenke kan deles: #/en/album/full-rulle
+  function readHash() {
+    const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+    const en = parts[0] === 'en';
+    if (en) parts.shift();
+    return { lang: en ? 'en' : 'no', parts };
+  }
+  const hashFor = (l, parts) => (l === 'en' ? '#/en' : '#') + '/' + parts.join('/');
+
+  // Legger til /en i alle lenker på siden når siden er på engelsk.
+  function localizeLinks() {
+    document.querySelectorAll('a[href^="#/"]').forEach((a) => {
+      if (!a.dataset.base) a.dataset.base = a.getAttribute('href');
+      a.setAttribute('href', hashFor(lang, a.dataset.base.slice(2).split('/').filter(Boolean)));
+    });
+  }
+
   function render() {
     if (!data) return;
-    const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+    const { lang: urlLang, parts } = readHash();
+    if (urlLang !== lang) {
+      lang = urlLang;
+      store.set('lang', lang);
+      applyStaticText();
+      renderQueue();
+    }
     let route = 'home';
     let html;
     let title = '';
@@ -336,7 +359,8 @@
     const siteTitle = tr(data.site.title);
     document.title = title ? `${title} · ${siteTitle}` : siteTitle;
 
-    const key = location.hash;
+    localizeLinks();
+    const key = parts.join('/'); // bytte av språk alene skal ikke hoppe til toppen
     if (key !== lastRoute) window.scrollTo(0, 0);
     lastRoute = key;
   }
@@ -402,11 +426,8 @@
   });
 
   $('#langBtn').addEventListener('click', () => {
-    lang = lang === 'no' ? 'en' : 'no';
-    store.set('lang', lang);
-    applyStaticText();
-    render();
-    renderQueue();
+    // Bytter adressen, så render() bytter språket. Da kan den engelske adressen kopieres og deles.
+    location.hash = hashFor(lang === 'no' ? 'en' : 'no', readHash().parts);
   });
 
   // ---------- Lyst / mørkt tema ----------
@@ -538,7 +559,8 @@
     player.hidden = false;
     document.body.classList.add('has-player');
     $('#plCover').innerHTML = coverHTML(r.album);
-    $('#plAlbum').href = `#/album/${encodeURIComponent(r.album.id)}`;
+    $('#plAlbum').dataset.base = `#/album/${encodeURIComponent(r.album.id)}`;
+    $('#plAlbum').href = hashFor(lang, ['album', encodeURIComponent(r.album.id)]);
     $('#plDur').textContent = r.track.duration ? fmt(r.track.duration) : '0:00';
     updatePlayerText();
     markPlaying();
@@ -746,6 +768,8 @@
     .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then((json) => {
       data = json;
+      // Har man valgt engelsk før, og lenken ikke sier noe om språk, åpnes den engelske utgaven.
+      if (lang === 'en' && readHash().lang === 'no') history.replaceState(null, '', hashFor('en', readHash().parts));
       applyStaticText();
       render();
       window.addEventListener('hashchange', render);
