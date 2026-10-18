@@ -220,7 +220,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.1; ma
 }
 
 /* ---------- Innhold ---------- */
-main { flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 28px clamp(16px, 4vw, 32px) 60px; }
+main { flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 28px clamp(16px, 4vw, 32px) 60px; overflow-x: clip; }
 main:focus { outline: none; }
 .view { animation: rise .5s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
