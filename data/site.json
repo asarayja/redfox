@@ -101,7 +101,7 @@
       "status": "ready",
       "image": "bilder/redfox-hode.webp",
       "avatar": "bilder/logo.webp",
-      "accent": "#ff5b2e",
+      "accent": "#ff2e2e",
       "accent2": "#2ee59d",
       "species": {
         "no": "Rev",
@@ -207,13 +207,13 @@
     "albums": [
       {
         "id": "full-rulle",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Full Rulle",
           "en": "Full Throttle"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Norsk album",
           "en": "Norwegian album"
@@ -282,13 +282,13 @@
       },
       {
         "id": "turbopels-og-toys",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Turbopels og Tøys",
           "en": "Turbofur & Tomfoolery"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Norsk album",
           "en": "Norwegian album"
@@ -352,13 +352,13 @@
       },
       {
         "id": "tails-of-trouble",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Tails of Trouble",
           "en": "Tails of Trouble"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Engelsk album",
           "en": "English album"
@@ -422,13 +422,13 @@
       },
       {
         "id": "linje-9-er-opptatt",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Linje 9 er Opptatt",
           "en": "Line 9 is Busy"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Norsk album",
           "en": "Norwegian album"
@@ -492,13 +492,13 @@
       },
       {
         "id": "toalettrock",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Toalettrock",
           "en": "Toiletrock"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Norsk album",
           "en": "Norwegian album"
@@ -562,13 +562,13 @@
       },
       {
         "id": "furry-med-fullt-register",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Furry med Fullt Register",
           "en": "Furry with Full Register"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Norsk album",
           "en": "Norwegian album"
@@ -652,13 +652,13 @@
       },
       {
         "id": "full-systemfeil",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Full Systemfeil",
           "en": "Full System Failure"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Norsk album",
           "en": "Norwegian album"
@@ -732,13 +732,13 @@
       },
       {
         "id": "shenanigans",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Shenanigans",
           "en": "Shenanigans"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Norsk album",
           "en": "Norwegian album"
@@ -802,13 +802,13 @@
       },
       {
         "id": "casino",
+        "artist": "Redfox",
+        "year": "",
+        "cover": "",
         "title": {
           "no": "Redfox på Casino",
           "en": "Redfox at the Casino"
         },
-        "artist": "Redfox",
-        "year": "",
-        "cover": "",
         "tag": {
           "no": "Norsk album",
           "en": "Norwegian album"
