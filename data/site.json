@@ -101,7 +101,7 @@
       "status": "ready",
       "image": "bilder/redfox-hode.webp",
       "avatar": "bilder/logo.webp",
-      "accent": "#ff2e2e",
+      "accent": "#ff0000",
       "accent2": "#2ee59d",
       "species": {
         "no": "Rev",
